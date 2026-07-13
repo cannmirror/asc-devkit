@@ -38,9 +38,15 @@ SPECIAL_PREFIXES = (
     "01_simd_cpp_api/02_features/99_",
 )
 
-CUSTOM_OP_PACKAGE_CASE = "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
-PARALLEL_OPS_PACKAGE_CASE = "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/parallel_ops_package"
-TILING_SINK_PROGRAMMING_CASE = "04_aicpu/02_features/00_framework/00_pytorch/tiling_sink_programming"
+CUSTOM_OP_PACKAGE_CASE = (
+    "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+)
+PARALLEL_OPS_PACKAGE_CASE = (
+    "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/parallel_ops_package"
+)
+TILING_SINK_PROGRAMMING_CASE = (
+    "04_aicpu/02_features/00_framework/00_pytorch/tiling_sink_programming"
+)
 TILING_SINK_GENERATE_TASK_PATTERN = (
     "GenerateTaskForSinkOp:Node [AddCustomTilingSink, AddCustomTilingSink] starts to generate tasks "
     "for the tiling sink, sk_flag [0]."
@@ -72,7 +78,9 @@ NO_CMAKE_ARCH_INJECTION_CASES = {
 }
 
 TENSORFLOW_SKIP_REASON = "requires TensorFlow 2.6.5 environment; skipped by presmoke"
-MATMUL_L2CACHE_SKIP_REASON = "data size (~308M) causes overtime in cpu mode; cpu mode skipped by presmoke"
+MATMUL_L2CACHE_SKIP_REASON = (
+    "data size (~308M) causes overtime in cpu mode; cpu mode skipped by presmoke"
+)
 
 
 @dataclass
@@ -161,11 +169,17 @@ def main() -> int:
     runners_root.mkdir(parents=True, exist_ok=True)
     reports_root.mkdir(parents=True, exist_ok=True)
 
-    specs = [parse_readme(path, examples_root) for path in discover_examples(examples_root)]
+    specs = [
+        parse_readme(path, examples_root) for path in discover_examples(examples_root)
+    ]
     apply_case_overrides(specs)
     cells, _ = build_cells(specs, args.arch, [args.mode])
     cells = expand_scenario_cells(cells, project_root)
-    cells = [cell for cell in cells if args.arch in cell.example.archs and args.mode in cell.example.modes]
+    cells = [
+        cell
+        for cell in cells
+        if args.arch in cell.example.archs and args.mode in cell.example.modes
+    ]
     runnable_by_rel = {cell.example.rel_path: cell for cell in cells}
     all_cells = [cell_for_spec(spec, args.arch, args.mode) for spec in specs]
     all_cells = expand_scenario_cells(all_cells, project_root)
@@ -182,13 +196,17 @@ def main() -> int:
     remove_stale_runners(runners_root, reports)
     write_manifest(reports_root, reports)
     LOG.info("generated_runners=%s", len(reports))
-    LOG.info("low_confidence=%s", sum(1 for item in reports if item.confidence != "high"))
+    LOG.info(
+        "low_confidence=%s", sum(1 for item in reports if item.confidence != "high")
+    )
     LOG.info("reports_dir=%s", reports_root)
     return 0
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Generate per-case presmoke run.sh wrappers")
+    parser = argparse.ArgumentParser(
+        description="Generate per-case presmoke run.sh wrappers"
+    )
     parser.add_argument("--project-root", default=Path(__file__).resolve().parents[2])
     parser.add_argument("--arch", default="dav-2201")
     parser.add_argument("--mode", default="npu")
@@ -207,7 +225,9 @@ def apply_case_overrides(specs) -> None:
             spec.archs = ARCH_OVERRIDES[spec.rel_path]
 
 
-def write_runner(project_root: Path, runners_root: Path, cell, runnable_on_target: bool) -> CaseReport:
+def write_runner(
+    project_root: Path, runners_root: Path, cell, runnable_on_target: bool
+) -> CaseReport:
     rel = cell.example.rel_path
     runner_dir = runners_root / rel
     runner_dir.mkdir(parents=True, exist_ok=True)
@@ -219,7 +239,9 @@ def write_runner(project_root: Path, runners_root: Path, cell, runnable_on_targe
     runner.chmod(0o755)
     skip_reason = render_spec.skip_reason
     skip_modes = render_spec.skip_modes
-    all_modes_skipped = bool(skip_reason and all(mode in skip_modes for mode in cell.example.modes))
+    all_modes_skipped = bool(
+        skip_reason and all(mode in skip_modes for mode in cell.example.modes)
+    )
     return CaseReport(
         case=rel,
         runner=runner.relative_to(project_root).as_posix(),
@@ -263,15 +285,21 @@ def parse_scenario_values_from_cmake(cmake_file: Path) -> List[int]:
         return []
 
     values: set[int] = set()
-    for match in re.finditer(r"set\s*\(\s*SCENARIO_NUM\s+[^)]*CACHE\s+STRING\s+\"([^\"]*)\"", text):
+    for match in re.finditer(
+        r"set\s*\(\s*SCENARIO_NUM\s+[^)]*CACHE\s+STRING\s+\"([^\"]*)\"", text
+    ):
         values.update(parse_scenario_values_from_text(match.group(1)))
-    for match in re.finditer(r"set\s*\(\s*SCENARIO\s+[^)]*CACHE\s+STRING\s+\"([^\"]*)\"", text):
+    for match in re.finditer(
+        r"set\s*\(\s*SCENARIO\s+[^)]*CACHE\s+STRING\s+\"([^\"]*)\"", text
+    ):
         values.update(parse_scenario_values_from_text(match.group(1)))
     for match in re.finditer(r"SCENARIO_NUM[^\n\r\"]*\"([^\"]*)\"", text):
         values.update(parse_scenario_values_from_text(match.group(1)))
     for match in re.finditer(r"set\s*\(\s*VALID_SCENARIOS\s+([^)]+)\)", text):
         values.update(parse_scenario_values_from_text(match.group(1)))
-    for match in re.finditer(r"SCENARIO_NUM[^\n\r]*(?:must be|Valid values are|specify)[^\n\r]*", text):
+    for match in re.finditer(
+        r"SCENARIO_NUM[^\n\r]*(?:must be|Valid values are|specify)[^\n\r]*", text
+    ):
         values.update(parse_scenario_values_from_text(match.group(0)))
     return sorted(value for value in values if 0 <= value <= 32)
 
@@ -364,8 +392,12 @@ def scenario_value_from_command(command: Command) -> int | None:
 def make_scenario_cell(cell: Cell, project_root: Path, scenario_num: int) -> Cell:
     source_rel = source_rel_for_cell(project_root, cell)
     scenario_rel = f"{source_rel}__scenario_{scenario_num}"
-    commands = [rewrite_command_for_scenario(command, scenario_num) for command in cell.commands]
-    archs = supported_archs_for_scenario(cell.example.archs, cell.example.path / "CMakeLists.txt", scenario_num)
+    commands = [
+        rewrite_command_for_scenario(command, scenario_num) for command in cell.commands
+    ]
+    archs = supported_archs_for_scenario(
+        cell.example.archs, cell.example.path / "CMakeLists.txt", scenario_num
+    )
     example = ExampleSpec(
         cell.example.path,
         scenario_rel,
@@ -375,7 +407,13 @@ def make_scenario_cell(cell: Cell, project_root: Path, scenario_num: int) -> Cel
         cell.example.source,
         cell.example.suggestions,
     )
-    return Cell(example, cell.arch, cell.mode, commands, cell.example.path / f"build_{cell.mode}_scenario_{scenario_num}")
+    return Cell(
+        example,
+        cell.arch,
+        cell.mode,
+        commands,
+        cell.example.path / f"build_{cell.mode}_scenario_{scenario_num}",
+    )
 
 
 def rewrite_command_for_scenario(command: Command, scenario_num: int) -> Command:
@@ -383,7 +421,11 @@ def rewrite_command_for_scenario(command: Command, scenario_num: int) -> Command
     if raw:
         raw = replace_scenario_num_arg(raw, scenario_num)
         has_cmake_scenario = "-DSCENARIO_NUM=" in raw or "-DSCENARIO=" in raw
-        if command.kind == "cmake" and is_cmake_configure(raw) and not has_cmake_scenario:
+        if (
+            command.kind == "cmake"
+            and is_cmake_configure(raw)
+            and not has_cmake_scenario
+        ):
             raw = f"{raw} -DSCENARIO_NUM={scenario_num}"
     env = dict(command.env)
     env["SCENARIO_NUM"] = str(scenario_num)
@@ -409,7 +451,9 @@ def replace_scenario_num_arg(command: str, scenario_num: int) -> str:
     return command
 
 
-def supported_archs_for_scenario(base_archs: List[str], cmake_file: Path, scenario_num: int) -> List[str]:
+def supported_archs_for_scenario(
+    base_archs: List[str], cmake_file: Path, scenario_num: int
+) -> List[str]:
     if not cmake_file.exists():
         return base_archs
     text = scenario_arch_text(cmake_file)
@@ -458,16 +502,23 @@ def scenario_only_supports_arch(text: str, scenario_num: int, arch: str) -> bool
         flags=re.IGNORECASE,
     ):
         return True
-    if re.search(rf"{scenario}\s*=[^\n\r,，)]*(?:仅|only supports).*(?:Ascend\s*950|{arch})", text):
+    if re.search(
+        rf"{scenario}\s*=[^\n\r,，)]*(?:仅|only supports).*(?:Ascend\s*950|{arch})",
+        text,
+    ):
         return True
     if arch == "dav-3510" and scenario != "1":
         if re.search(r"A2/A3架构仅支持Scenario\s*1", text, flags=re.IGNORECASE):
             return True
 
-    for match in re.finditer(r"if\s*\((.*?)\)(.*?)(?:endif\s*\(\)|$)", text, flags=re.S):
+    for match in re.finditer(
+        r"if\s*\((.*?)\)(.*?)(?:endif\s*\(\)|$)", text, flags=re.S
+    ):
         condition = match.group(1)
         body = match.group(2)
-        if not re.search(rf"SCENARIO_NUM[^\n\r)]*(?:STREQUAL|EQUAL)\s*\"?{scenario}\"?", condition):
+        if not re.search(
+            rf"SCENARIO_NUM[^\n\r)]*(?:STREQUAL|EQUAL)\s*\"?{scenario}\"?", condition
+        ):
             continue
         combined = condition + "\n" + body
         if arch == "dav-3510" and (
@@ -478,7 +529,7 @@ def scenario_only_supports_arch(text: str, scenario_num: int, arch: str) -> bool
         ):
             return True
         if arch == "dav-2201" and (
-            f'CMAKE_ASC_ARCHITECTURES STREQUAL "dav-3510"' in combined
+            'CMAKE_ASC_ARCHITECTURES STREQUAL "dav-3510"' in combined
             and "only supports dav-2201" in combined
         ):
             return True
@@ -508,13 +559,17 @@ def runner_confidence(cell, runnable_on_target: bool) -> tuple[str, List[str]]:
     return confidence, reasons
 
 
-def build_runner_render_spec(cell, confidence: str, reasons: List[str]) -> tuple[RunnerRenderSpec, str]:
+def build_runner_render_spec(
+    cell, confidence: str, reasons: List[str]
+) -> tuple[RunnerRenderSpec, str]:
     rel = cell.example.rel_path
     source_rel = source_rel_for_cell(None, cell)
     build_cmds = build_commands_for_runner(cell.commands)
     run_cmds = run_commands_for_runner(cell.commands, build_cmds)
     build_cmds, run_cmds = merge_export_commands_into_run(build_cmds, run_cmds)
-    verify_cmds = [command for command in cell.commands if command.raw and command.kind == "verify"]
+    verify_cmds = [
+        command for command in cell.commands if command.raw and command.kind == "verify"
+    ]
     if not run_cmds:
         run_cmds = [Command(":", "run")]
         if "no_run_step" not in reasons:
@@ -525,7 +580,9 @@ def build_runner_render_spec(cell, confidence: str, reasons: List[str]) -> tuple
     custom_op_package_case = source_rel == CUSTOM_OP_PACKAGE_CASE
     custom_op_dependency = requires_custom_op_package(source_rel)
     skip_reason, skip_modes = explicit_skip_config(source_rel)
-    all_modes_skipped = skip_reason and all(mode in skip_modes for mode in cell.example.modes)
+    all_modes_skipped = skip_reason and all(
+        mode in skip_modes for mode in cell.example.modes
+    )
     if all_modes_skipped:
         reasons.append("explicit_skip")
         confidence = "high"
@@ -573,7 +630,9 @@ def build_commands_for_runner(commands: Iterable[Command]) -> List[Command]:
     return result
 
 
-def run_commands_for_runner(commands: Iterable[Command], build_cmds: List[Command]) -> List[Command]:
+def run_commands_for_runner(
+    commands: Iterable[Command], build_cmds: List[Command]
+) -> List[Command]:
     result: List[Command] = []
     for command in commands:
         if not command.raw or command.kind not in {"run", "package_run"}:
@@ -598,7 +657,9 @@ def merge_export_commands_into_run(
         return build_cmds, run_cmds
 
     first_run = run_cmds[0]
-    merged_run = Command("; ".join([*export_cmds, first_run.raw]), first_run.kind, dict(first_run.env))
+    merged_run = Command(
+        "; ".join([*export_cmds, first_run.raw]), first_run.kind, dict(first_run.env)
+    )
     return remaining_build_cmds, [merged_run, *run_cmds[1:]]
 
 
@@ -630,7 +691,10 @@ def classify_confidence(cell) -> tuple[str, List[str]]:
     if any("atc " in command or command.startswith("atc") for command in commands):
         reasons.append("atc_command")
         confidence = downgrade(confidence)
-    if any("tensorflow" in command.lower() or "onnx" in command.lower() for command in commands):
+    if any(
+        "tensorflow" in command.lower() or "onnx" in command.lower()
+        for command in commands
+    ):
         reasons.append("framework_command")
         confidence = downgrade(confidence)
     if not any(command.startswith("cmake") for command in commands):
@@ -650,7 +714,7 @@ def is_atc_prerequisite_command(command: Command, commands: Iterable[Command]) -
         index = command_list.index(command)
     except ValueError:
         return False
-    return any(item.raw.startswith("atc ") for item in command_list[index + 1:])
+    return any(item.raw.startswith("atc ") for item in command_list[index + 1 :])
 
 
 def downgrade(confidence: str) -> str:
@@ -689,10 +753,18 @@ def render_runner(
         *runner_header(spec),
         *runner_function(
             "case_build",
-            [*build_prefix, *indent_commands(spec.build_cmds, inject_cmake_arch=inject_cmake_arch)],
+            [
+                *build_prefix,
+                *indent_commands(spec.build_cmds, inject_cmake_arch=inject_cmake_arch),
+            ],
         ),
-        *runner_function("case_run", [*run_prefix, *indent_commands(spec.run_cmds, default_cd_build=True)]),
-        *runner_function("case_verify", indent_commands(spec.verify_cmds, default_cd_build=True)),
+        *runner_function(
+            "case_run",
+            [*run_prefix, *indent_commands(spec.run_cmds, default_cd_build=True)],
+        ),
+        *runner_function(
+            "case_verify", indent_commands(spec.verify_cmds, default_cd_build=True)
+        ),
         "case_clean() {",
         "    presmoke_default_clean",
         "}",
@@ -708,9 +780,18 @@ def apply_scenario_to_render_spec(spec: RunnerRenderSpec) -> RunnerRenderSpec:
         return spec
     return RunnerRenderSpec(
         rel=spec.rel,
-        build_cmds=[rewrite_command_for_scenario(command, spec.scenario_num) for command in spec.build_cmds],
-        run_cmds=[rewrite_command_for_scenario(command, spec.scenario_num) for command in spec.run_cmds],
-        verify_cmds=[rewrite_command_for_scenario(command, spec.scenario_num) for command in spec.verify_cmds],
+        build_cmds=[
+            rewrite_command_for_scenario(command, spec.scenario_num)
+            for command in spec.build_cmds
+        ],
+        run_cmds=[
+            rewrite_command_for_scenario(command, spec.scenario_num)
+            for command in spec.run_cmds
+        ],
+        verify_cmds=[
+            rewrite_command_for_scenario(command, spec.scenario_num)
+            for command in spec.verify_cmds
+        ],
         source_rel=spec.source_rel,
         scenario_num=spec.scenario_num,
         custom_op_dependency=spec.custom_op_dependency,
@@ -724,7 +805,9 @@ def render_tiling_sink_programming_runner(spec: RunnerRenderSpec) -> str:
     build_prefix = custom_op_guard(spec.custom_op_dependency, spec.skip_reason)
     lines = [
         *runner_header(spec),
-        *runner_function("case_build", [*build_prefix, *indent_commands(spec.build_cmds)]),
+        *runner_function(
+            "case_build", [*build_prefix, *indent_commands(spec.build_cmds)]
+        ),
         *runner_function(
             "case_run",
             [
@@ -733,7 +816,9 @@ def render_tiling_sink_programming_runner(spec: RunnerRenderSpec) -> str:
                 f"    presmoke_verify_tiling_sink_task_log {shlex.quote(TILING_SINK_GENERATE_TASK_PATTERN)}",
             ],
         ),
-        *runner_function("case_verify", indent_commands(spec.verify_cmds, default_cd_build=True)),
+        *runner_function(
+            "case_verify", indent_commands(spec.verify_cmds, default_cd_build=True)
+        ),
         "case_clean() {",
         "    presmoke_default_clean",
         "}",
@@ -761,8 +846,12 @@ def render_parallel_ops_package_runner(spec: RunnerRenderSpec) -> str:
         '    (cd "$CASE_DIR" && soc_version=$SOC_VERSION presmoke_run_command cmake --build build -j)',
         "}",
         "",
-        *runner_function("case_run", indent_commands(spec.run_cmds, default_cd_build=True)),
-        *runner_function("case_verify", indent_commands(spec.verify_cmds, default_cd_build=True)),
+        *runner_function(
+            "case_run", indent_commands(spec.run_cmds, default_cd_build=True)
+        ),
+        *runner_function(
+            "case_verify", indent_commands(spec.verify_cmds, default_cd_build=True)
+        ),
         "case_clean() {",
         '    rm -rf "$CASE_DIR/build" "$BUILD_DIR"',
         "}",
@@ -774,7 +863,9 @@ def render_parallel_ops_package_runner(spec: RunnerRenderSpec) -> str:
 
 
 def custom_op_guard(enabled: bool, skip_reason: str) -> List[str]:
-    return ['    presmoke_ensure_custom_op_package'] if enabled and not skip_reason else []
+    return (
+        ["    presmoke_ensure_custom_op_package"] if enabled and not skip_reason else []
+    )
 
 
 def runner_header(spec: RunnerRenderSpec) -> List[str]:
@@ -784,7 +875,7 @@ def runner_header(spec: RunnerRenderSpec) -> List[str]:
         "",
         "set -euo pipefail",
         "",
-        f'CASE_REL={shlex.quote(source_rel)}',
+        f"CASE_REL={shlex.quote(source_rel)}",
         *skip_reason_lines(spec.skip_reason),
         *skip_modes_lines(spec.skip_modes),
         'SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"',
@@ -853,11 +944,15 @@ def indent_tiling_sink_run_commands(commands: Iterable[Command]) -> List[str]:
         quoted = shlex.quote(raw)
         env_prefix = command_env_prefix(command)
         runner = f"ASCEND_GLOBAL_LOG_LEVEL=1 {env_prefix}bash -lc {quoted}"
-        lines.append(f'    (cd "{command_workdir(raw, default_cd_build=True)}" && {runner})')
+        lines.append(
+            f'    (cd "{command_workdir(raw, default_cd_build=True)}" && {runner})'
+        )
     return lines
 
 
-def indent_command(command: Command, default_cd_build: bool = False, inject_cmake_arch: bool = True) -> str:
+def indent_command(
+    command: Command, default_cd_build: bool = False, inject_cmake_arch: bool = True
+) -> str:
     raw = command.raw
     if not raw or raw == ":":
         return "    :"
@@ -886,9 +981,15 @@ def command_runs_from_build_dir(command: str, default_cd_build: bool = False) ->
         return True
     if command.startswith("python3 ../"):
         return True
-    if 'python3 ../' in command and ("--application=" in command or command.startswith("msprof ")):
+    if "python3 ../" in command and (
+        "--application=" in command or command.startswith("msprof ")
+    ):
         return True
-    return default_cd_build and command.startswith("./") and not command.startswith("./build/")
+    return (
+        default_cd_build
+        and command.startswith("./")
+        and not command.startswith("./build/")
+    )
 
 
 def rewrite_runtime_cmake_options(command: str, inject_cmake_arch: bool = True) -> str:
@@ -932,7 +1033,9 @@ def command_env_prefix(command: Command) -> str:
             env[key] = "$ARCH"
     if not env:
         return ""
-    parts = [f"{key}={quote_env_value(str(value))}" for key, value in sorted(env.items())]
+    parts = [
+        f"{key}={quote_env_value(str(value))}" for key, value in sorted(env.items())
+    ]
     return " ".join(parts) + " "
 
 
@@ -946,7 +1049,9 @@ def quote_env_value(value: str) -> str:
 
 def write_manifest(reports_root: Path, reports: List[CaseReport]) -> None:
     (reports_root / "case_runner_manifest.json").write_text(
-        json.dumps([asdict(report) for report in reports], ensure_ascii=False, indent=2),
+        json.dumps(
+            [asdict(report) for report in reports], ensure_ascii=False, indent=2
+        ),
         encoding="utf-8",
     )
 

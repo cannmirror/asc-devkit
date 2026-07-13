@@ -10,11 +10,8 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
-import configparser
 import argparse
 import os
-import stat
-import hashlib
 import multiprocessing
 import const_var
 
@@ -65,15 +62,9 @@ def args_parse():
     parser.add_argument(
         "-s", "--src-file", nargs="*", required=True, help="input src files"
     )
-    parser.add_argument(
-        "-d", "--output-dir", required=True, help="output dir"
-    )
-    parser.add_argument(
-        "-o", "--output", required=True, help="output"
-    )
-    parser.add_argument(
-        "-p", "--cann-path", required=True, help="cann path"
-    )
+    parser.add_argument("-d", "--output-dir", required=True, help="output dir")
+    parser.add_argument("-o", "--output", required=True, help="output")
+    parser.add_argument("-p", "--cann-path", required=True, help="cann path")
     parser.add_argument(
         "-j", "--parallel-jobs", required=False, help="compile parallel jobs"
     )
@@ -111,14 +102,15 @@ def gen_compile_make_file(param_args):
             param_args.cxx_compiler,
             f"-D_GLIBCXX_USE_CXX11_ABI=0 -std=c++11 {compile_options} -I{param_args.cann_path}/include",
             debug_content,
-            f"{link_options} -lexe_graph -lregister -ltiling_api -L{param_args.cann_path}/lib64")
+            f"{link_options} -lexe_graph -lregister -ltiling_api -L{param_args.cann_path}/lib64",
+        )
         fd.write(compile_cmd)
 
 
 def run_compile_cmd(param_args):
     mkfile = os.path.join(param_args.output_dir, "ascendc_all_ops.make")
     if not os.path.exists(mkfile):
-        raise RuntimeError('ascendc_all_ops.make not exist')
+        raise RuntimeError("ascendc_all_ops.make not exist")
     system_cpu_count = 2 * multiprocessing.cpu_count() - 2
     if param_args.parallel_jobs is not None:
         system_cpu_count = min(system_cpu_count, int(param_args.parallel_jobs))
@@ -126,7 +118,7 @@ def run_compile_cmd(param_args):
     cmd = f"make -f {mkfile} -j{parallel_compile_job}"
     ret = os.system(cmd)
     if ret != 0:
-        raise RuntimeError('compile ascend all ops failed')
+        raise RuntimeError("compile ascend all ops failed")
 
 
 if __name__ == "__main__":

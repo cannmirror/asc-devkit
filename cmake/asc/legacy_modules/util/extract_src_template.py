@@ -30,7 +30,7 @@ class ParseSrcFilePathError(ExtractError):
 
 def get_template_config_filepath(dst_dir: str) -> str:
     """Get template_config.cmake destination file path."""
-    return os.path.join(dst_dir, 'template_config.cmake')
+    return os.path.join(dst_dir, "template_config.cmake")
 
 
 def generate_template_config_code(filepaths: List[str]) -> str:
@@ -38,11 +38,13 @@ def generate_template_config_code(filepaths: List[str]) -> str:
     config_options = ""
     disable_kernel_check_option = "--cce-disable-kernel-global-attr-check"
     src_file_pattern = r'#\s*\d+\s*"([^"]+)"'
-    template_kernel_func_pattern = (r'template<([^<>]*(?:<[^<>]*>)*[^<>]*)>\s*__attribute__\(\(cce_kernel\)\)'
-                                r'\s*(?:\[aicore\]|__attribute__\(\(cce_aicore\)\))\s*(.+?)\s*\{')
+    template_kernel_func_pattern = (
+        r"template<([^<>]*(?:<[^<>]*>)*[^<>]*)>\s*__attribute__\(\(cce_kernel\)\)"
+        r"\s*(?:\[aicore\]|__attribute__\(\(cce_aicore\)\))\s*(.+?)\s*\{"
+    )
     for path in filepaths:
         try:
-            with open(path, encoding='utf-8') as file:
+            with open(path, encoding="utf-8") as file:
                 data = file.read()
                 first_line = data.splitlines()[0]
                 src_file_match = re.search(src_file_pattern, first_line)
@@ -52,8 +54,8 @@ def generate_template_config_code(filepaths: List[str]) -> str:
                     raise ParseSrcFilePathError()
                 template_match = re.compile(template_kernel_func_pattern, re.DOTALL)
                 if not template_match.search(data):
-                    config_options += f'set_source_files_properties({src_file_path} \
-PROPERTIES COMPILE_OPTIONS {disable_kernel_check_option})\n'
+                    config_options += f"set_source_files_properties({src_file_path} \
+PROPERTIES COMPILE_OPTIONS {disable_kernel_check_option})\n"
 
         except Exception as err:
             print("[ERROR]: read file failed, filename is: {}".format(path))
@@ -61,20 +63,20 @@ PROPERTIES COMPILE_OPTIONS {disable_kernel_check_option})\n'
     return config_options
 
 
-
-def generate_save_template_config_commands(filepaths: List[str],
-                                         dst_dir: str) -> Iterator[Tuple[str, str]]:
+def generate_save_template_config_commands(
+    filepaths: List[str], dst_dir: str
+) -> Iterator[Tuple[str, str]]:
     """Generate save template_config commands."""
     yield (
         get_template_config_filepath(dst_dir),
-        generate_template_config_code(filepaths)
+        generate_template_config_code(filepaths),
     )
 
 
 def main(argv: List[str]):
     parser = argparse.ArgumentParser()
-    parser.add_argument('filepaths', nargs='+', help='Preprocessed file paths.')
-    parser.add_argument('-d', '--dst-dir', default='.', help='Destination directory.')
+    parser.add_argument("filepaths", nargs="+", help="Preprocessed file paths.")
+    parser.add_argument("-d", "--dst-dir", default=".", help="Destination directory.")
 
     args = parser.parse_args(argv)
 
@@ -82,9 +84,7 @@ def main(argv: List[str]):
     if not os.path.exists(dst_dir):
         os.makedirs(dst_dir)
 
-    do_save_commands(
-        generate_save_template_config_commands(args.filepaths, dst_dir)
-    )
+    do_save_commands(generate_save_template_config_commands(args.filepaths, dst_dir))
 
     return True
 
@@ -94,7 +94,7 @@ def main_with_except(argv: List[str]):
     try:
         return main(argv)
     except ArgumentError as ex:
-        print(f'error: check arguments error, {ex}')
+        print(f"error: check arguments error, {ex}")
         return False
 
 

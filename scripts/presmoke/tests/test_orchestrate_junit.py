@@ -33,7 +33,10 @@ class OrchestrateJunitTest(unittest.TestCase):
             stage_dir.mkdir(parents=True)
             case_log = logs_dir / "pass.log"
             fail_stage_log = stage_dir / "fail_run.log"
-            case_log.write_text("case log with invalid xml char \x00 and pass details\n", encoding="utf-8")
+            case_log.write_text(
+                "case log with invalid xml char \x00 and pass details\n",
+                encoding="utf-8",
+            )
             fail_stage_log.write_text("stage fail log\n", encoding="utf-8")
             (run_dir / "meta.txt").write_text(
                 "\n".join(
@@ -74,8 +77,20 @@ class OrchestrateJunitTest(unittest.TestCase):
                                 "log_file": str(case_log),
                                 "stage_log_files": [str(stage_dir / "missing.log")],
                                 "steps": [
-                                    {"kind": "build", "command": "bash run.sh build", "rc": 0, "duration_s": 1.0},
-                                    {"kind": "run", "command": "bash run.sh run", "rc": 0, "duration_s": 0.2, "wait_s": 0.1, "npu_slot": True},
+                                    {
+                                        "kind": "build",
+                                        "command": "bash run.sh build",
+                                        "rc": 0,
+                                        "duration_s": 1.0,
+                                    },
+                                    {
+                                        "kind": "run",
+                                        "command": "bash run.sh run",
+                                        "rc": 0,
+                                        "duration_s": 0.2,
+                                        "wait_s": 0.1,
+                                        "npu_slot": True,
+                                    },
                                 ],
                             },
                             {
@@ -89,7 +104,14 @@ class OrchestrateJunitTest(unittest.TestCase):
                                 "duration_s": 2.5,
                                 "log_file": str(logs_dir / "missing_fail.log"),
                                 "stage_log_files": [str(fail_stage_log)],
-                                "steps": [{"kind": "build", "command": "bash run.sh build", "rc": 2, "duration_s": 2.5}],
+                                "steps": [
+                                    {
+                                        "kind": "build",
+                                        "command": "bash run.sh build",
+                                        "rc": 2,
+                                        "duration_s": 2.5,
+                                    }
+                                ],
                             },
                             {
                                 "example": "01_simd_cpp_api/02_features/00_framework/01_tensorflow/tensorflow_builtin",
@@ -125,7 +147,10 @@ class OrchestrateJunitTest(unittest.TestCase):
 
             cases = {case.attrib["name"]: case for case in suite.findall("testcase")}
             pass_case = cases["matmul_ibshareAB [npu]"]
-            self.assertEqual(pass_case.attrib["classname"], "01_simd_cpp_api.04_advanced_api.00_matmul")
+            self.assertEqual(
+                pass_case.attrib["classname"],
+                "01_simd_cpp_api.04_advanced_api.00_matmul",
+            )
             self.assertIsNone(pass_case.find("failure"))
             self.assertIsNone(pass_case.find("skipped"))
             pass_out = pass_case.findtext("system-out") or ""

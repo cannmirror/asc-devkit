@@ -19,6 +19,7 @@ class Pattern:
     """
     Built-in Patterns
     """
+
     ELEMWISE = "ElemWise"
     BROADCAST = "Broadcast"
     REDUCE = "CommReduce"
@@ -57,6 +58,7 @@ class ElewisePattern:
     Elewise sub pattern.
     Each sub-pattern has a corresponding schedule, for function or performance.
     """
+
     # generic
     E_0 = "E_0"
 
@@ -66,6 +68,7 @@ class BroadcastPattern:
     Broadcast sub pattern.
     Each sub-pattern has a corresponding schedule, for function or performance.
     """
+
     # generic
     B_0 = "B_0"
 
@@ -75,6 +78,7 @@ class ReducePattern:
     Reduce sub pattern.
     Each sub-pattern has a corresponding schedule, for function or performance.
     """
+
     # generic
     R_0 = "R_0"
 
@@ -83,6 +87,7 @@ class ReduceCategory:
     """
     Category of Reduce
     """
+
     ALL_REDUCE = 1
     NOT_LAST_REDUCE = 2
     LAST_REDUCE = 3
@@ -92,6 +97,7 @@ class ReduceSchType:
     """
     Category of Reduce
     """
+
     NORMAL = 0
     PAD = 1
     TRANSPOSE = 2
@@ -102,6 +108,7 @@ class NormPattern:
     Norm sub pattern.
     Each sub-pattern has a corresponding schedule, for function or performance.
     """
+
     # generic
     N_0 = "N_0"
 
@@ -111,6 +118,7 @@ class GatherPattern:
     Gather sub pattern.
     Each sub-pattern has a corresponding schedule, for function or performance.
     """
+
     NORMAL_SCHEDULE = "NORMAL_SCHEDULE"
     ZERO_SCHEDULE = "ZERO_SCHEDULE"
 
@@ -120,6 +128,7 @@ class SlicePattern:
     Slice sub pattern.
     Each sub-pattern has a corresponding schedule, for function or performance.
     """
+
     NORMAL_SCHEDULE = "NORMAL_SCHEDULE"
 
 
@@ -128,6 +137,7 @@ class TransposePattern:
     Transpose sub pattern.
     Each sub-pattern has a corresponding schedule, for function or performance.
     """
+
     # generic
     T_0 = "T_0"
 
@@ -136,6 +146,7 @@ class TransdataCategory:
     """
     Category of Transdata
     """
+
     GENERAL_FORWARD = "general.forward"
     GENERAL_BACKWARD = "general.backward"
     BORROW_N_B8B16_BACKWARD = "borrow.n.b8b16.backward"
@@ -147,6 +158,7 @@ class ConcatPattern:
     Concat sub pattern.
     Each sub-pattern has a corresponding schedule, for function or performance.
     """
+
     # generic
     C_0 = "C_0"
 
@@ -156,6 +168,7 @@ class SplitPattern:
     Split sub pattern.
     Each sub-pattern has a corresponding schedule, for function or performance.
     """
+
     # generic
     S_0 = "S_0"
 
@@ -165,6 +178,7 @@ class TupleReducePattern:
     Tuple Reduce sub pattern.
     Each sub-pattern has a corresponding schedule, for function or performance.
     """
+
     # generic
     TR_0 = "TR_0"
 
@@ -173,6 +187,7 @@ class CompileInfo:
     """
     Built-in Compilation Info Keys
     """
+
     PATTERN = "_pattern"
     BASE_INFO = "_base_info"
     FLAG_INFO = "_flag_info"
@@ -255,7 +270,7 @@ INSN_MAPPING = {
     "elewise_multiple_madd": "vector_madd",
     "elewise_multiple_maddrelu": "vector_maddrelu",
     "elewise_binary_scalar_axpy": "vector_axpy",
-    "dma_copy": "dma_copy"
+    "dma_copy": "dma_copy",
 }
 
 TERNARY_INSNS = [
@@ -281,7 +296,6 @@ DST_SRC_NO_REUSE_SET = {
     "elewise_binary_cmpsel_le",
     "elewise_binary_cmpsel_eq",
     "elewise_binary_cmpsel_ne",
-
     # cast insns
     "elewise_single_cast",
     "elewise_single_ceil",
@@ -377,8 +391,16 @@ DTYPE_BYTE_MAPPING = {
     "bfloat16": 2,
 }
 
-AtomicSupportMap910 = {"support_dtype": ["float32", ],
-                       "support_insn": ["reduce_sum", ], }
+AtomicSupportMap910 = {
+    "support_dtype": [
+        "float32",
+    ],
+    "support_insn": [
+        "reduce_sum",
+    ],
+}
 
-AtomicSupportMap920A = {"support_dtype": ["float32", "float16", "int32", "int16", "int8", "bfloat16"],
-                        "support_insn": ["reduce_sum", "reduce_max", "reduce_min"]}
+AtomicSupportMap920A = {
+    "support_dtype": ["float32", "float16", "int32", "int16", "int8", "bfloat16"],
+    "support_insn": ["reduce_sum", "reduce_max", "reduce_min"],
+}

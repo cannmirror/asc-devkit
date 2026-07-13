@@ -24,5 +24,6 @@ def variable_shape(inputs: list, op_mode="elewise"):
 
     return tvm_shapes
 
+
 def axis_check(shape_len, attr_axis):
     return shape_len, attr_axis

@@ -37,7 +37,10 @@ class OrchestrateShardingTest(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            assignments = dict((example, card) for card, example in shard_examples(report, ["0", "1"], manifest))
+            assignments = dict(
+                (example, card)
+                for card, example in shard_examples(report, ["0", "1"], manifest)
+            )
 
         self.assertEqual(assignments["case/a"], assignments["case/b"])
 
@@ -59,9 +62,12 @@ class OrchestrateShardingTest(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            assignments = dict((example, card) for card, example in shard_examples(
-                report, ["0", "1"], schedule_report=timings
-            ))
+            assignments = dict(
+                (example, card)
+                for card, example in shard_examples(
+                    report, ["0", "1"], schedule_report=timings
+                )
+            )
 
         self.assertNotEqual(assignments["case/a"], assignments["case/b"])
         self.assertEqual(assignments["case/a"], assignments["case/c"])
@@ -84,9 +90,12 @@ class OrchestrateShardingTest(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            assignments = dict((example, card) for card, example in shard_examples(
-                report, ["0", "1"], schedule_report=timings, jobs=2
-            ))
+            assignments = dict(
+                (example, card)
+                for card, example in shard_examples(
+                    report, ["0", "1"], schedule_report=timings, jobs=2
+                )
+            )
 
         self.assertNotEqual(assignments["case/a"], assignments["case/b"])
         self.assertIn(assignments["case/c"], {"0", "1"})
@@ -94,7 +103,9 @@ class OrchestrateShardingTest(unittest.TestCase):
     def test_sharding_interleaves_same_card_source_groups(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            report = write_plan_report(root, ["case/a1", "case/a2", "case/b1", "case/b2"])
+            report = write_plan_report(
+                root, ["case/a1", "case/a2", "case/b1", "case/b2"]
+            )
             manifest = root / "manifest.json"
             manifest.write_text(
                 json.dumps(
@@ -108,7 +119,9 @@ class OrchestrateShardingTest(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            assignments = [example for _, example in shard_examples(report, ["0"], manifest)]
+            assignments = [
+                example for _, example in shard_examples(report, ["0"], manifest)
+            ]
 
         self.assertEqual(assignments, ["case/a1", "case/b1", "case/a2", "case/b2"])
 
@@ -127,9 +140,12 @@ class OrchestrateShardingTest(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            assignments = dict((example, card) for card, example in shard_examples(
-                report, ["0", "1"], manifest, keep_source_groups=False
-            ))
+            assignments = dict(
+                (example, card)
+                for card, example in shard_examples(
+                    report, ["0", "1"], manifest, keep_source_groups=False
+                )
+            )
 
         self.assertNotEqual(assignments["case/a1"], assignments["case/a2"])
 
@@ -137,7 +153,9 @@ class OrchestrateShardingTest(unittest.TestCase):
 def write_plan_report(root: Path, examples: list[str]) -> Path:
     report = root / "report.json"
     report.write_text(
-        json.dumps({"results": [{"example": example, "duration_s": 0} for example in examples]}),
+        json.dumps(
+            {"results": [{"example": example, "duration_s": 0} for example in examples]}
+        ),
         encoding="utf-8",
     )
     return report

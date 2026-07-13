@@ -13,6 +13,7 @@
 """
 split_opc_json_with_op_list.py
 """
+
 import sys
 import os
 import json
@@ -62,5 +63,6 @@ def split_json_files(ori_json, output_dir):
 
     return generated_files
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     generated_files = split_json_files(sys.argv[1], sys.argv[2])

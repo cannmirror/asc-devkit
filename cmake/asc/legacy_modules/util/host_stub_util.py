@@ -14,6 +14,7 @@ from enum import Enum
 
 class CodeMode(Enum):
     """Code mode."""
+
     MIX = 0
     AIV = 1
     AIC = 2
@@ -29,6 +30,7 @@ class CodeMode(Enum):
 
 class FuncMetaType(Enum):
     """function meta type."""
+
     F_TYPE_KTYPE = 1
     F_TYPE_CROSS_CORE_SYNC = 2
     F_TYPE_MAX = 3
@@ -64,7 +66,8 @@ class TooMuchFuncParamParts(ParseFuncSignatureError):
 
 class GetFuncParamPartError(ExtractError):
     """Get function parameter part error."""
-    def __init__(self, func_param: 'FuncParam'):
+
+    def __init__(self, func_param: "FuncParam"):
         super().__init__(func_param)
         self.func_param = func_param
 

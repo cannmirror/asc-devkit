@@ -13,7 +13,6 @@
 operation
 """
 
-from tbe.common.context import op_context
 
 def get_te_var(name):
     """

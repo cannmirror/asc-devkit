@@ -12,16 +12,10 @@
 """
 op context
 """
+
 import functools
 import threading
-from typing import Any
-from typing import Callable
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Union
 
-from .op_info import OpInfo
 
 # 'pylint: disable=C0103
 _contexts = {}

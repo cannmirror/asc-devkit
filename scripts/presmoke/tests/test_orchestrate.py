@@ -40,7 +40,10 @@ class OrchestrateShellTest(unittest.TestCase):
 
         presmoke_pkg = root / "scripts/presmoke"
         presmoke_pkg.mkdir(parents=True)
-        shutil.copy(project_root / "scripts/presmoke/orchestrate_report.py", presmoke_pkg / "orchestrate_report.py")
+        shutil.copy(
+            project_root / "scripts/presmoke/orchestrate_report.py",
+            presmoke_pkg / "orchestrate_report.py",
+        )
         (presmoke_pkg / "__init__.py").write_text("", encoding="utf-8")
 
         fake_bin = root / "bin"
@@ -197,7 +200,13 @@ EOF
                 NPU_CARDS="0",
             )
 
-            result = subprocess.run(["bash", str(script)], text=True, capture_output=True, env=env, check=False)
+            result = subprocess.run(
+                ["bash", str(script)],
+                text=True,
+                capture_output=True,
+                env=env,
+                check=False,
+            )
 
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertFalse(stale.exists())
@@ -229,7 +238,10 @@ EOF
             )
 
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertIn(f"out_root={root / 'presmoke_reports' / 'presmoke_dav-2201_'}", result.stdout)
+            self.assertIn(
+                f"out_root={root / 'presmoke_reports' / 'presmoke_dav-2201_'}",
+                result.stdout,
+            )
             self.assertFalse((root / "presmoke_results").exists())
 
     def test_cpu_mode_uses_default_schedule(self) -> None:
@@ -344,7 +356,13 @@ EOF
                 NPU_CARDS="0",
             )
 
-            result = subprocess.run(["bash", str(script)], text=True, capture_output=True, env=env, check=False)
+            result = subprocess.run(
+                ["bash", str(script)],
+                text=True,
+                capture_output=True,
+                env=env,
+                check=False,
+            )
 
             self.assertEqual(result.returncode, 1)
             self.assertIn("Presmoke Summary:", result.stdout)
@@ -362,24 +380,50 @@ EOF
                 ASCEND_OPP_PATH=str(root / "opp"),
             )
 
-            result = subprocess.run(["bash", str(script)], text=True, capture_output=True, env=env, check=False)
+            result = subprocess.run(
+                ["bash", str(script)],
+                text=True,
+                capture_output=True,
+                env=env,
+                check=False,
+            )
 
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertTrue((root / "out/full_card0/results/report.json").exists())
             self.assertTrue((root / "out/full_card1/results/report.json").exists())
             self.assertTrue((root / "out/full_card2/results/report.json").exists())
-            self.assertTrue((root / "out/.workspaces/card_0/scripts/run_presmoke_v2.sh").exists())
+            self.assertTrue(
+                (root / "out/.workspaces/card_0/scripts/run_presmoke_v2.sh").exists()
+            )
             self.assertIn("multi_card_start cards=0 1 2 cases=5", result.stdout)
             self.assertIn(
                 f"project_root={root / 'out/.workspaces/card_0'}",
                 (root / "out/full_card0/meta.txt").read_text(encoding="utf-8"),
             )
-            self.assertIn("device=0", (root / "out/full_card0/run_env.txt").read_text(encoding="utf-8"))
-            self.assertIn("device=1", (root / "out/full_card1/run_env.txt").read_text(encoding="utf-8"))
-            self.assertIn("device=2", (root / "out/full_card2/run_env.txt").read_text(encoding="utf-8"))
-            self.assertIn("filters=case/a case/d", (root / "out/full_card0/run_env.txt").read_text(encoding="utf-8"))
-            self.assertIn("filters=case/b case/e", (root / "out/full_card1/run_env.txt").read_text(encoding="utf-8"))
-            self.assertIn("filters=case/c", (root / "out/full_card2/run_env.txt").read_text(encoding="utf-8"))
+            self.assertIn(
+                "device=0",
+                (root / "out/full_card0/run_env.txt").read_text(encoding="utf-8"),
+            )
+            self.assertIn(
+                "device=1",
+                (root / "out/full_card1/run_env.txt").read_text(encoding="utf-8"),
+            )
+            self.assertIn(
+                "device=2",
+                (root / "out/full_card2/run_env.txt").read_text(encoding="utf-8"),
+            )
+            self.assertIn(
+                "filters=case/a case/d",
+                (root / "out/full_card0/run_env.txt").read_text(encoding="utf-8"),
+            )
+            self.assertIn(
+                "filters=case/b case/e",
+                (root / "out/full_card1/run_env.txt").read_text(encoding="utf-8"),
+            )
+            self.assertIn(
+                "filters=case/c",
+                (root / "out/full_card2/run_env.txt").read_text(encoding="utf-8"),
+            )
             self.assertIn("Cases: total=5 pass=5 fail=0 skip=0", result.stdout)
 
     def test_auto_npu_cards_prefers_davinci_devices_over_npu_smi(self) -> None:
@@ -398,7 +442,13 @@ EOF
                 NPU_CARD_DEV_GLOB=str(dev_dir / "davinci[0-9]*"),
             )
 
-            result = subprocess.run(["bash", str(script)], text=True, capture_output=True, env=env, check=False)
+            result = subprocess.run(
+                ["bash", str(script)],
+                text=True,
+                capture_output=True,
+                env=env,
+                check=False,
+            )
 
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertTrue((root / "out/full_card4/results/report.json").exists())
@@ -432,7 +482,10 @@ EOF
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertTrue((root / "out/full_card7/results/report.json").exists())
             self.assertFalse((root / "out/full_card0/results/report.json").exists())
-            self.assertIn("device=7", (root / "out/full_card7/run_env.txt").read_text(encoding="utf-8"))
+            self.assertIn(
+                "device=7",
+                (root / "out/full_card7/run_env.txt").read_text(encoding="utf-8"),
+            )
 
     def test_make_wrapper_limits_explicit_parallel_jobs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -463,7 +516,10 @@ EOF
             )
 
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertEqual(capture.read_text(encoding="utf-8").splitlines(), ["-j16", "binary", "package"])
+            self.assertEqual(
+                capture.read_text(encoding="utf-8").splitlines(),
+                ["-j16", "binary", "package"],
+            )
 
             result = subprocess.run(
                 [str(wrapper), "-j", "8", "binary"],
@@ -474,7 +530,9 @@ EOF
             )
 
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertEqual(capture.read_text(encoding="utf-8").splitlines(), ["-j16", "binary"])
+            self.assertEqual(
+                capture.read_text(encoding="utf-8").splitlines(), ["-j16", "binary"]
+            )
 
 
 if __name__ == "__main__":

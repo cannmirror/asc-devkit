@@ -10,24 +10,29 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
-#from contextlib import contextmanager
+# from contextlib import contextmanager
 class BuildConfig:
     # pylint: disable=no-member
     def __init__(self):
+        pass
 
     def __enter__(self):
         # pylint: disable=protected-access
-        #_api_internal._EnterBuildConfigScope(self)
-        #if self.dump_pass_ir:
-            #BuildConfig._dump_ir.enter()
-        #return self
-        print("stub llt atc opcompiler opc stub tbe common buildcfg buildcfg.py __enter__")
+        # _api_internal._EnterBuildConfigScope(self)
+        # if self.dump_pass_ir:
+        # BuildConfig._dump_ir.enter()
+        # return self
+        print(
+            "stub llt atc opcompiler opc stub tbe common buildcfg buildcfg.py __enter__"
+        )
 
     def __exit__(self, ptype, value, trace):
-        #if self.dump_pass_ir:
-            #BuildConfig._dump_ir.exit()
-        #_api_internal._ExitBuildConfigScope(self)
-        print("stub llt atc opcompiler opc stub tbe common buildcfg buildcfg.py __exit__")
+        # if self.dump_pass_ir:
+        # BuildConfig._dump_ir.exit()
+        # _api_internal._ExitBuildConfigScope(self)
+        print(
+            "stub llt atc opcompiler opc stub tbe common buildcfg buildcfg.py __exit__"
+        )
 
 
 def build_config(**kwargs):
@@ -35,8 +40,10 @@ def build_config(**kwargs):
     buildConfig = BuildConfig()
     return buildConfig
 
+
 def set_current_build_config(key, value):
     print("set key: ", key, " : ", value)
+
 
 def set_L1_info(key, value):
     return key, value

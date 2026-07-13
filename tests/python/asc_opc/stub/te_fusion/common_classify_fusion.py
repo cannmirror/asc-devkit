@@ -12,13 +12,14 @@
 
 from tbe.dsl import classify
 
-class _op():
+
+class _op:
     def __init__(self):
         self.value = []
         self.idx = []
 
 
-class CommonClassifyFusion():
+class CommonClassifyFusion:
     def __init__(self, op_list, pattern, mode):
         self.op_list = op_list
         self.pattern = pattern
@@ -26,7 +27,6 @@ class CommonClassifyFusion():
         self.mode = mode
         self.placeholder_op = _op()
         self.init()
-
 
     @staticmethod
     def _handle_input_range(inputs):
@@ -38,7 +38,6 @@ class CommonClassifyFusion():
                 if len(range) == 2:
                     if range[1] == -1:
                         range[1] = None
-
 
     def init(self):
         for key, node in enumerate(self.op_list):

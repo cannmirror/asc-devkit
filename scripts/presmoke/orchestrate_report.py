@@ -74,7 +74,11 @@ def list_examples(report_path: Path) -> list[str]:
     data = read_json(report_path)
     if not data:
         return []
-    return [str(result.get("example", "")) for result in data.get("results", []) if result.get("example")]
+    return [
+        str(result.get("example", ""))
+        for result in data.get("results", [])
+        if result.get("example")
+    ]
 
 
 def shard_examples(
@@ -86,13 +90,19 @@ def shard_examples(
     keep_source_groups: bool = True,
     jobs: int | None = None,
 ) -> list[tuple[str, str]]:
-    examples = [example for example in list_examples(report_path) if example not in (excludes or set())]
+    examples = [
+        example
+        for example in list_examples(report_path)
+        if example not in (excludes or set())
+    ]
     if not cards or not examples:
         return []
 
     source_case = load_source_case_map(manifest_path) if keep_source_groups else {}
     schedule_report = schedule_report or builtin_timing_report(report_path)
-    stage_timings = load_pipeline_stage_seconds(schedule_report) if schedule_report else {}
+    stage_timings = (
+        load_pipeline_stage_seconds(schedule_report) if schedule_report else {}
+    )
     if stage_timings:
         return shard_examples_by_pipeline_makespan(
             examples,
@@ -108,13 +118,17 @@ def shard_examples(
     order_index = {example: index for index, example in enumerate(examples)}
     group_items = []
     for source, group_examples in groups.items():
-        group_weight = sum(weights.get(example, default_weight) for example in group_examples)
+        group_weight = sum(
+            weights.get(example, default_weight) for example in group_examples
+        )
         first_index = min(order_index[example] for example in group_examples)
         group_items.append((group_weight, first_index, source, group_examples))
 
     card_loads = {card: 0.0 for card in cards}
     card_groups: dict[str, list[list[str]]] = {card: [] for card in cards}
-    for group_weight, _, _, group_examples in sorted(group_items, key=lambda item: (-item[0], item[1])):
+    for group_weight, _, _, group_examples in sorted(
+        group_items, key=lambda item: (-item[0], item[1])
+    ):
         card = min(cards, key=lambda item: (card_loads[item], cards.index(item)))
         card_loads[card] += group_weight
         card_groups[card].append(group_examples)
@@ -138,17 +152,27 @@ def shard_examples_by_pipeline_makespan(
     default_timing = default_stage_timing(stage_timings, examples)
     group_items = []
     for source, group_examples in groups.items():
-        group_weight = sum(sum(stage_timings.get(example, default_timing)) for example in group_examples)
+        group_weight = sum(
+            sum(stage_timings.get(example, default_timing))
+            for example in group_examples
+        )
         first_index = min(order_index[example] for example in group_examples)
         group_items.append((group_weight, first_index, source, group_examples))
 
     card_groups: dict[str, list[list[str]]] = {card: [] for card in cards}
     card_makespans = {card: 0.0 for card in cards}
-    for _, first_index, _, group_examples in sorted(group_items, key=lambda item: (-item[0], item[1])):
+    for _, first_index, _, group_examples in sorted(
+        group_items, key=lambda item: (-item[0], item[1])
+    ):
         best_card = min(
             cards,
             key=lambda card: (
-                estimate_card_makespan(card_groups[card] + [group_examples], order_index, stage_timings, jobs),
+                estimate_card_makespan(
+                    card_groups[card] + [group_examples],
+                    order_index,
+                    stage_timings,
+                    jobs,
+                ),
                 card_makespans[card],
                 cards.index(card),
             ),
@@ -176,7 +200,9 @@ def estimate_card_makespan(
 ) -> float:
     examples = interleave_group_examples(groups, order_index)
     default_timing = default_stage_timing(stage_timings, examples)
-    return simulate_pipeline_makespan_for_examples(examples, stage_timings, default_timing, jobs)
+    return simulate_pipeline_makespan_for_examples(
+        examples, stage_timings, default_timing, jobs
+    )
 
 
 def simulate_pipeline_makespan_for_examples(
@@ -188,7 +214,9 @@ def simulate_pipeline_makespan_for_examples(
     worker_available = [0.0 for _ in range(max(jobs, 1))]
     build_finishes = []
     for index, example in enumerate(examples):
-        worker = min(range(len(worker_available)), key=lambda idx: worker_available[idx])
+        worker = min(
+            range(len(worker_available)), key=lambda idx: worker_available[idx]
+        )
         start = worker_available[worker]
         build_s = stage_timings.get(example, default_timing)[0]
         worker_available[worker] = start + build_s
@@ -196,14 +224,23 @@ def simulate_pipeline_makespan_for_examples(
 
     npu_available = 0.0
     verify_ready = []
-    for ready_at, index, example in sorted(build_finishes, key=lambda item: (item[0], item[1])):
-        npu_available = max(npu_available, ready_at) + stage_timings.get(example, default_timing)[1]
+    for ready_at, index, example in sorted(
+        build_finishes, key=lambda item: (item[0], item[1])
+    ):
+        npu_available = (
+            max(npu_available, ready_at) + stage_timings.get(example, default_timing)[1]
+        )
         verify_ready.append((npu_available, index, example))
 
     verify_workers = [0.0 for _ in range(max(jobs, 1))]
-    for ready_at, _, example in sorted(verify_ready, key=lambda item: (item[0], item[1])):
+    for ready_at, _, example in sorted(
+        verify_ready, key=lambda item: (item[0], item[1])
+    ):
         worker = min(range(len(verify_workers)), key=lambda idx: verify_workers[idx])
-        verify_workers[worker] = max(verify_workers[worker], ready_at) + stage_timings.get(example, default_timing)[2]
+        verify_workers[worker] = (
+            max(verify_workers[worker], ready_at)
+            + stage_timings.get(example, default_timing)[2]
+        )
     return max(npu_available, max(verify_workers) if verify_workers else 0.0)
 
 
@@ -214,7 +251,9 @@ def default_stage_timing(
     known = [stage_timings[example] for example in examples if example in stage_timings]
     if not known:
         return (1.0, 1.0, 0.0)
-    return tuple(statistics.median(timing[index] for timing in known) for index in range(3))
+    return tuple(
+        statistics.median(timing[index] for timing in known) for index in range(3)
+    )
 
 
 def builtin_timing_report(report_path: Path) -> Path | None:
@@ -235,7 +274,9 @@ def builtin_timing_report(report_path: Path) -> Path | None:
     mode = str(modes[0])
     candidate_root = Path(__file__).resolve().parents[2]
     for root in [Path.cwd(), candidate_root]:
-        candidate = root / "scripts" / "presmoke" / "schedules" / f"{arch}_{mode}_timings.tsv"
+        candidate = (
+            root / "scripts" / "presmoke" / "schedules" / f"{arch}_{mode}_timings.tsv"
+        )
         if candidate.exists():
             return candidate
     return None
@@ -263,15 +304,21 @@ def load_source_case_map(manifest_path: Path | None) -> dict[str, str]:
     }
 
 
-def group_examples_by_source_case(examples: list[str], source_case: dict[str, str]) -> dict[str, list[str]]:
+def group_examples_by_source_case(
+    examples: list[str], source_case: dict[str, str]
+) -> dict[str, list[str]]:
     groups: dict[str, list[str]] = {}
     for example in examples:
         groups.setdefault(source_case.get(example, example), []).append(example)
     return groups
 
 
-def interleave_group_examples(groups: list[list[str]], order_index: dict[str, int]) -> list[str]:
-    queues = [sorted(group, key=lambda item: order_index[item]) for group in groups if group]
+def interleave_group_examples(
+    groups: list[list[str]], order_index: dict[str, int]
+) -> list[str]:
+    queues = [
+        sorted(group, key=lambda item: order_index[item]) for group in groups if group
+    ]
     queues.sort(key=lambda group: order_index[group[0]])
     ordered: list[str] = []
     while queues:
@@ -321,7 +368,9 @@ def load_duration_seconds_from_tsv(report_path: Path) -> dict[str, float]:
     return weights
 
 
-def load_pipeline_stage_seconds(report_path: Path | None) -> dict[str, tuple[float, float, float]]:
+def load_pipeline_stage_seconds(
+    report_path: Path | None,
+) -> dict[str, tuple[float, float, float]]:
     if report_path is None or not report_path.exists():
         return {}
     if report_path.is_dir():
@@ -357,7 +406,9 @@ def load_pipeline_stage_seconds(report_path: Path | None) -> dict[str, tuple[flo
     return estimates
 
 
-def load_pipeline_stage_seconds_from_tsv(report_path: Path) -> dict[str, tuple[float, float, float]]:
+def load_pipeline_stage_seconds_from_tsv(
+    report_path: Path,
+) -> dict[str, tuple[float, float, float]]:
     estimates: dict[str, tuple[float, float, float]] = {}
     with report_path.open(encoding="utf-8", newline="") as handle:
         for row in csv.DictReader(handle, delimiter="\t"):
@@ -419,7 +470,11 @@ def print_summary(root: Path) -> None:
 
 def log_summary_header(root: Path) -> None:
     effective_rc_path = root / "effective_rc.txt"
-    effective_rc = effective_rc_path.read_text(encoding="utf-8").strip() if effective_rc_path.exists() else "1"
+    effective_rc = (
+        effective_rc_path.read_text(encoding="utf-8").strip()
+        if effective_rc_path.exists()
+        else "1"
+    )
     LOG.info("========================================")
     LOG.info("Presmoke Summary:")
     LOG.info("  Output: %s", root)
@@ -429,7 +484,9 @@ def log_summary_header(root: Path) -> None:
     LOG.info("  Effective RC: %s", effective_rc)
 
 
-def log_primary_summary(primary: tuple[str, Path, dict[str, str], dict[str, Any]]) -> None:
+def log_primary_summary(
+    primary: tuple[str, Path, dict[str, str], dict[str, Any]],
+) -> None:
     name, _, meta, data = primary
     summary = data.get("summary", {})
     results = data.get("results", [])
@@ -441,11 +498,7 @@ def log_primary_summary(primary: tuple[str, Path, dict[str, str], dict[str, Any]
     LOG.info("  Jobs/NPU slots: %s/%s", meta.get("jobs", ""), meta.get("npu_slots", ""))
     LOG.info("  Elapsed: %ss", elapsed)
     LOG.info(
-        "  Cases: "
-        "total=%s "
-        "pass=%s "
-        "fail=%s "
-        "skip=%s",
+        "  Cases: total=%s pass=%s fail=%s skip=%s",
         len(results),
         summary.get("PASS", 0),
         summary.get("FAIL", 0),
@@ -484,7 +537,9 @@ def log_failed_cases(results: list[dict[str, Any]]) -> None:
             LOG.info("    ... %s more", len(failures) - 20)
 
 
-def load_primary_run(root: Path) -> tuple[str, Path, dict[str, str], dict[str, Any]] | None:
+def load_primary_run(
+    root: Path,
+) -> tuple[str, Path, dict[str, str], dict[str, Any]] | None:
     runs = load_primary_runs(root)
     if not runs:
         return None
@@ -493,7 +548,9 @@ def load_primary_run(root: Path) -> tuple[str, Path, dict[str, str], dict[str, A
     return merge_primary_runs(root, runs)
 
 
-def load_primary_runs(root: Path) -> list[tuple[str, Path, dict[str, str], dict[str, Any]]]:
+def load_primary_runs(
+    root: Path,
+) -> list[tuple[str, Path, dict[str, str], dict[str, Any]]]:
     primary_runs: list[tuple[str, Path, dict[str, str], dict[str, Any]]] = []
     for report in sorted(root.glob("*/results/report.json")):
         run_dir = report.parents[1]
@@ -501,7 +558,9 @@ def load_primary_runs(root: Path) -> list[tuple[str, Path, dict[str, str], dict[
             continue
         data = read_json(report)
         if data:
-            primary_runs.append((run_dir.name, run_dir, read_meta(run_dir / "meta.txt"), data))
+            primary_runs.append(
+                (run_dir.name, run_dir, read_meta(run_dir / "meta.txt"), data)
+            )
     return primary_runs
 
 
@@ -524,7 +583,10 @@ def merge_primary_runs(
         "FAIL": sum(1 for result in results if result.get("status") == "FAIL"),
         "SKIP": sum(1 for result in results if result.get("status") == "SKIP"),
     }
-    unique_cards = sorted({meta.get("card", "") for _, _, meta, _ in runs if meta.get("card", "")}, key=int)
+    unique_cards = sorted(
+        {meta.get("card", "") for _, _, meta, _ in runs if meta.get("card", "")},
+        key=int,
+    )
     first_meta["card"] = ",".join(unique_cards)
     first_meta["elapsed_sec"] = merged_elapsed_sec(runs)
     first_meta["npu_slots"] = str(len(unique_cards) or len(runs))
@@ -546,7 +608,9 @@ def merge_primary_runs(
     return "full_multi", root, first_meta, merged_data
 
 
-def merged_elapsed_sec(runs: list[tuple[str, Path, dict[str, str], dict[str, Any]]]) -> str:
+def merged_elapsed_sec(
+    runs: list[tuple[str, Path, dict[str, str], dict[str, Any]]],
+) -> str:
     starts = [parse_meta_time(meta.get("started_at", "")) for _, _, meta, _ in runs]
     finishes = [parse_meta_time(meta.get("finished_at", "")) for _, _, meta, _ in runs]
     starts = [value for value in starts if value]
@@ -590,7 +654,14 @@ def write_final_report(root: Path) -> None:
         encoding="utf-8",
     )
     markdown = render_markdown(
-        MarkdownRenderContext(root, primary, retry_by_example, effective_failures, timings_path, failures_path)
+        MarkdownRenderContext(
+            root,
+            primary,
+            retry_by_example,
+            effective_failures,
+            timings_path,
+            failures_path,
+        )
     )
     (root / "FINAL_REPORT.md").write_text("\n".join(markdown) + "\n", encoding="utf-8")
     write_junit_xml(root / "junit.xml", primary)
@@ -615,7 +686,9 @@ def collect_retry_results(
             continue
         results = data.get("results", [])
         if results:
-            retry_by_example.setdefault(results[0].get("example", ""), []).append((name, meta, results[0]))
+            retry_by_example.setdefault(results[0].get("example", ""), []).append(
+                (name, meta, results[0])
+            )
     return retry_by_example
 
 
@@ -649,7 +722,9 @@ def write_timings_tsv(
                 steps = result.get("steps", [])
                 npu_wait = sum(float(step.get("wait_s") or 0) for step in steps)
                 step_text = "; ".join(format_step(step) for step in steps)
-                commands = " && ".join(str(step.get("command", "")).replace("\n", " ") for step in steps)
+                commands = " && ".join(
+                    str(step.get("command", "")).replace("\n", " ") for step in steps
+                )
                 writer.writerow(
                     [
                         name,
@@ -692,11 +767,15 @@ def write_failures_tsv(
             writer.writerow(failure_row(result, retry_by_example))
 
 
-def primary_failures(primary: tuple[str, Path, dict[str, str], dict[str, Any]] | None) -> list[dict[str, Any]]:
+def primary_failures(
+    primary: tuple[str, Path, dict[str, str], dict[str, Any]] | None,
+) -> list[dict[str, Any]]:
     if not primary:
         return []
     _, _, _, data = primary
-    return [result for result in data.get("results", []) if result.get("status") == "FAIL"]
+    return [
+        result for result in data.get("results", []) if result.get("status") == "FAIL"
+    ]
 
 
 def failure_row(
@@ -717,8 +796,8 @@ def failure_row(
 
 def retry_texts(retries: list[tuple[str, dict[str, str], dict[str, Any]]]) -> list[str]:
     return [
-        f"{retry_name}:card={meta.get('card','')}:status={retry_result.get('status','')}:"
-        f"reason={retry_result.get('reason','')}:rc={retry_result.get('rc','')}:"
+        f"{retry_name}:card={meta.get('card', '')}:status={retry_result.get('status', '')}:"
+        f"reason={retry_result.get('reason', '')}:rc={retry_result.get('rc', '')}:"
         f"duration={float(retry_result.get('duration_s') or 0):.1f}"
         for retry_name, meta, retry_result in retries
     ]
@@ -736,14 +815,18 @@ def compute_effective_failures(
         if result.get("status") != "FAIL":
             continue
         retries = retry_by_example.get(result.get("example", ""), [])
-        retry_passed = any(retry_result.get("status") == "PASS" for _, _, retry_result in retries)
+        retry_passed = any(
+            retry_result.get("status") == "PASS" for _, _, retry_result in retries
+        )
         if result.get("reason") == "timeout" and retry_passed:
             continue
         effective_failures.append(result)
     return effective_failures
 
 
-def write_junit_xml(path: Path, primary: tuple[str, Path, dict[str, str], dict[str, Any]] | None) -> None:
+def write_junit_xml(
+    path: Path, primary: tuple[str, Path, dict[str, str], dict[str, Any]] | None
+) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     suites = ET.Element("testsuites")
     if primary:
@@ -762,7 +845,9 @@ def write_junit_xml(path: Path, primary: tuple[str, Path, dict[str, str], dict[s
     path.write_bytes(pretty)
 
 
-def append_junit_suite(parent: ET.Element, arch: str, mode: str, results: list[dict[str, Any]]) -> None:
+def append_junit_suite(
+    parent: ET.Element, arch: str, mode: str, results: list[dict[str, Any]]
+) -> None:
     failures = sum(1 for result in results if result.get("status") == "FAIL")
     skipped = sum(1 for result in results if result.get("status") == "SKIP")
     suite = ET.SubElement(
@@ -805,7 +890,9 @@ def append_junit_case(suite: ET.Element, result: dict[str, Any]) -> None:
                 "type": "PresmokeFailure",
             },
         )
-        failure.text = sanitize_xml_text(f"reason={reason}\nrc={rc}\nfailing_step={failing_step}\n")
+        failure.text = sanitize_xml_text(
+            f"reason={reason}\nrc={rc}\nfailing_step={failing_step}\n"
+        )
     elif status == "SKIP":
         skipped = ET.SubElement(case, "skipped", {"message": sanitize_xml_text(reason)})
         skipped.text = sanitize_xml_text(reason)
@@ -867,7 +954,9 @@ def append_log_tail(lines: list[str], label: str, raw_path: str) -> None:
         data = path.read_bytes()
         tail = data[-_JUNIT_LOG_TAIL_BYTES:]
         if len(data) > len(tail):
-            lines.append(f"  ... log truncated to last {_JUNIT_LOG_TAIL_BYTES} bytes ...")
+            lines.append(
+                f"  ... log truncated to last {_JUNIT_LOG_TAIL_BYTES} bytes ..."
+            )
         lines.append(tail.decode("utf-8", errors="replace"))
     except OSError as exc:
         lines.append(f"  unable to read log: {exc}")
@@ -908,12 +997,20 @@ def render_markdown(context: MarkdownRenderContext) -> list[str]:
     append_failures(lines, data.get("results", []), context.retry_by_example)
     append_skips(lines, data.get("results", []))
     lines.extend(render_effective_status(context.effective_failures))
-    lines.extend(render_artifacts(context.root, run_dir, context.timings_path, context.failures_path))
+    lines.extend(
+        render_artifacts(
+            context.root, run_dir, context.timings_path, context.failures_path
+        )
+    )
     return lines
 
 
 def render_markdown_header(root: Path) -> list[str]:
-    generated_at = datetime.datetime.now(datetime.timezone.utc).astimezone().isoformat(timespec="seconds")
+    generated_at = (
+        datetime.datetime.now(datetime.timezone.utc)
+        .astimezone()
+        .isoformat(timespec="seconds")
+    )
     return [
         "# Presmoke Report",
         "",
@@ -922,7 +1019,9 @@ def render_markdown_header(root: Path) -> list[str]:
     ]
 
 
-def render_primary_run(name: str, meta: dict[str, str], data: dict[str, Any]) -> list[str]:
+def render_primary_run(
+    name: str, meta: dict[str, str], data: dict[str, Any]
+) -> list[str]:
     summary = data.get("summary", {})
     npu_stats = data.get("npu_stats") or {}
     parallel_config = data.get("parallel_config") or {}
@@ -948,7 +1047,9 @@ def render_primary_run(name: str, meta: dict[str, str], data: dict[str, Any]) ->
         f"- pass/fail/skip: `{summary.get('PASS', 0)}/{summary.get('FAIL', 0)}/{summary.get('SKIP', 0)}`",
     ]
     if npu_stats:
-        metric_prefix = "run_queue" if npu_stats.get("queue_model") == "pipeline-cpu" else "npu"
+        metric_prefix = (
+            "run_queue" if npu_stats.get("queue_model") == "pipeline-cpu" else "npu"
+        )
         lines.extend(
             [
                 f"- {metric_prefix}_busy_s: `{float(npu_stats.get('busy_s') or 0):.3f}`",
@@ -961,11 +1062,18 @@ def render_primary_run(name: str, meta: dict[str, str], data: dict[str, Any]) ->
 
 def render_effective_status(effective_failures: list[dict[str, Any]]) -> list[str]:
     if effective_failures:
-        return ["", "## Effective Status", "", f"`FAIL`: `{len(effective_failures)}` unrecovered failed cases."]
+        return [
+            "",
+            "## Effective Status",
+            "",
+            f"`FAIL`: `{len(effective_failures)}` unrecovered failed cases.",
+        ]
     return ["", "## Effective Status", "", "`PASS`: no unrecovered failed cases."]
 
 
-def render_artifacts(root: Path, run_dir: Path, timings_path: Path, failures_path: Path) -> list[str]:
+def render_artifacts(
+    root: Path, run_dir: Path, timings_path: Path, failures_path: Path
+) -> list[str]:
     return [
         "",
         "## Artifacts",
@@ -990,18 +1098,22 @@ def append_failures(
     if not failures:
         lines.append("No failures.")
         return
-    lines.append("| example | status | reason | rc | duration_s | failing_step | retry |")
+    lines.append(
+        "| example | status | reason | rc | duration_s | failing_step | retry |"
+    )
     lines.append("|---|---:|---|---:|---:|---|---|")
     for result in failures:
         retry_text = [
-            f"{retry_name} card={retry_meta.get('card','')} {retry_result.get('status','')}"
-            f" {retry_result.get('reason','')} rc={retry_result.get('rc','')}"
-            for retry_name, retry_meta, retry_result in retry_by_example.get(result.get("example", ""), [])
+            f"{retry_name} card={retry_meta.get('card', '')} {retry_result.get('status', '')}"
+            f" {retry_result.get('reason', '')} rc={retry_result.get('rc', '')}"
+            for retry_name, retry_meta, retry_result in retry_by_example.get(
+                result.get("example", ""), []
+            )
         ]
         failing_step = str(result.get("failing_step", "")).replace("|", "\\|")
         lines.append(
-            f"| {result.get('example','')} | {result.get('status','')} | {result.get('reason','')} | "
-            f"{result.get('rc','')} | {float(result.get('duration_s') or 0):.1f} | "
+            f"| {result.get('example', '')} | {result.get('status', '')} | {result.get('reason', '')} | "
+            f"{result.get('rc', '')} | {float(result.get('duration_s') or 0):.1f} | "
             f"{failing_step} | {'<br>'.join(retry_text)} |"
         )
 
@@ -1012,13 +1124,17 @@ def append_skips(lines: list[str], results: list[dict[str, Any]]) -> None:
     dry_run_skips = [result for result in skips if result.get("reason") == "dry-run"]
     real_skips = [result for result in skips if result.get("reason") != "dry-run"]
     if dry_run_skips:
-        lines.append(f"- dry-run planned cases: `{len(dry_run_skips)}`; details are in `ALL_CASE_TIMINGS.tsv`.")
+        lines.append(
+            f"- dry-run planned cases: `{len(dry_run_skips)}`; details are in `ALL_CASE_TIMINGS.tsv`."
+        )
     if real_skips:
         lines.append("")
         lines.append("| example | reason |")
         lines.append("|---|---|")
         for result in real_skips:
-            lines.append(f"| {result.get('example','')} | {result.get('reason','')} |")
+            lines.append(
+                f"| {result.get('example', '')} | {result.get('reason', '')} |"
+            )
     elif not dry_run_skips:
         lines.append("No skips.")
 

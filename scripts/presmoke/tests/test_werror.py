@@ -53,8 +53,8 @@ class WerrorTest(unittest.TestCase):
             cmake = fake_bin / "cmake"
             cmake.write_text(
                 "#!/usr/bin/env bash\n"
-                "printf 'args=%s\\n' \"$*\" >> \"$PRESMOKE_CMAKE_LOG\"\n"
-                "printf 'env=%s|%s\\n' \"${CFLAGS:-}\" \"${CXXFLAGS:-}\" >> \"$PRESMOKE_CMAKE_LOG\"\n",
+                'printf \'args=%s\\n\' "$*" >> "$PRESMOKE_CMAKE_LOG"\n'
+                'printf \'env=%s|%s\\n\' "${CFLAGS:-}" "${CXXFLAGS:-}" >> "$PRESMOKE_CMAKE_LOG"\n',
                 encoding="utf-8",
             )
             cmake.chmod(0o755)
@@ -70,7 +70,13 @@ bash -lc 'cmake --build build -j'
 """
             env = os.environ.copy()
             env.pop("PRESMOKE_WERROR", None)
-            result = subprocess.run(["bash", "-c", script], env=env, text=True, capture_output=True, check=False)
+            result = subprocess.run(
+                ["bash", "-c", script],
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
 
             self.assertEqual(result.returncode, 0, result.stderr)
             lines = cmake_log.read_text(encoding="utf-8").splitlines()

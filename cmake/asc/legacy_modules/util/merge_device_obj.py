@@ -12,11 +12,7 @@
 
 import argparse
 import os
-import shutil
 import subprocess
-import sys
-import stat
-from typing import List
 
 
 class CompareError(Exception):
@@ -30,7 +26,7 @@ class MergeCMDError(Exception):
 def run_merge_cmd(script, linker, build_type, input_file, output_file):
     """run cmds"""
 
-    input_str = ' '.join(input_file)
+    input_str = " ".join(input_file)
 
     output_dir = os.path.dirname(output_file)
     output_name = os.path.basename(output_file)
@@ -53,7 +49,7 @@ def single_obj_merge(script, linker, build_type, all_merge_list):
 def read_file(source_file):
     """read file content."""
     try:
-        with open(source_file, encoding='utf-8') as file:
+        with open(source_file, encoding="utf-8") as file:
             content = file.readlines()
         return content
     except Exception as err:
@@ -64,11 +60,11 @@ def read_file(source_file):
 def get_obj_name(obj_file):
     """get obj name."""
     obj_base_name = os.path.basename(obj_file)
-    obj_split_name = obj_base_name.split('.')
+    obj_split_name = obj_base_name.split(".")
     prefix = obj_split_name[0]
     file_name = prefix.replace("auto_gen_", "")
     suffix = obj_split_name[-1]
-    return rf'{file_name}.{suffix}'
+    return rf"{file_name}.{suffix}"
 
 
 def get_normal_obj_info(input_dir, file_name, output_dir):
@@ -125,44 +121,23 @@ def get_mix_obj_info(aic_dir, aiv_dir, file_name, output_dir):
 def parse_args():
     """parse parameters"""
     parser = argparse.ArgumentParser()
-    parser.add_argument('-l',
-                        '--linker',
-                        required=True,
-                        help='ccec linker')
+    parser.add_argument("-l", "--linker", required=True, help="ccec linker")
 
-    parser.add_argument('-o',
-                        '--output',
-                        required=True,
-                        help='output directory')
+    parser.add_argument("-o", "--output", required=True, help="output directory")
 
-    parser.add_argument('--build-type',
-                        required=True,
-                        help='build type')
+    parser.add_argument("--build-type", required=True, help="build type")
 
-    parser.add_argument('--script',
-                        required=True,
-                        help='merge script')
+    parser.add_argument("--script", required=True, help="merge script")
 
-    parser.add_argument('--aiv-dir',
-                        nargs='?',
-                        help='aiv directory')
+    parser.add_argument("--aiv-dir", nargs="?", help="aiv directory")
 
-    parser.add_argument('--aic-dir',
-                        nargs='?',
-                        help='aic directory')
+    parser.add_argument("--aic-dir", nargs="?", help="aic directory")
 
-    parser.add_argument('--normal-dir',
-                        nargs='?',
-                        help='normal directory')
+    parser.add_argument("--normal-dir", nargs="?", help="normal directory")
 
-    parser.add_argument('-n',
-                        '--name',
-                        nargs='?',
-                        help='output name')
+    parser.add_argument("-n", "--name", nargs="?", help="output name")
 
-    parser.add_argument('--fatbin',
-                        action='store_true',
-                        help='fatbin mode')
+    parser.add_argument("--fatbin", action="store_true", help="fatbin mode")
 
     args = parser.parse_args()
 
@@ -177,28 +152,38 @@ def main():
     all_merge_list = []
 
     if args.normal_dir:
-        normal_objs, merge_normal = get_normal_obj_info(args.normal_dir, 'mix_build.flag', args.output)
+        normal_objs, merge_normal = get_normal_obj_info(
+            args.normal_dir, "mix_build.flag", args.output
+        )
         all_source_list.extend(normal_objs)
         all_merge_list.extend(merge_normal)
     else:
-        aic_objs, merge_aic = get_normal_obj_info(args.aic_dir, 'aic_build.flag', args.output)
+        aic_objs, merge_aic = get_normal_obj_info(
+            args.aic_dir, "aic_build.flag", args.output
+        )
         all_source_list.extend(aic_objs)
         all_merge_list.extend(merge_aic)
 
-        aiv_objs, merge_aiv = get_normal_obj_info(args.aiv_dir, 'aiv_build.flag', args.output)
+        aiv_objs, merge_aiv = get_normal_obj_info(
+            args.aiv_dir, "aiv_build.flag", args.output
+        )
         all_source_list.extend(aiv_objs)
         all_merge_list.extend(merge_aiv)
 
-        mix_objs, merge_mix = get_mix_obj_info(args.aic_dir, args.aiv_dir, 'mix_build.flag', args.output)
+        mix_objs, merge_mix = get_mix_obj_info(
+            args.aic_dir, args.aiv_dir, "mix_build.flag", args.output
+        )
         all_source_list.extend(mix_objs)
         all_merge_list.extend(merge_mix)
 
     if args.fatbin:
         output_file = os.path.join(args.output, args.name)
-        run_merge_cmd(args.script, args.linker, args.build_type, all_source_list, output_file)
+        run_merge_cmd(
+            args.script, args.linker, args.build_type, all_source_list, output_file
+        )
     else:
         single_obj_merge(args.script, args.linker, args.build_type, all_merge_list)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

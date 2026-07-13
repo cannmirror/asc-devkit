@@ -45,27 +45,27 @@ MY_STRUCT_EX = """struct MyStruct{
 
 def test_parse_struct_by_str_01():
     result = parse_struct_by_str(TAIL_STRUCT)
-    assert result == ('uint32_t',)
+    assert result == ("uint32_t",)
 
 
 def test_parse_struct_by_str_02():
     result = parse_struct_by_str(TAIL_STRUCT_2)
-    assert result == ('unsigned int',)
+    assert result == ("unsigned int",)
 
 
 def test_parse_struct_by_str_03():
     result = parse_struct_by_str(TILING_STRUCT)
-    assert result == ('uint32_t', 'uint64_t', 'TailStruct')
+    assert result == ("uint32_t", "uint64_t", "TailStruct")
 
 
 def test_parse_struct_by_str_04():
     result = parse_struct_by_str(MY_STRUCT)
-    assert result == ('uint8_t',)
+    assert result == ("uint8_t",)
 
 
 def test_parse_struct_by_str_05():
     result = parse_struct_by_str(MY_STRUCT_2)
-    assert result == ('unsigned long long',)
+    assert result == ("unsigned long long",)
 
 
 def test_parse_struct_by_str_ex_01():

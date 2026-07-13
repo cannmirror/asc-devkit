@@ -11,19 +11,19 @@
 # ----------------------------------------------------------------------------------------------------------
 import os
 import sys
-import shutil
 import unittest
-import subprocess
 import filecmp
 
-from unittest.mock import MagicMock, patch
 
 THIS_FILE_NAME = __file__
 FILE_PATH = os.path.dirname(os.path.realpath(THIS_FILE_NAME))
-MSOBJDUMP_PATH = os.path.join(FILE_PATH, "../../../", "tools/scripts/compile_trace_log/")
+MSOBJDUMP_PATH = os.path.join(
+    FILE_PATH, "../../../", "tools/scripts/compile_trace_log/"
+)
 print(MSOBJDUMP_PATH)
 sys.path.append(MSOBJDUMP_PATH)
 from compile_trace_log import compile_trace
+
 
 class TestCompileTrace(unittest.TestCase):
     def setUp(self):
@@ -36,11 +36,13 @@ class TestCompileTrace(unittest.TestCase):
 
     def test_compile_trace(self):
         a = 0
-        #有编译打点时间日志
-        input_file = os.path.join(FILE_PATH, "valid.txt" )        # 修改为你实际的日志文件名
-        output_file = os.path.join(FILE_PATH, "valid_trace_output.json" )   # 输出的 JSON 文件名
+        # 有编译打点时间日志
+        input_file = os.path.join(FILE_PATH, "valid.txt")  # 修改为你实际的日志文件名
+        output_file = os.path.join(
+            FILE_PATH, "valid_trace_output.json"
+        )  # 输出的 JSON 文件名
         compile_trace(input_file, output_file)
-        if filecmp.cmp(output_file, FILE_PATH + '/valid_golden.json'):
+        if filecmp.cmp(output_file, FILE_PATH + "/valid_golden.json"):
             print("The contents of the two files are the same")
             a += 1
         else:

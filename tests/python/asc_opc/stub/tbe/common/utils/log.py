@@ -11,14 +11,16 @@
 # ----------------------------------------------------------------------------------------------------------
 import os
 import inspect
+
 FILE_PATH = os.path.dirname(os.path.realpath(__file__))
+
 
 def debug(log_msg, *log_paras):
     line_no = inspect.currentframe().f_back.f_lineno
     funcname = inspect.currentframe().f_back.f_code.co_name
     co_filename = inspect.currentframe().f_back.f_code.co_filename
     filename = os.path.relpath(co_filename, FILE_PATH)
-    log_str = '[Debug][%s:%d][%s] ' % (co_filename, line_no, funcname)
+    log_str = "[Debug][%s:%d][%s] " % (co_filename, line_no, funcname)
     log_all_msg = log_str + log_msg % log_paras
     print(log_all_msg)
 
@@ -28,7 +30,7 @@ def info(log_msg, *log_paras):
     funcname = inspect.currentframe().f_back.f_code.co_name
     co_filename = inspect.currentframe().f_back.f_code.co_filename
     filename = os.path.relpath(co_filename, FILE_PATH)
-    log_str = '[Info][%s:%d][%s] ' % (co_filename, line_no, funcname)
+    log_str = "[Info][%s:%d][%s] " % (co_filename, line_no, funcname)
     log_all_msg = log_str + log_msg % log_paras
     print(log_all_msg)
 
@@ -38,7 +40,7 @@ def warn(log_msg, *log_paras):
     funcname = inspect.currentframe().f_back.f_code.co_name
     co_filename = inspect.currentframe().f_back.f_code.co_filename
     filename = os.path.relpath(co_filename, FILE_PATH)
-    log_str = '[Warning][%s:%d][%s] ' % (co_filename, line_no, funcname)
+    log_str = "[Warning][%s:%d][%s] " % (co_filename, line_no, funcname)
     log_all_msg = log_str + log_msg % log_paras
     print(log_all_msg)
 
@@ -48,6 +50,6 @@ def error(log_msg, *log_paras):
     funcname = inspect.currentframe().f_back.f_code.co_name
     co_filename = inspect.currentframe().f_back.f_code.co_filename
     filename = os.path.relpath(co_filename, FILE_PATH)
-    log_str = '[Error][%s:%d][%s] ' % (co_filename, line_no, funcname)
+    log_str = "[Error][%s:%d][%s] " % (co_filename, line_no, funcname)
     log_all_msg = log_str + log_msg % log_paras
     print(log_all_msg)

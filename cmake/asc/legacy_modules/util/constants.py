@@ -14,57 +14,57 @@ import re
 from host_stub_util import CodeMode
 
 FUNC_SIGNATURE = re.compile(
-    r'(?:template\s*<\s*([^>]+?)\s*>\s*\n?\s*)?'
-    r'__attribute__\(\(cce_kernel\)\)\s*'
-    r'(?:\[aicore\]|__attribute__\(\(cce_aicore\)\))\s*'
-    r'(.+?)\s*\{',
+    r"(?:template\s*<\s*([^>]+?)\s*>\s*\n?\s*)?"
+    r"__attribute__\(\(cce_kernel\)\)\s*"
+    r"(?:\[aicore\]|__attribute__\(\(cce_aicore\)\))\s*"
+    r"(.+?)\s*\{",
     re.DOTALL,
 )
-FUNC_PARAMS = re.compile(r'\((.+)\)', re.DOTALL)
+FUNC_PARAMS = re.compile(r"\((.+)\)", re.DOTALL)
 
-STRUCT = re.compile(r'^\s*struct\s+(\w+)\s*\{', re.MULTILINE)
+STRUCT = re.compile(r"^\s*struct\s+(\w+)\s*\{", re.MULTILINE)
 
-CCE_GLOBAL = '__attribute__((cce_global))'
-FUNC_PARAM_SKIPS = ('__restrict__', '__restrict', 'struct')
+CCE_GLOBAL = "__attribute__((cce_global))"
+FUNC_PARAM_SKIPS = ("__restrict__", "__restrict", "struct")
 
-ATTRIBUTE = re.compile(r'__attribute__\(\(\w+\)\)')
+ATTRIBUTE = re.compile(r"__attribute__\(\(\w+\)\)")
 
-COMMENT = re.compile(r'[ \t]*//.*')
+COMMENT = re.compile(r"[ \t]*//.*")
 
-TYPE_BASENAME = re.compile(r'\w+')
+TYPE_BASENAME = re.compile(r"\w+")
 
-MIX_CORE_MACRO = '__MIX_CORE_MACRO__'
+MIX_CORE_MACRO = "__MIX_CORE_MACRO__"
 
 FUN_TEMPLATE_HASH_TILING_KEY_BASE = 1000000
 
 STR_TO_KERNEL_TYPE_V200 = {
-    "KERNEL_TYPE_AICORE" : CodeMode.AIC,
-    "KERNEL_TYPE_VECTORCORE" : CodeMode.AIC,
-    "KERNEL_TYPE_MIX_VECTOR_CORE" : CodeMode.MIX_VECTOR_CORE,
+    "KERNEL_TYPE_AICORE": CodeMode.AIC,
+    "KERNEL_TYPE_VECTORCORE": CodeMode.AIC,
+    "KERNEL_TYPE_MIX_VECTOR_CORE": CodeMode.MIX_VECTOR_CORE,
 }
 
 STR_TO_KERNEL_TYPE_V220 = {
-    "KERNEL_TYPE_AIV_ONLY" : CodeMode.KERNEL_TYPE_AIV_ONLY,
-    "KERNEL_TYPE_AIC_ONLY" : CodeMode.KERNEL_TYPE_AIC_ONLY,
-    "KERNEL_TYPE_MIX_AIV_1_0" : CodeMode.KERNEL_TYPE_MIX_AIV_1_0,
-    "KERNEL_TYPE_MIX_AIC_1_0" : CodeMode.KERNEL_TYPE_MIX_AIC_1_0,
-    "KERNEL_TYPE_MIX_AIC_1_1" : CodeMode.KERNEL_TYPE_MIX_AIC_1_1,
-    "KERNEL_TYPE_MIX_AIC_1_2" : CodeMode.KERNEL_TYPE_MIX_AIC_1_2,
+    "KERNEL_TYPE_AIV_ONLY": CodeMode.KERNEL_TYPE_AIV_ONLY,
+    "KERNEL_TYPE_AIC_ONLY": CodeMode.KERNEL_TYPE_AIC_ONLY,
+    "KERNEL_TYPE_MIX_AIV_1_0": CodeMode.KERNEL_TYPE_MIX_AIV_1_0,
+    "KERNEL_TYPE_MIX_AIC_1_0": CodeMode.KERNEL_TYPE_MIX_AIC_1_0,
+    "KERNEL_TYPE_MIX_AIC_1_1": CodeMode.KERNEL_TYPE_MIX_AIC_1_1,
+    "KERNEL_TYPE_MIX_AIC_1_2": CodeMode.KERNEL_TYPE_MIX_AIC_1_2,
 }
 
 STR_TO_KERNEL_TYPE_C310 = {
-    "KERNEL_TYPE_AIV_ONLY" : CodeMode.KERNEL_TYPE_AIV_ONLY,
-    "KERNEL_TYPE_AIC_ONLY" : CodeMode.KERNEL_TYPE_AIC_ONLY,
-    "KERNEL_TYPE_MIX_AIV_1_0" : CodeMode.KERNEL_TYPE_MIX_AIV_1_0,
-    "KERNEL_TYPE_MIX_AIC_1_0" : CodeMode.KERNEL_TYPE_MIX_AIC_1_0,
-    "KERNEL_TYPE_MIX_AIC_1_1" : CodeMode.KERNEL_TYPE_MIX_AIC_1_1,
-    "KERNEL_TYPE_MIX_AIC_1_2" : CodeMode.KERNEL_TYPE_MIX_AIC_1_2,
+    "KERNEL_TYPE_AIV_ONLY": CodeMode.KERNEL_TYPE_AIV_ONLY,
+    "KERNEL_TYPE_AIC_ONLY": CodeMode.KERNEL_TYPE_AIC_ONLY,
+    "KERNEL_TYPE_MIX_AIV_1_0": CodeMode.KERNEL_TYPE_MIX_AIV_1_0,
+    "KERNEL_TYPE_MIX_AIC_1_0": CodeMode.KERNEL_TYPE_MIX_AIC_1_0,
+    "KERNEL_TYPE_MIX_AIC_1_1": CodeMode.KERNEL_TYPE_MIX_AIC_1_1,
+    "KERNEL_TYPE_MIX_AIC_1_2": CodeMode.KERNEL_TYPE_MIX_AIC_1_2,
 }
 
 STR_TO_KERNEL_TYPE_L300 = {
-    "KERNEL_TYPE_AICORE" : CodeMode.AIC,
+    "KERNEL_TYPE_AICORE": CodeMode.AIC,
 }
 
 STR_TO_KERNEL_TYPE_L311 = {
-    "KERNEL_TYPE_AICORE" : CodeMode.AIC,
+    "KERNEL_TYPE_AICORE": CodeMode.AIC,
 }

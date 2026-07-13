@@ -22,7 +22,11 @@ from presmoke.planner import build_cells_with_skips, rewrite_cmake
 
 class PlannerTest(unittest.TestCase):
     def test_rewrite_cmake_replaces_arch_and_mode(self) -> None:
-        cmd = rewrite_cmake("cmake -DSCENARIO_NUM=4 -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DCMAKE_ASC_RUN_MODE=cpu ..", "dav-3510", "sim")
+        cmd = rewrite_cmake(
+            "cmake -DSCENARIO_NUM=4 -DCMAKE_ASC_ARCHITECTURES=dav-2201 -DCMAKE_ASC_RUN_MODE=cpu ..",
+            "dav-3510",
+            "sim",
+        )
         self.assertIn("-DSCENARIO_NUM=4", cmd)
         self.assertIn("-DCMAKE_ASC_ARCHITECTURES=dav-3510", cmd)
         self.assertIn("-DCMAKE_ASC_RUN_MODE=sim", cmd)
@@ -72,7 +76,9 @@ class PlannerTest(unittest.TestCase):
             ["npu"],
             "readme",
         )
-        cells, suggestions, skipped = build_cells_with_skips([spec], "dav-2201", ["npu"])
+        cells, suggestions, skipped = build_cells_with_skips(
+            [spec], "dav-2201", ["npu"]
+        )
         self.assertEqual(cells, [])
         self.assertEqual(len(suggestions), 1)
         self.assertEqual(skipped, [])

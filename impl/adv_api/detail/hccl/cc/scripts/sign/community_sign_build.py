@@ -19,9 +19,11 @@ from typing import List, Optional, Tuple
 myfile = os.path.realpath(__file__)
 mypath = os.path.dirname(myfile)
 
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s line:%(lineno)d %(levelname)s:%(name)s:%(message)s',
-                    datefmt='%H:%M:%S')
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s line:%(lineno)d %(levelname)s:%(name)s:%(message)s",
+    datefmt="%H:%M:%S",
+)
 
 
 def _get_sign_filename() -> Tuple[Optional[str], Optional[str]]:
@@ -62,27 +64,49 @@ def _check_result(inputfile) -> bool:
 
 
 def _help():
-    print("==================================== 帮助信息 ==================================")
+    print(
+        "==================================== 帮助信息 =================================="
+    )
     print("通用命令，命令格式如下:")
     print("python community_sign_build.py [cmd] target ...")
-    print("--------------------------------------------------------------------------------")
+    print(
+        "--------------------------------------------------------------------------------"
+    )
     print("[cmd] help|cms|")
     print("  %s: 查看帮助" % ("help".ljust(8)))
     print("  %s: 制作cms签名" % ("cms".ljust(8)))
-    print("--------------------------------------------------------------------------------")
-    print("  %s: 待签名的文件路径,支持多target,各target以空格分开" % ("target".ljust(8)))
-    print("====================================== END =====================================")
+    print(
+        "--------------------------------------------------------------------------------"
+    )
+    print(
+        "  %s: 待签名的文件路径,支持多target,各target以空格分开" % ("target".ljust(8))
+    )
+    print(
+        "====================================== END ====================================="
+    )
 
 
 def get_sign_cmd(file, rootdir) -> List[str]:
     """获取签名命令。"""
     sign_crl = os.path.join(rootdir, "scripts/signtool/signature/SWSCRL.crl")
     return [
-        "sudo", "/home/jenkins/signatrust_client/signatrust_client",
-        "--config", "/home/jenkins/signatrust_client/client.toml",
-        "add", "--file-type", "p7s", "--key-type", "x509",
-        "--key-name", "SignCert", "--detached", file,
-        "--timestamp-key", "TimeCert", "--crl", sign_crl,
+        "sudo",
+        "/home/jenkins/signatrust_client/signatrust_client",
+        "--config",
+        "/home/jenkins/signatrust_client/client.toml",
+        "add",
+        "--file-type",
+        "p7s",
+        "--key-type",
+        "x509",
+        "--key-name",
+        "SignCert",
+        "--detached",
+        file,
+        "--timestamp-key",
+        "TimeCert",
+        "--crl",
+        sign_crl,
     ]
 
 
@@ -98,8 +122,8 @@ def _run_sign(inputfiles, rootdir):
 
         logging.info("run sign cmd %s in %s", " ".join(cmd), mypath)
         result = subprocess.run(
-            cmd, cwd=mypath, shell=False, check=False,
-            stdout=PIPE, stderr=STDOUT)
+            cmd, cwd=mypath, shell=False, check=False, stdout=PIPE, stderr=STDOUT
+        )
         if 0 != result.returncode:
             logging.error(result.stdout.decode())
             logging.error("file %s signed error", file)
@@ -112,8 +136,7 @@ def _run_sign(inputfiles, rootdir):
 def main(argv):
     """主流程。"""
     if (len(argv)) < 3:
-        logging.error(
-            "argv number is error, it must >= 2, now (%s)", str(argv))
+        logging.error("argv number is error, it must >= 2, now (%s)", str(argv))
         print("argv number is error, it must >= 2, now " + str(argv))
         sys.exit(1)
 
@@ -132,5 +155,5 @@ def main(argv):
     sys.exit(0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)

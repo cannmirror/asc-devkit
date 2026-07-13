@@ -12,13 +12,14 @@
 
 from tbe.dsl import classify
 
-class _op():
+
+class _op:
     def __init__(self):
         self.value = []
         self.idx = []
 
 
-class ReduceClassifyFusion():
+class ReduceClassifyFusion:
     def __init__(self, op_list, pattern, mode="reduce"):
         self.op_list = op_list
         self.pattern = pattern
@@ -54,12 +55,14 @@ class ReduceClassifyFusion():
         output_tensors = reduce_op["output_desc"]
         if input_tensors:
             for in_tensor in input_tensors:
-                ReduceClassifyFusion._find_input_names_before_reduce(in_tensor["name"], _op_list,
-                                                                     input_list_before_reduce)
+                ReduceClassifyFusion._find_input_names_before_reduce(
+                    in_tensor["name"], _op_list, input_list_before_reduce
+                )
         if output_tensors:
             for out_tensor in output_tensors:
-                ReduceClassifyFusion._find_input_names_after_reduce(out_tensor["name"], _op_list,
-                                                                    input_list_after_reduce)
+                ReduceClassifyFusion._find_input_names_after_reduce(
+                    out_tensor["name"], _op_list, input_list_after_reduce
+                )
         for _op in _op_list:
             if _op["type"] == "Data":
                 out_tensor_name = _op["output_desc"][0]["name"]
@@ -87,8 +90,9 @@ class ReduceClassifyFusion():
                 input_desc = _op["input_desc"]
                 if input_desc:
                     for in_desc in input_desc:
-                        ReduceClassifyFusion._find_input_names_before_reduce(in_desc["name"], _op_list,
-                                                                             input_tensor_name_list)
+                        ReduceClassifyFusion._find_input_names_before_reduce(
+                            in_desc["name"], _op_list, input_tensor_name_list
+                        )
 
     @staticmethod
     def _find_input_names_after_reduce(tensor_name, _op_list, input_tensor_name_list):
@@ -111,9 +115,9 @@ class ReduceClassifyFusion():
                 output_desc = _op["output_desc"]
                 if output_desc:
                     for out_desc in output_desc:
-                        ReduceClassifyFusion._find_input_names_after_reduce(out_desc["name"], _op_list,
-                                                                            input_tensor_name_list)
-
+                        ReduceClassifyFusion._find_input_names_after_reduce(
+                            out_desc["name"], _op_list, input_tensor_name_list
+                        )
 
     @staticmethod
     def _handle_input_range(inputs):
@@ -125,7 +129,6 @@ class ReduceClassifyFusion():
                 if len(range) == 2:
                     if range[1] == -1:
                         range[1] = None
-
 
     def _collect_common_info(self):
         for _key, _node in enumerate(self.op_list):
@@ -143,8 +146,10 @@ class ReduceClassifyFusion():
         # ReduceD or Reduce(Single Reduce)
         self.label = self.reduce_op.value[0].get("type")[-1]
         # classify need keepdims attr
-        extra_params = {"keepdims" : self.reduce_op.value[0].get("attr_desc")[-1]}
-        if self.label in ["D", ]:
+        extra_params = {"keepdims": self.reduce_op.value[0].get("attr_desc")[-1]}
+        if self.label in [
+            "D",
+        ]:
             # ReduceSumD, ReduceMaxD,...D
             input_shape = self.reduce_op.value[0].get("input_desc")[0].get("shape")
             attr_axis = self.reduce_op.value[0].get("attr_desc")[0]
@@ -152,11 +157,18 @@ class ReduceClassifyFusion():
 
             if not attr_axis:
                 attr_axis = range(shape_len)
-            if hasattr(attr_axis, 'index'):
+            if hasattr(attr_axis, "index"):
                 attr_axis = list(attr_axis)
             import tbe.common.utils.shape_util as shape_util
+
             attr_axis = shape_util.axis_check(shape_len, attr_axis)
-            dict_axis = {"shape": [len(attr_axis), ], "value": attr_axis, "rel_pos_to_reduce": "axis"}
+            dict_axis = {
+                "shape": [
+                    len(attr_axis),
+                ],
+                "value": attr_axis,
+                "rel_pos_to_reduce": "axis",
+            }
 
             inputs_desc = [x.get("output_desc")[0] for x in self.placeholder_op.value]
             inputs_desc.append(dict_axis)
@@ -171,20 +183,33 @@ class ReduceClassifyFusion():
                 # axis is placeholder
                 for _idx, _var in enumerate(self.placeholder_op.value):
                     if _var.get("output_desc")[0].get("name").lower() == axis_name:
-                        self.placeholder_op.value[_idx]["output_desc"][0].update({"rel_pos_to_reduce": "axis"})
                         self.placeholder_op.value[_idx]["output_desc"][0].update(
-                            {"dtype": self.placeholder_op.value[_idx]["output_desc"][0].get("data_type")})
+                            {"rel_pos_to_reduce": "axis"}
+                        )
+                        self.placeholder_op.value[_idx]["output_desc"][0].update(
+                            {
+                                "dtype": self.placeholder_op.value[_idx]["output_desc"][
+                                    0
+                                ].get("data_type")
+                            }
+                        )
                         self.axis_idx = _idx
                         break
                     if _idx == len(self.placeholder_op.value) - 1:
-                        raise RuntimeError("Axis is belong to placeholder, but not find in placeholder_op")
-                inputs_desc = [x.get("output_desc")[0] for x in self.placeholder_op.value]
+                        raise RuntimeError(
+                            "Axis is belong to placeholder, but not find in placeholder_op"
+                        )
+                inputs_desc = [
+                    x.get("output_desc")[0] for x in self.placeholder_op.value
+                ]
                 ReduceClassifyFusion._handle_input_range(inputs_desc)
                 self.ins_list = classify(inputs_desc, self.pattern, extra_params)
             else:
                 # axis is not in placeholder
                 dict_axis.update({"rel_pos_to_reduce": "axis"})
-                inputs_desc = [x.get("output_desc")[0] for x in self.placeholder_op.value]
+                inputs_desc = [
+                    x.get("output_desc")[0] for x in self.placeholder_op.value
+                ]
                 inputs_desc.append(dict_axis)
                 ReduceClassifyFusion._handle_input_range(inputs_desc)
                 self.axis_idx = len(inputs_desc) - 1

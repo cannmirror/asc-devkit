@@ -90,13 +90,21 @@ class GenerateCaseRunnersTest(unittest.TestCase):
         archs = []
         if re.search(r"Ascend\s*950|950PR|950DT|dav-3510", support, re.IGNORECASE):
             archs.append("dav-3510")
-        if re.search(r"Atlas\s*A[23]|Atlas\s*200I/500\s*A2|Atlas\s*200I|Atlas\s*500\s*A2|dav-2201", support, re.IGNORECASE):
+        if re.search(
+            r"Atlas\s*A[23]|Atlas\s*200I/500\s*A2|Atlas\s*200I|Atlas\s*500\s*A2|dav-2201",
+            support,
+            re.IGNORECASE,
+        ):
             archs.append("dav-2201")
         return archs
 
     def test_manifest_archs_match_readme_supported_products(self) -> None:
         project_root = Path(__file__).resolve().parents[3]
-        manifest = json.loads((project_root / "scripts/presmoke/reports/case_runner_manifest.json").read_text(encoding="utf-8"))
+        manifest = json.loads(
+            (
+                project_root / "scripts/presmoke/reports/case_runner_manifest.json"
+            ).read_text(encoding="utf-8")
+        )
         mismatches = []
         for item in manifest:
             readme = project_root / "examples" / item["case"] / "README.md"
@@ -111,8 +119,14 @@ class GenerateCaseRunnersTest(unittest.TestCase):
         project_root = Path(__file__).resolve().parents[3]
         examples_root = project_root / "examples"
         manifest_by_source: dict[str, list[dict]] = {}
-        for item in json.loads((project_root / "scripts/presmoke/reports/case_runner_manifest.json").read_text(encoding="utf-8")):
-            manifest_by_source.setdefault(item.get("source_case") or item["case"], []).append(item)
+        for item in json.loads(
+            (
+                project_root / "scripts/presmoke/reports/case_runner_manifest.json"
+            ).read_text(encoding="utf-8")
+        ):
+            manifest_by_source.setdefault(
+                item.get("source_case") or item["case"], []
+            ).append(item)
         missing = []
         for readme in examples_root.rglob("README.md"):
             text = readme.read_text(encoding="utf-8", errors="ignore")
@@ -120,7 +134,9 @@ class GenerateCaseRunnersTest(unittest.TestCase):
                 continue
             rel_path = readme.parent.relative_to(examples_root).as_posix()
             items = manifest_by_source.get(rel_path, [])
-            if not items or all("cpu" not in item.get("supported_modes", []) for item in items):
+            if not items or all(
+                "cpu" not in item.get("supported_modes", []) for item in items
+            ):
                 missing.append(rel_path)
 
         self.assertEqual(missing, [])
@@ -129,10 +145,14 @@ class GenerateCaseRunnersTest(unittest.TestCase):
         project_root = Path(__file__).resolve().parents[3]
         examples_root = project_root / "examples"
         manifest_items = json.loads(
-            (project_root / "scripts/presmoke/reports/case_runner_manifest.json").read_text(encoding="utf-8")
+            (
+                project_root / "scripts/presmoke/reports/case_runner_manifest.json"
+            ).read_text(encoding="utf-8")
         )
         manifest_cases = {item["case"] for item in manifest_items}
-        manifest_sources = {item.get("source_case") or item["case"] for item in manifest_items}
+        manifest_sources = {
+            item.get("source_case") or item["case"] for item in manifest_items
+        }
         missing = []
         for cmake_file in examples_root.rglob("CMakeLists.txt"):
             text = cmake_file.read_text(encoding="utf-8", errors="ignore")
@@ -142,7 +162,9 @@ class GenerateCaseRunnersTest(unittest.TestCase):
             if rel_path in manifest_cases or rel_path in manifest_sources:
                 continue
             readme = cmake_file.parent / "README.md"
-            has_child_case = any(case.startswith(rel_path + "/") for case in manifest_cases)
+            has_child_case = any(
+                case.startswith(rel_path + "/") for case in manifest_cases
+            )
             if readme.exists() and not has_child_case:
                 missing.append(rel_path)
 
@@ -155,11 +177,16 @@ class GenerateCaseRunnersTest(unittest.TestCase):
             / "examples/01_simd_cpp_api/05_best_practices/02_reg_compute/softmax_high_performance/CMakeLists.txt"
         )
 
-        self.assertEqual(parse_scenario_values_from_cmake(cmake_file), [0, 1, 2, 3, 4, 5])
+        self.assertEqual(
+            parse_scenario_values_from_cmake(cmake_file), [0, 1, 2, 3, 4, 5]
+        )
 
     def test_scenario_range_can_be_discovered_from_readme_table(self) -> None:
         project_root = Path(__file__).resolve().parents[3]
-        readme_file = project_root / "examples/01_simd_cpp_api/04_advanced_api/08_transpose/transdata/README.md"
+        readme_file = (
+            project_root
+            / "examples/01_simd_cpp_api/04_advanced_api/08_transpose/transdata/README.md"
+        )
 
         self.assertEqual(parse_scenario_values_from_readme(readme_file), [1, 2, 3, 4])
 
@@ -173,14 +200,20 @@ class GenerateCaseRunnersTest(unittest.TestCase):
             scenario_num=5,
         )
 
-        self.assertIn("CASE_REL=01_simd_cpp_api/05_best_practices/02_reg_compute/softmax_high_performance", script)
+        self.assertIn(
+            "CASE_REL=01_simd_cpp_api/05_best_practices/02_reg_compute/softmax_high_performance",
+            script,
+        )
         self.assertIn('BUILD_DIR="$CASE_DIR/build_${MODE}_scenario_5"', script)
         self.assertIn("SCENARIO_NUM=5", script)
         self.assertIn("-DSCENARIO_NUM=5", script)
 
     def test_default_scenario_is_named_explicitly(self) -> None:
         project_root = Path(__file__).resolve().parents[3]
-        case_dir = project_root / "examples/01_simd_cpp_api/05_best_practices/02_reg_compute/softmax_high_performance"
+        case_dir = (
+            project_root
+            / "examples/01_simd_cpp_api/05_best_practices/02_reg_compute/softmax_high_performance"
+        )
         spec = ExampleSpec(
             case_dir,
             "01_simd_cpp_api/05_best_practices/02_reg_compute/softmax_high_performance",
@@ -190,11 +223,19 @@ class GenerateCaseRunnersTest(unittest.TestCase):
             "readme",
         )
 
-        expanded = expand_scenario_cells([cell_for_spec(spec, "dav-3510", "npu")], project_root)
+        expanded = expand_scenario_cells(
+            [cell_for_spec(spec, "dav-3510", "npu")], project_root
+        )
         names = [cell.example.rel_path for cell in expanded]
 
-        self.assertIn("01_simd_cpp_api/05_best_practices/02_reg_compute/softmax_high_performance__scenario_5", names)
-        self.assertNotIn("01_simd_cpp_api/05_best_practices/02_reg_compute/softmax_high_performance", names)
+        self.assertIn(
+            "01_simd_cpp_api/05_best_practices/02_reg_compute/softmax_high_performance__scenario_5",
+            names,
+        )
+        self.assertNotIn(
+            "01_simd_cpp_api/05_best_practices/02_reg_compute/softmax_high_performance",
+            names,
+        )
 
     def test_exported_scenario_num_is_rewritten(self) -> None:
         command = Command("export SCENARIO_NUM=1; ./demo", "run")
@@ -207,7 +248,9 @@ class GenerateCaseRunnersTest(unittest.TestCase):
     def test_atc_prerequisite_python_stays_in_build_before_atc(self) -> None:
         commands = [
             Command("python3 ../leaky_relu.py", "run"),
-            Command("atc --model=./leaky_relu.onnx --soc_version=${soc_version}", "shell"),
+            Command(
+                "atc --model=./leaky_relu.onnx --soc_version=${soc_version}", "shell"
+            ),
             Command("cmake ..", "cmake"),
             Command("make -j", "make"),
             Command("./execute_leaky_relu_op", "run"),
@@ -215,19 +258,32 @@ class GenerateCaseRunnersTest(unittest.TestCase):
         build_cmds = [
             command
             for command in commands
-            if command.kind in {"cmake", "make", "gen_data", "shell"} or is_atc_prerequisite_command(command, commands)
+            if command.kind in {"cmake", "make", "gen_data", "shell"}
+            or is_atc_prerequisite_command(command, commands)
         ]
-        run_cmds = [command for command in commands if command.kind in {"run", "package_run"} and command not in build_cmds]
+        run_cmds = [
+            command
+            for command in commands
+            if command.kind in {"run", "package_run"} and command not in build_cmds
+        ]
         script = render_runner_from_parts("x", build_cmds, run_cmds, [])
-        self.assertLess(script.index("python3 ../leaky_relu.py"), script.index("atc --model=./leaky_relu.onnx"))
-        self.assertLess(script.index("atc --model=./leaky_relu.onnx"), script.index("cmake .."))
+        self.assertLess(
+            script.index("python3 ../leaky_relu.py"),
+            script.index("atc --model=./leaky_relu.onnx"),
+        )
+        self.assertLess(
+            script.index("atc --model=./leaky_relu.onnx"), script.index("cmake ..")
+        )
         self.assertLess(script.index("cmake .."), script.index("make -j"))
         self.assertIn("./execute_leaky_relu_op", script)
 
     def test_cmake_build_command_is_not_treated_as_configure(self) -> None:
         script = render_runner_from_parts(
             "x",
-            [Command("cmake -S . -B build", "cmake"), Command("cmake --build build -j", "cmake")],
+            [
+                Command("cmake -S . -B build", "cmake"),
+                Command("cmake --build build -j", "cmake"),
+            ],
             [],
             [],
         )
@@ -243,15 +299,26 @@ class GenerateCaseRunnersTest(unittest.TestCase):
             [],
         )
         self.assertIn("local cmake_args=(cmake -S . -B build)", script)
-        self.assertNotIn("local cmake_args=(cmake -S . -B build \"-DCMAKE_ASC_ARCHITECTURES=$ARCH\")", script)
+        self.assertNotIn(
+            'local cmake_args=(cmake -S . -B build "-DCMAKE_ASC_ARCHITECTURES=$ARCH")',
+            script,
+        )
         self.assertIn('rm -rf "$CASE_DIR/build" "$BUILD_DIR"', script)
 
     def test_no_arch_injection_cases_do_not_pass_unused_cmake_arch(self) -> None:
-        for rel_path in sorted(NO_CMAKE_ARCH_INJECTION_CASES - {"01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/parallel_ops_package"}):
+        for rel_path in sorted(
+            NO_CMAKE_ARCH_INJECTION_CASES
+            - {
+                "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/parallel_ops_package"
+            }
+        ):
             with self.subTest(rel_path=rel_path):
                 script = render_runner_from_parts(
                     rel_path,
-                    [Command("cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-2201", "cmake"), Command("make -j", "make")],
+                    [
+                        Command("cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-2201", "cmake"),
+                        Command("make -j", "make"),
+                    ],
                     [Command("./demo", "run")],
                     [],
                 )
@@ -262,18 +329,26 @@ class GenerateCaseRunnersTest(unittest.TestCase):
         script = render_runner_from_parts(
             "x",
             [],
-            [Command('msprof --application="python3 ../torch_library_report_tensor.py" --output="../result"', "run")],
+            [
+                Command(
+                    'msprof --application="python3 ../torch_library_report_tensor.py" --output="../result"',
+                    "run",
+                )
+            ],
             [],
         )
         self.assertIn('(cd "$BUILD_DIR" && soc_version=$SOC_VERSION bash -lc', script)
-        self.assertIn('python3 ../torch_library_report_tensor.py', script)
+        self.assertIn("python3 ../torch_library_report_tensor.py", script)
         self.assertNotIn('(cd "$CASE_DIR" && soc_version=$SOC_VERSION bash -lc', script)
 
     def test_export_command_is_merged_into_first_run_command(self) -> None:
         build_cmds, run_cmds = merge_export_commands_into_run(
             [
                 Command("cmake ..", "cmake"),
-                Command('export ASCEND_CUSTOM_OPP_PATH="$(pwd)/output:${ASCEND_CUSTOM_OPP_PATH}"', "shell"),
+                Command(
+                    'export ASCEND_CUSTOM_OPP_PATH="$(pwd)/output:${ASCEND_CUSTOM_OPP_PATH}"',
+                    "shell",
+                ),
             ],
             [Command("./demo", "run")],
         )
@@ -283,7 +358,9 @@ class GenerateCaseRunnersTest(unittest.TestCase):
             run_cmds[0].raw,
             'export ASCEND_CUSTOM_OPP_PATH="$(pwd)/output:${ASCEND_CUSTOM_OPP_PATH}"; ./demo',
         )
-        self.assertEqual(command_workdir(run_cmds[0].raw, default_cd_build=True), "$BUILD_DIR")
+        self.assertEqual(
+            command_workdir(run_cmds[0].raw, default_cd_build=True), "$BUILD_DIR"
+        )
 
     def test_env_value_references_are_not_single_quoted(self) -> None:
         self.assertEqual(quote_env_value("$ARCH"), "$ARCH")
@@ -293,7 +370,9 @@ class GenerateCaseRunnersTest(unittest.TestCase):
         self.assertEqual(quote_env_value("plain value"), "'plain value'")
 
     def test_arch_env_assignment_uses_runtime_arch(self) -> None:
-        prefix = command_env_prefix(Command("cmake ..", "cmake", {"ASC_ARCH": "dav-2201"}))
+        prefix = command_env_prefix(
+            Command("cmake ..", "cmake", {"ASC_ARCH": "dav-2201"})
+        )
         self.assertIn("ASC_ARCH=$ARCH", prefix)
         self.assertNotIn("ASC_ARCH=dav-2201", prefix)
 
@@ -315,7 +394,9 @@ class GenerateCaseRunnersTest(unittest.TestCase):
             [],
             custom_op_dependency=True,
         )
-        self.assertLess(script.index("presmoke_ensure_custom_op_package"), script.index("cmake .."))
+        self.assertLess(
+            script.index("presmoke_ensure_custom_op_package"), script.index("cmake ..")
+        )
 
     def test_tiling_sink_runner_validates_sink_task_generation_log(self) -> None:
         script = render_runner_from_parts(
@@ -348,24 +429,49 @@ class GenerateCaseRunnersTest(unittest.TestCase):
         self.assertEqual(script.count("presmoke_ensure_custom_op_package"), 2)
 
     def test_dependency_and_tensorflow_skip_rules(self) -> None:
-        self.assertTrue(requires_custom_op_package("01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"))
-        self.assertTrue(requires_custom_op_package("01_simd_cpp_api/02_features/99_acl_based/01_acl_invocation/aclnn_invocation"))
-        self.assertTrue(requires_custom_op_package("01_simd_cpp_api/02_features/00_framework/02_onnx/onnx_plugin"))
-        self.assertTrue(requires_custom_op_package("01_simd_cpp_api/02_features/00_framework/01_tensorflow/tensorflow_custom"))
-        reason, modes = explicit_skip_config("01_simd_cpp_api/02_features/00_framework/01_tensorflow/tensorflow_custom")
+        self.assertTrue(
+            requires_custom_op_package(
+                "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+            )
+        )
+        self.assertTrue(
+            requires_custom_op_package(
+                "01_simd_cpp_api/02_features/99_acl_based/01_acl_invocation/aclnn_invocation"
+            )
+        )
+        self.assertTrue(
+            requires_custom_op_package(
+                "01_simd_cpp_api/02_features/00_framework/02_onnx/onnx_plugin"
+            )
+        )
+        self.assertTrue(
+            requires_custom_op_package(
+                "01_simd_cpp_api/02_features/00_framework/01_tensorflow/tensorflow_custom"
+            )
+        )
+        reason, modes = explicit_skip_config(
+            "01_simd_cpp_api/02_features/00_framework/01_tensorflow/tensorflow_custom"
+        )
         self.assertIn("TensorFlow 2.6.5", reason)
         self.assertEqual(modes, ["npu"])
-        reason, modes = explicit_skip_config("01_simd_cpp_api/02_features/00_framework/01_tensorflow/tensorflow_builtin")
+        reason, modes = explicit_skip_config(
+            "01_simd_cpp_api/02_features/00_framework/01_tensorflow/tensorflow_builtin"
+        )
         self.assertEqual(modes, ["npu"])
 
     def test_matmul_l2cache_skip_config(self) -> None:
-        reason, modes = explicit_skip_config("01_simd_cpp_api/04_advanced_api/00_matmul/matmul_l2cache")
+        reason, modes = explicit_skip_config(
+            "01_simd_cpp_api/04_advanced_api/00_matmul/matmul_l2cache"
+        )
         self.assertIn("308M", reason)
         self.assertEqual(modes, ["cpu"])
 
     def test_matmul_fp8_is_950_only(self) -> None:
         project_root = Path(__file__).resolve().parents[3]
-        example_dir = project_root / "examples/01_simd_cpp_api/04_advanced_api/00_matmul/matmul_fp8"
+        example_dir = (
+            project_root
+            / "examples/01_simd_cpp_api/04_advanced_api/00_matmul/matmul_fp8"
+        )
 
         spec = parse_readme(example_dir, project_root / "examples")
 
@@ -431,20 +537,28 @@ class GenerateCaseRunnersTest(unittest.TestCase):
 
         self.assertEqual(archs, ["dav-3510"])
 
-    def test_scenario_arch_limit_keeps_supported_rows_when_later_rows_are_950_only(self) -> None:
+    def test_scenario_arch_limit_keeps_supported_rows_when_later_rows_are_950_only(
+        self,
+    ) -> None:
         project_root = Path(__file__).resolve().parents[3]
         cmake_file = (
             project_root
             / "examples/01_simd_cpp_api/03_basic_api/00_data_movement/data_copy_pad_gm2ub_ub2gm/CMakeLists.txt"
         )
 
-        scenario_two_archs = supported_archs_for_scenario(["dav-2201", "dav-3510"], cmake_file, 2)
-        scenario_three_archs = supported_archs_for_scenario(["dav-2201", "dav-3510"], cmake_file, 3)
+        scenario_two_archs = supported_archs_for_scenario(
+            ["dav-2201", "dav-3510"], cmake_file, 2
+        )
+        scenario_three_archs = supported_archs_for_scenario(
+            ["dav-2201", "dav-3510"], cmake_file, 3
+        )
 
         self.assertEqual(scenario_two_archs, ["dav-2201", "dav-3510"])
         self.assertEqual(scenario_three_archs, ["dav-3510"])
 
-    def test_scenario_arch_limit_reads_readme_heading_only_supports_ascend_950(self) -> None:
+    def test_scenario_arch_limit_reads_readme_heading_only_supports_ascend_950(
+        self,
+    ) -> None:
         project_root = Path(__file__).resolve().parents[3]
         cmake_file = (
             project_root
@@ -481,8 +595,16 @@ class GenerateCaseRunnersTest(unittest.TestCase):
             project_root
             / "scripts/presmoke/cases/01_simd_cpp_api/02_features/05_aclrtc/rtc_template_add/run.sh"
         )
-        manifest = json.loads((project_root / "scripts/presmoke/reports/case_runner_manifest.json").read_text())
-        item = next(entry for entry in manifest if entry["case"].endswith("05_aclrtc/rtc_template_add"))
+        manifest = json.loads(
+            (
+                project_root / "scripts/presmoke/reports/case_runner_manifest.json"
+            ).read_text()
+        )
+        item = next(
+            entry
+            for entry in manifest
+            if entry["case"].endswith("05_aclrtc/rtc_template_add")
+        )
 
         self.assertIn("bash -lc ./demo", runner.read_text(encoding="utf-8"))
         self.assertNotIn("bash -lc ./main", runner.read_text(encoding="utf-8"))
@@ -491,16 +613,31 @@ class GenerateCaseRunnersTest(unittest.TestCase):
 
     def test_skip_runner_clean_still_removes_build_directory(self) -> None:
         project_root = Path(__file__).resolve().parents[3]
-        runner = project_root / "scripts/presmoke/cases/01_simd_cpp_api/02_features/00_framework/01_tensorflow/tensorflow_builtin/run.sh"
-        build_dir = project_root / "examples/01_simd_cpp_api/02_features/00_framework/01_tensorflow/tensorflow_builtin/build_npu"
+        runner = (
+            project_root
+            / "scripts/presmoke/cases/01_simd_cpp_api/02_features/00_framework/01_tensorflow/tensorflow_builtin/run.sh"
+        )
+        build_dir = (
+            project_root
+            / "examples/01_simd_cpp_api/02_features/00_framework/01_tensorflow/tensorflow_builtin/build_npu"
+        )
 
         with tempfile.TemporaryDirectory(dir=project_root) as tmp:
             marker = build_dir / "presmoke_clean_marker"
             build_dir.mkdir(parents=True, exist_ok=True)
             marker.write_text("stale", encoding="utf-8")
-            env = {"PRESMOKE_PROJECT_ROOT": str(project_root), **dict(__import__("os").environ)}
+            env = {
+                "PRESMOKE_PROJECT_ROOT": str(project_root),
+                **dict(__import__("os").environ),
+            }
 
-            result = subprocess.run(["bash", str(runner), "clean"], cwd=tmp, env=env, text=True, capture_output=True)
+            result = subprocess.run(
+                ["bash", str(runner), "clean"],
+                cwd=tmp,
+                env=env,
+                text=True,
+                capture_output=True,
+            )
 
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertFalse(build_dir.exists())
@@ -536,33 +673,57 @@ class GenerateCaseRunnersTest(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            custom_op = root / "examples/01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+            custom_op = (
+                root
+                / "examples/01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+            )
             state = root / ".presmoke_state"
             custom_op.mkdir(parents=True)
             state.mkdir()
-            (state / "custom_op_dav-2201_npu.installed").write_text("stale", encoding="utf-8")
+            (state / "custom_op_dav-2201_npu.installed").write_text(
+                "stale", encoding="utf-8"
+            )
             opp = root / "opp"
-            build_dynamic = custom_op / "build_npu/op_kernel/ascendc_kernels/binary/dynamic/add_custom"
+            build_dynamic = (
+                custom_op
+                / "build_npu/op_kernel/ascendc_kernels/binary/dynamic/add_custom"
+            )
             build_dynamic.mkdir(parents=True)
-            (build_dynamic / "add_custom_tiling.h").write_text("header", encoding="utf-8")
-            vendor_dynamic = opp / "vendors/customize/op_impl/ai_core/tbe/customize_impl/dynamic"
+            (build_dynamic / "add_custom_tiling.h").write_text(
+                "header", encoding="utf-8"
+            )
+            vendor_dynamic = (
+                opp / "vendors/customize/op_impl/ai_core/tbe/customize_impl/dynamic"
+            )
             vendor_dynamic.mkdir(parents=True)
             (vendor_dynamic / "add_custom.py").write_text("", encoding="utf-8")
-            (vendor_dynamic / "add_custom_tiling_sink.py").write_text("", encoding="utf-8")
-            add_custom_dynamic = opp / "vendors/add_custom/op_impl/ai_core/tbe/add_custom_impl/dynamic"
+            (vendor_dynamic / "add_custom_tiling_sink.py").write_text(
+                "", encoding="utf-8"
+            )
+            add_custom_dynamic = (
+                opp / "vendors/add_custom/op_impl/ai_core/tbe/add_custom_impl/dynamic"
+            )
             add_custom_dynamic.mkdir(parents=True)
             (add_custom_dynamic / "add_custom.py").write_text("", encoding="utf-8")
-            (add_custom_dynamic / "add_custom_kernel.cpp").write_text("", encoding="utf-8")
+            (add_custom_dynamic / "add_custom_kernel.cpp").write_text(
+                "", encoding="utf-8"
+            )
             vendor_api = opp / "vendors/customize/op_api"
             (vendor_api / "include").mkdir(parents=True)
             (vendor_api / "lib").mkdir(parents=True)
             (vendor_api / "include/aclnn_add_custom.h").write_text("", encoding="utf-8")
-            (vendor_api / "include/aclnn_add_custom_tiling_sink.h").write_text("", encoding="utf-8")
+            (vendor_api / "include/aclnn_add_custom_tiling_sink.h").write_text(
+                "", encoding="utf-8"
+            )
             (vendor_api / "lib/libcust_opapi.so").write_text("", encoding="utf-8")
             vendor_framework = opp / "vendors/customize/framework/onnx"
             vendor_framework.mkdir(parents=True)
-            (vendor_framework / "libcust_onnx_parsers.so").write_text("", encoding="utf-8")
-            vendor_master = opp / "vendors/customize/op_impl/ai_core/tbe/op_master_device/lib"
+            (vendor_framework / "libcust_onnx_parsers.so").write_text(
+                "", encoding="utf-8"
+            )
+            vendor_master = (
+                opp / "vendors/customize/op_impl/ai_core/tbe/op_master_device/lib"
+            )
             vendor_master.mkdir(parents=True)
             (vendor_master / "libcust_opmaster.so").write_text("", encoding="utf-8")
 
@@ -603,11 +764,18 @@ RUN
 presmoke_ensure_custom_op_package
 """
 
-            result = subprocess.run(["bash", "-c", script], text=True, capture_output=True, check=False)
+            result = subprocess.run(
+                ["bash", "-c", script], text=True, capture_output=True, check=False
+            )
 
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("custom_op package already installed", result.stderr)
-            self.assertTrue((opp / "vendors/customize/op_impl/ai_core/tbe/customize_impl/dynamic/add_custom_tiling_sink.py").exists())
+            self.assertTrue(
+                (
+                    opp
+                    / "vendors/customize/op_impl/ai_core/tbe/customize_impl/dynamic/add_custom_tiling_sink.py"
+                ).exists()
+            )
             self.assertTrue((add_custom_dynamic / "add_custom_tiling.h").exists())
 
     def test_custom_op_package_install_does_not_pass_unused_cmake_arch(self) -> None:
@@ -616,7 +784,10 @@ presmoke_ensure_custom_op_package
 
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            custom_op = root / "examples/01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+            custom_op = (
+                root
+                / "examples/01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+            )
             custom_op.mkdir(parents=True)
             opp = root / "opp"
             log = root / "cmake_args.log"
@@ -659,7 +830,9 @@ RUN
 presmoke_ensure_custom_op_package
 """
 
-            result = subprocess.run(["bash", "-c", script], text=True, capture_output=True, check=False)
+            result = subprocess.run(
+                ["bash", "-c", script], text=True, capture_output=True, check=False
+            )
 
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("cmake ..", log.read_text(encoding="utf-8"))

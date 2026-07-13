@@ -13,13 +13,13 @@
 from tbe.dsl.unify_schedule.constants import Pattern
 
 
-class _op():
+class _op:
     def __init__(self):
         self.value = []
         self.idx = []
 
 
-class CubeClassifyFusion():
+class CubeClassifyFusion:
     def __init__(self, op_list, pattern, mode="cube"):
         self.op_list = op_list
         self.pattern = pattern
@@ -28,14 +28,20 @@ class CubeClassifyFusion():
         self.placeholder_op = _op()
         self.init()
 
-
     def init(self):
         cube_op_type = ""
         cube_input_name_vec = []
         for key, node in enumerate(self.op_list):
-            if node.get("pattern") in [Pattern.CONV2D, Pattern.CONV2D_BACKPROP_INPUT, Pattern.CONV2D_BACKPROP_FILTER, \
-                                       Pattern.MAT_MUL, Pattern.BATCH_MATMUL, Pattern.CONV3D, \
-                                       Pattern.CONV3D_BACKPROP_INPUT, Pattern.CONV3D_BACKPROP_FILTER]:
+            if node.get("pattern") in [
+                Pattern.CONV2D,
+                Pattern.CONV2D_BACKPROP_INPUT,
+                Pattern.CONV2D_BACKPROP_FILTER,
+                Pattern.MAT_MUL,
+                Pattern.BATCH_MATMUL,
+                Pattern.CONV3D,
+                Pattern.CONV3D_BACKPROP_INPUT,
+                Pattern.CONV3D_BACKPROP_FILTER,
+            ]:
                 for input_desc in node["input_desc"]:
                     cube_input_name_vec.append(input_desc["name"])
                 cube_op_type = node.get("type", "")

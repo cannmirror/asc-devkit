@@ -13,9 +13,27 @@
 dynamic apply_adam_v2
 """
 
+
 # 'pylint: disable=unused-argument,too-many-arguments,too-many-locals
-def apply_adam_v2(var, m, v, lr, beta1, beta2, epsilon, grad, max_grad_norm, global_grad_norm, weight_decay,
-                  step_size, var_out, m_out, v_out, adam_mode, kernel_name="ApplyAdamV2"):
+def apply_adam_v2(
+    var,
+    m,
+    v,
+    lr,
+    beta1,
+    beta2,
+    epsilon,
+    grad,
+    max_grad_norm,
+    global_grad_norm,
+    weight_decay,
+    step_size,
+    var_out,
+    m_out,
+    v_out,
+    adam_mode,
+    kernel_name="ApplyAdamV2",
+):
     """
     algorithm: assign positive bboxes
         default:

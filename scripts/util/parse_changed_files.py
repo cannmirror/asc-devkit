@@ -23,8 +23,8 @@ def get_file_action(path):
         "PKG"     - Trigger package build
         "COMPILE" - Normal compile
     """
-    skip_keywords = ['.md', 'OWNERS', 'LICENSE', 'classify_rule.yaml', 'docs']
-    pkg_keywords = ['examples']
+    skip_keywords = [".md", "OWNERS", "LICENSE", "classify_rule.yaml", "docs"]
+    pkg_keywords = ["examples"]
 
     for kw in skip_keywords:
         if kw in path:
@@ -50,14 +50,16 @@ def main():
 
     changed_files_arg = sys.argv[1]
     try:
-        if os.path.isfile(changed_files_arg) and changed_files_arg.endswith('.txt'):
-            with open(changed_files_arg, 'r') as f:
+        if os.path.isfile(changed_files_arg) and changed_files_arg.endswith(".txt"):
+            with open(changed_files_arg, "r") as f:
                 changed_files = [line.strip() for line in f.readlines() if line.strip()]
-        elif ',' in changed_files_arg:
-            changed_files = [f.strip() for f in changed_files_arg.split(',') if f.strip()]
+        elif "," in changed_files_arg:
+            changed_files = [
+                f.strip() for f in changed_files_arg.split(",") if f.strip()
+            ]
         else:
             changed_files = [changed_files_arg.strip()]
-    except BaseException as err:
+    except BaseException:
         return "COMPILE"
 
     if not changed_files:
@@ -77,5 +79,5 @@ def main():
     return "COMPILE"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.stdout.write(main())

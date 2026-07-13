@@ -16,15 +16,14 @@ To make it easy to manage operator registration information, TBE provides a set 
 
 
 class op_compute:
-
     """
     define a option.
     """
+
     def __init__(self, op_type):
         self.__op_type = op_type
 
     def get_func(self):
-
         def conv2d_compute(*args, **kwargs):
             tensor = Tensor()
             op = Op()
@@ -38,6 +37,7 @@ class op_compute:
 class Op:
     attrs = {}
 
+
 class Tensor:
     op = Op()
 
@@ -46,6 +46,7 @@ class op_operator:
     """
     define a option.
     """
+
     def __init__(self, op_type):
         self.__op_type = op_type
 
@@ -79,20 +80,20 @@ def get_operator(op_type):
 
     return op_operator(op_type)
 
+
 case_switch = 0
+
+
 def get_fusion_buildcfg():
     if case_switch == 0:
-        return {"Add":{
-            "read_write_bank_conflict": 1,
-            "InjectSync": {"sync_mode": 3}}}
+        return {"Add": {"read_write_bank_conflict": 1, "InjectSync": {"sync_mode": 3}}}
     elif case_switch == 1:
-        return {"Add":{
-            "read_write_bank_conflict": 1,
-            "InjectSync": {"sync_mode": 3}},
-            "Sub":{
-            "read_write_bank_conflict": 1,
-            "InjectSync": {"sync_mode": 2}}}
+        return {
+            "Add": {"read_write_bank_conflict": 1, "InjectSync": {"sync_mode": 3}},
+            "Sub": {"read_write_bank_conflict": 1, "InjectSync": {"sync_mode": 2}},
+        }
     return {}
+
 
 def get_all_fusion_pass():
     return []

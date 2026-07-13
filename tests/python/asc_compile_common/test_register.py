@@ -11,40 +11,45 @@
 # ----------------------------------------------------------------------------------------------------------
 import os
 import sys
-import shutil
 import unittest
-from unittest import mock
-from unittest.mock import patch
 import functools
 
 
 THIS_FILE_NAME = __file__
 FILE_PATH = os.path.dirname(os.path.realpath(THIS_FILE_NAME))
 TOP_PATH = os.path.join(FILE_PATH, "../../../")
-FRAMEWORK_PATH = os.path.join(
-    TOP_PATH, "tools/build/")
+FRAMEWORK_PATH = os.path.join(TOP_PATH, "tools/build/")
 sys.path.insert(0, FRAMEWORK_PATH)
 
-from asc_op_compile_base.common.register import OpCompute, register_operator, register_param_generalization, \
-    set_fusion_buildcfg, get_op_compute, get_operator, get_param_generalization, get_fusion_buildcfg
-from asc_op_compile_base.common.register.operation_func_mgr import _generalization, _op_computes
-from asc_op_compile_base.common.register.register_api import register_op_compute
+from asc_op_compile_base.common.register import (
+    OpCompute,
+    register_operator,
+    register_param_generalization,
+    set_fusion_buildcfg,
+    get_op_compute,
+    get_operator,
+    get_param_generalization,
+    get_fusion_buildcfg,
+)
+from asc_op_compile_base.common.register.operation_func_mgr import (
+    _generalization,
+    _op_computes,
+)
 
 
 class TestRegister(unittest.TestCase):
     def setUp(self):
         # operator before each testcase
-        print(f"-------------------SetUp----------------")
-
+        print("-------------------SetUp----------------")
 
     def tearDown(self):
         # operator after each testcase
-        print(f"-------------------TearDown-------------")
-
+        print("-------------------TearDown-------------")
 
     def test_operator(self):
         def custom_add_v2(*args, **kwargs):
             return "success"
+
         deco = register_operator("custom_add_v2", None, False)
         custom_add_v2_deco = deco(custom_add_v2)
         op = get_operator("custom_add_v2")
@@ -63,8 +68,9 @@ class TestRegister(unittest.TestCase):
         op_compute = get_op_compute("conv2d")
         self.assertIsNotNone(op_compute)
         self.assertTrue(op_compute.if_support_fusion())
-        self.assertEqual((op_compute.get_func())([1, 2, 3], [4, 5, 6]), "conv([1, 2, 3], [4, 5, 6])")
-
+        self.assertEqual(
+            (op_compute.get_func())([1, 2, 3], [4, 5, 6]), "conv([1, 2, 3], [4, 5, 6])"
+        )
 
     def test_fusion_buildcfg(self):
         # test set

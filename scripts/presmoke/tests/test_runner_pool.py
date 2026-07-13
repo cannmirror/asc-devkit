@@ -36,10 +36,14 @@ def cell(tmp: Path, name: str, mode: str = "npu", commands=None) -> Cell:
     return Cell(spec, "dav-2201", mode, commands or [], spec.path / f"build_{mode}")
 
 
-def source_cell(tmp: Path, source: str, name: str, mode: str = "npu", commands=None) -> Cell:
+def source_cell(
+    tmp: Path, source: str, name: str, mode: str = "npu", commands=None
+) -> Cell:
     source_path = tmp / source
     source_path.mkdir(parents=True, exist_ok=True)
-    spec = ExampleSpec(source_path, name, commands or [], ["dav-2201"], [mode], "case-runner")
+    spec = ExampleSpec(
+        source_path, name, commands or [], ["dav-2201"], [mode], "case-runner"
+    )
     return Cell(spec, "dav-2201", mode, commands or [], source_path / f"build_{mode}")
 
 
@@ -78,14 +82,19 @@ class RunnerPoolTest(unittest.TestCase):
             (lock_dir / "pid").write_text("999999999", encoding="utf-8")
 
             with presmoke_run_lock(root):
-                self.assertEqual((lock_dir / "pid").read_text(encoding="utf-8"), str(__import__("os").getpid()))
+                self.assertEqual(
+                    (lock_dir / "pid").read_text(encoding="utf-8"),
+                    str(__import__("os").getpid()),
+                )
 
             self.assertFalse(lock_dir.exists())
 
     def test_runner_timeout(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             c = cell(Path(tmp), "x", commands=[Command("sleep 2", "run")])
-            result = run_cell_with_options(c, RunOptions(Path(tmp) / "logs", timeout=1, keep_artifacts=True))
+            result = run_cell_with_options(
+                c, RunOptions(Path(tmp) / "logs", timeout=1, keep_artifacts=True)
+            )
         self.assertEqual(result.status, "FAIL")
         self.assertEqual(result.rc, 124)
 
@@ -100,7 +109,9 @@ class RunnerPoolTest(unittest.TestCase):
                     Command("sleep 1.2", "verify"),
                 ],
             )
-            result = run_cell_with_options(c, RunOptions(Path(tmp) / "logs", timeout=1, keep_artifacts=True))
+            result = run_cell_with_options(
+                c, RunOptions(Path(tmp) / "logs", timeout=1, keep_artifacts=True)
+            )
 
         self.assertEqual(result.status, "PASS")
         self.assertEqual([step.rc for step in result.steps], [0, 0, 0])
@@ -108,7 +119,9 @@ class RunnerPoolTest(unittest.TestCase):
     def test_cpu_run_stage_uses_timeout(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             c = cell(Path(tmp), "x", mode="cpu", commands=[Command("sleep 2", "run")])
-            result = run_cell_with_options(c, RunOptions(Path(tmp) / "logs", timeout=1, keep_artifacts=True))
+            result = run_cell_with_options(
+                c, RunOptions(Path(tmp) / "logs", timeout=1, keep_artifacts=True)
+            )
 
         self.assertEqual(result.status, "PASS")
         self.assertEqual(result.rc, 0)
@@ -116,7 +129,15 @@ class RunnerPoolTest(unittest.TestCase):
     def test_cpu_run_timeout_can_be_overridden(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             c = cell(Path(tmp), "x", mode="cpu", commands=[Command("sleep 2", "run")])
-            result = run_cell_with_options(c, RunOptions(Path(tmp) / "logs", timeout=1, cpu_run_timeout=1, keep_artifacts=True))
+            result = run_cell_with_options(
+                c,
+                RunOptions(
+                    Path(tmp) / "logs",
+                    timeout=1,
+                    cpu_run_timeout=1,
+                    keep_artifacts=True,
+                ),
+            )
 
         self.assertEqual(result.status, "FAIL")
         self.assertEqual(result.rc, 124)
@@ -130,6 +151,7 @@ class RunnerPoolTest(unittest.TestCase):
 
             def work(c):
                 nonlocal active, max_active
+
                 def gated() -> int:
                     nonlocal active, max_active
                     with lock:
@@ -165,7 +187,9 @@ class RunnerPoolTest(unittest.TestCase):
             )
             cells, suggestions, skipped = build_case_runner_cells_with_skips(
                 root,
-                CaseRunnerOptions(arch="dav-2201", modes=["npu"], includes=[], excludes=[]),
+                CaseRunnerOptions(
+                    arch="dav-2201", modes=["npu"], includes=[], excludes=[]
+                ),
             )
         self.assertEqual(cells, [])
         self.assertEqual(len(skipped), 1)
@@ -187,7 +211,9 @@ class RunnerPoolTest(unittest.TestCase):
             )
             cells, suggestions, skipped = build_case_runner_cells_with_skips(
                 root,
-                CaseRunnerOptions(arch="dav-2201", modes=["npu"], includes=[], excludes=[]),
+                CaseRunnerOptions(
+                    arch="dav-2201", modes=["npu"], includes=[], excludes=[]
+                ),
             )
         self.assertEqual(cells, [])
         self.assertEqual(skipped, [])
@@ -249,7 +275,9 @@ class RunnerPoolTest(unittest.TestCase):
 
             cells, _, _ = build_case_runner_cells_with_skips(
                 root,
-                CaseRunnerOptions(arch="dav-2201", modes=["npu"], includes=[], excludes=[]),
+                CaseRunnerOptions(
+                    arch="dav-2201", modes=["npu"], includes=[], excludes=[]
+                ),
             )
 
         self.assertEqual(cells[0].example.rel_path, case)
@@ -270,10 +298,15 @@ class RunnerPoolTest(unittest.TestCase):
 
             cells, _, _ = build_case_runner_cells_with_skips(
                 root,
-                CaseRunnerOptions(arch="dav-2201", modes=["npu"], includes=[], excludes=[]),
+                CaseRunnerOptions(
+                    arch="dav-2201", modes=["npu"], includes=[], excludes=[]
+                ),
             )
 
-        self.assertEqual([command.kind for command in cells[0].commands], ["clean", "build", "run", "verify"])
+        self.assertEqual(
+            [command.kind for command in cells[0].commands],
+            ["clean", "build", "run", "verify"],
+        )
         self.assertTrue(cells[0].commands[0].raw.endswith("run.sh clean"))
 
     def test_single_worker_run_removes_stale_build_dir_before_commands(self) -> None:
@@ -289,24 +322,33 @@ class RunnerPoolTest(unittest.TestCase):
             c.build_dir.mkdir()
             (c.build_dir / "stale").write_text("old", encoding="utf-8")
 
-            result = run_cell_with_options(c, RunOptions(Path(tmp) / "logs", timeout=1, keep_artifacts=True))
+            result = run_cell_with_options(
+                c, RunOptions(Path(tmp) / "logs", timeout=1, keep_artifacts=True)
+            )
 
         self.assertEqual(result.status, "PASS")
 
-    def test_custom_op_provider_build_dir_is_preserved_for_dependent_cases(self) -> None:
+    def test_custom_op_provider_build_dir_is_preserved_for_dependent_cases(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             c = cell(
                 root,
                 "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op",
                 commands=[
-                    Command("mkdir -p build_npu && touch build_npu/custom_opp_test.run", "build"),
+                    Command(
+                        "mkdir -p build_npu && touch build_npu/custom_opp_test.run",
+                        "build",
+                    ),
                     Command(":", "run"),
                     Command(":", "verify"),
                 ],
             )
 
-            result = run_cell_with_options(c, RunOptions(root / "logs", timeout=1, keep_artifacts=False))
+            result = run_cell_with_options(
+                c, RunOptions(root / "logs", timeout=1, keep_artifacts=False)
+            )
 
             self.assertEqual(result.status, "PASS")
             self.assertTrue((c.build_dir / "custom_opp_test.run").exists())
@@ -322,7 +364,10 @@ class RunnerPoolTest(unittest.TestCase):
                     "slow-run",
                     commands=[
                         Command(":", "build"),
-                        Command(f"while [ ! -f {marker_dir / 'third_build_started'} ]; do sleep 0.02; done", "run"),
+                        Command(
+                            f"while [ ! -f {marker_dir / 'third_build_started'} ]; do sleep 0.02; done",
+                            "run",
+                        ),
                         Command(":", "verify"),
                     ],
                 ),
@@ -345,7 +390,16 @@ class RunnerPoolTest(unittest.TestCase):
                     ],
                 ),
             ]
-            run = run_cells_pipeline_with_options(cells, PipelineOptions(Path(tmp) / "logs", timeout=2, keep_artifacts=True, jobs=2, npu_slots=1))
+            run = run_cells_pipeline_with_options(
+                cells,
+                PipelineOptions(
+                    Path(tmp) / "logs",
+                    timeout=2,
+                    keep_artifacts=True,
+                    jobs=2,
+                    npu_slots=1,
+                ),
+            )
             results = run.results
 
         by_name = {result.example: result for result in results}
@@ -366,19 +420,29 @@ class RunnerPoolTest(unittest.TestCase):
                     root,
                     "shared-source",
                     "shared-source__scenario_1",
-                    commands=[Command(guarded_build, "build"), Command(":", "run"), Command(":", "verify")],
+                    commands=[
+                        Command(guarded_build, "build"),
+                        Command(":", "run"),
+                        Command(":", "verify"),
+                    ],
                 ),
                 source_cell(
                     root,
                     "shared-source",
                     "shared-source__scenario_2",
-                    commands=[Command(guarded_build, "build"), Command(":", "run"), Command(":", "verify")],
+                    commands=[
+                        Command(guarded_build, "build"),
+                        Command(":", "run"),
+                        Command(":", "verify"),
+                    ],
                 ),
             ]
 
             run = run_cells_pipeline_with_options(
                 cells,
-                PipelineOptions(root / "logs", timeout=1, keep_artifacts=True, jobs=2, npu_slots=1),
+                PipelineOptions(
+                    root / "logs", timeout=1, keep_artifacts=True, jobs=2, npu_slots=1
+                ),
             )
 
         self.assertEqual([result.status for result in run.results], ["PASS", "PASS"])
@@ -394,7 +458,9 @@ class RunnerPoolTest(unittest.TestCase):
                     commands=[
                         Command(":", "build"),
                         Command("sleep 0.01", "run"),
-                        Command(f"while [ ! -f {marker} ]; do sleep 0.02; done", "verify"),
+                        Command(
+                            f"while [ ! -f {marker} ]; do sleep 0.02; done", "verify"
+                        ),
                     ],
                 ),
                 cell(
@@ -408,7 +474,16 @@ class RunnerPoolTest(unittest.TestCase):
                 ),
             ]
 
-            run = run_cells_pipeline_with_options(cells, PipelineOptions(Path(tmp) / "logs", timeout=1, keep_artifacts=True, jobs=2, npu_slots=1))
+            run = run_cells_pipeline_with_options(
+                cells,
+                PipelineOptions(
+                    Path(tmp) / "logs",
+                    timeout=1,
+                    keep_artifacts=True,
+                    jobs=2,
+                    npu_slots=1,
+                ),
+            )
             results = run.results
 
         by_name = {result.example: result for result in results}
@@ -445,7 +520,16 @@ class RunnerPoolTest(unittest.TestCase):
                 ),
             ]
 
-            run = run_cells_pipeline_with_options(cells, PipelineOptions(Path(tmp) / "logs", timeout=1, keep_artifacts=True, jobs=2, npu_slots=1))
+            run = run_cells_pipeline_with_options(
+                cells,
+                PipelineOptions(
+                    Path(tmp) / "logs",
+                    timeout=1,
+                    keep_artifacts=True,
+                    jobs=2,
+                    npu_slots=1,
+                ),
+            )
             results = run.results
 
         by_name = {result.example: result for result in results}
@@ -467,7 +551,16 @@ class RunnerPoolTest(unittest.TestCase):
                 )
             ]
 
-            run = run_cells_pipeline_with_options(cells, PipelineOptions(Path(tmp) / "logs", timeout=1, keep_artifacts=True, jobs=2, npu_slots=1))
+            run = run_cells_pipeline_with_options(
+                cells,
+                PipelineOptions(
+                    Path(tmp) / "logs",
+                    timeout=1,
+                    keep_artifacts=True,
+                    jobs=2,
+                    npu_slots=1,
+                ),
+            )
 
         self.assertEqual(run.npu_stats.slots, 1)
         self.assertEqual(run.npu_stats.queue_model, "pipeline")
@@ -489,8 +582,15 @@ class RunnerPoolTest(unittest.TestCase):
                     ],
                 )
             ]
-            run = run_cells_pipeline_with_options(cells, PipelineOptions(root / "logs", timeout=1, keep_artifacts=True, jobs=2, npu_slots=1))
-            report = RunReport("dav-2201", ["npu"], "start", "finish", run.results, [], run.npu_stats)
+            run = run_cells_pipeline_with_options(
+                cells,
+                PipelineOptions(
+                    root / "logs", timeout=1, keep_artifacts=True, jobs=2, npu_slots=1
+                ),
+            )
+            report = RunReport(
+                "dav-2201", ["npu"], "start", "finish", run.results, [], run.npu_stats
+            )
             json_path = root / "report.json"
             md_path = root / "report.md"
 
@@ -521,8 +621,15 @@ class RunnerPoolTest(unittest.TestCase):
                     ],
                 )
             ]
-            run = run_cells_pipeline_with_options(cells, PipelineOptions(root / "logs", timeout=1, keep_artifacts=True, jobs=2, npu_slots=1))
-            report = RunReport("dav-2201", ["cpu"], "start", "finish", run.results, [], run.npu_stats)
+            run = run_cells_pipeline_with_options(
+                cells,
+                PipelineOptions(
+                    root / "logs", timeout=1, keep_artifacts=True, jobs=2, npu_slots=1
+                ),
+            )
+            report = RunReport(
+                "dav-2201", ["cpu"], "start", "finish", run.results, [], run.npu_stats
+            )
             md_path = root / "report.md"
 
             write_markdown(report, md_path)
@@ -545,7 +652,12 @@ class RunnerPoolTest(unittest.TestCase):
                 ],
             )
 
-            run = run_cells_pipeline_with_options([c], PipelineOptions(root / "logs", timeout=1, keep_artifacts=True, jobs=2, npu_slots=1))
+            run = run_cells_pipeline_with_options(
+                [c],
+                PipelineOptions(
+                    root / "logs", timeout=1, keep_artifacts=True, jobs=2, npu_slots=1
+                ),
+            )
             result = run.results[0]
 
             build_log = root / "logs/stages/stage-log-case__npu__build.log"
@@ -553,7 +665,10 @@ class RunnerPoolTest(unittest.TestCase):
             verify_log = root / "logs/stages/stage-log-case__npu__verify.log"
 
             self.assertEqual(result.status, "PASS")
-            self.assertEqual(set(result.stage_log_files), {str(build_log), str(run_log), str(verify_log)})
+            self.assertEqual(
+                set(result.stage_log_files),
+                {str(build_log), str(run_log), str(verify_log)},
+            )
             self.assertIn("build-stage", build_log.read_text(encoding="utf-8"))
             self.assertIn("run-stage", run_log.read_text(encoding="utf-8"))
             self.assertIn("verify-stage", verify_log.read_text(encoding="utf-8"))

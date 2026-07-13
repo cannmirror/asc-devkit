@@ -16,7 +16,7 @@ from __future__ import annotations
 import re
 import shlex
 from pathlib import Path
-from typing import Dict, Iterable, List, Sequence, Tuple
+from typing import Dict, List, Sequence, Tuple
 
 from .model import Command, ExampleSpec, Suggestion
 
@@ -29,14 +29,26 @@ def parse_readme(example_dir: Path, examples_root: Path) -> ExampleSpec:
     rel_path = example_dir.relative_to(examples_root).as_posix()
     suggestions: List[Suggestion] = []
     text = read_readme_text(example_dir, rel_path, suggestions)
-    commands, command_block, source = readme_commands(example_dir, rel_path, text, suggestions)
+    commands, command_block, source = readme_commands(
+        example_dir, rel_path, text, suggestions
+    )
     archs = infer_archs(text, command_block, example_dir, rel_path, suggestions)
     modes = parse_modes(text, command_block) or ["npu"]
     _static_suggestions(example_dir, rel_path, commands, suggestions)
-    return ExampleSpec(example_dir, rel_path, commands, sorted(set(archs)), sorted(set(modes)), source, suggestions)
+    return ExampleSpec(
+        example_dir,
+        rel_path,
+        commands,
+        sorted(set(archs)),
+        sorted(set(modes)),
+        source,
+        suggestions,
+    )
 
 
-def read_readme_text(example_dir: Path, rel_path: str, suggestions: List[Suggestion]) -> str:
+def read_readme_text(
+    example_dir: Path, rel_path: str, suggestions: List[Suggestion]
+) -> str:
     readme = example_dir / "README.md"
     if readme.exists():
         return readme.read_text(encoding="utf-8", errors="ignore")
@@ -61,7 +73,13 @@ def readme_commands(
     run_section = _section(text, "编译运行") or _section(text, "运行方式")
     if not run_section:
         suggestions.append(
-            _suggest(rel_path, "structure", "warn", "README has no 编译运行 section", "Add a runnable 编译运行 section.")
+            _suggest(
+                rel_path,
+                "structure",
+                "warn",
+                "README has no 编译运行 section",
+                "Add a runnable 编译运行 section.",
+            )
         )
     command_block, source = _pick_command_block(run_section)
     if command_block:
@@ -100,8 +118,16 @@ def infer_archs(
     return ["dav-2201"]
 
 
-def _suggest(example: str, category: str, severity: str, message: str, hint: str = "") -> Suggestion:
-    return Suggestion(example=example, category=category, severity=severity, message=message, hint=hint)
+def _suggest(
+    example: str, category: str, severity: str, message: str, hint: str = ""
+) -> Suggestion:
+    return Suggestion(
+        example=example,
+        category=category,
+        severity=severity,
+        message=message,
+        hint=hint,
+    )
 
 
 def _section(text: str, title: str) -> str:
@@ -189,7 +215,11 @@ def _is_runnable_block(block: str) -> bool:
     text = block.strip()
     if not text:
         return False
-    if "set_env.sh" in text or text.startswith("pip3 install") or text.startswith("pip install"):
+    if (
+        "set_env.sh" in text
+        or text.startswith("pip3 install")
+        or text.startswith("pip install")
+    ):
         return False
     return bool(re.search(r"\b(cmake|make|python3|./|msprof)\b", text))
 
@@ -208,7 +238,9 @@ def split_commands(block: str) -> List[Command]:
             assignments, rest = _consume_assignments(part)
             env.update(assignments)
             if rest:
-                commands.append(Command(raw=rest, kind=classify_command(rest), env=dict(env)))
+                commands.append(
+                    Command(raw=rest, kind=classify_command(rest), env=dict(env))
+                )
     return commands
 
 
@@ -264,7 +296,7 @@ def _split_shell_line(line: str) -> List[str]:
             current = []
             i += 1
             continue
-        if not in_single and not in_double and line[i:i + 2] == "&&":
+        if not in_single and not in_double and line[i : i + 2] == "&&":
             out.append("".join(current))
             current = []
             i += 2
@@ -362,7 +394,9 @@ def parse_modes(text: str, command_block: str) -> List[str]:
     return sorted(found)
 
 
-def _values_from_option_rows(text: str, option_name: str, pattern: re.Pattern[str]) -> List[str]:
+def _values_from_option_rows(
+    text: str, option_name: str, pattern: re.Pattern[str]
+) -> List[str]:
     values: List[str] = []
     for line in text.splitlines():
         cleaned = _clean_markdown_cell(line)
@@ -378,19 +412,29 @@ def _clean_markdown_cell(text: str) -> str:
 def convention_commands(example_dir: Path) -> List[Command]:
     commands: List[Command] = []
     if (example_dir / "CMakeLists.txt").exists():
-        commands.extend([
-            Command("cmake ..", "cmake"),
-            Command("make -j", "make"),
-        ])
+        commands.extend(
+            [
+                Command("cmake ..", "cmake"),
+                Command("make -j", "make"),
+            ]
+        )
     scripts = example_dir / "scripts"
     if (scripts / "gen_data.py").exists():
         commands.append(Command("python3 ../scripts/gen_data.py", "gen_data"))
     if any(example_dir.glob("*_test.py")):
-        commands.extend(Command(f"python3 ../{p.name}", "run") for p in sorted(example_dir.glob("*_test.py"))[:1])
+        commands.extend(
+            Command(f"python3 ../{p.name}", "run")
+            for p in sorted(example_dir.glob("*_test.py"))[:1]
+        )
     elif (example_dir / "CMakeLists.txt").exists():
         commands.append(Command("./demo", "run"))
     if (scripts / "verify_result.py").exists():
-        commands.append(Command("python3 ../scripts/verify_result.py output/output.bin output/golden.bin", "verify"))
+        commands.append(
+            Command(
+                "python3 ../scripts/verify_result.py output/output.bin output/golden.bin",
+                "verify",
+            )
+        )
     return commands
 
 
@@ -411,7 +455,10 @@ def _static_suggestions(
             )
         )
     for command in commands:
-        if "gen_data.py" in command.raw and not (example_dir / "scripts" / "gen_data.py").exists():
+        if (
+            "gen_data.py" in command.raw
+            and not (example_dir / "scripts" / "gen_data.py").exists()
+        ):
             suggestions.append(
                 _suggest(
                     rel_path,
@@ -421,7 +468,10 @@ def _static_suggestions(
                     "Fix README command or add scripts/gen_data.py.",
                 )
             )
-        if "verify_result.py" in command.raw and not (example_dir / "scripts" / "verify_result.py").exists():
+        if (
+            "verify_result.py" in command.raw
+            and not (example_dir / "scripts" / "verify_result.py").exists()
+        ):
             suggestions.append(
                 _suggest(
                     rel_path,

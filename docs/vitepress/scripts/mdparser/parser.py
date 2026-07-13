@@ -60,67 +60,67 @@ _CANN_OPEN_RE = re.compile(
 )
 
 _CANN_CLOSE_RE = re.compile(
-    r'</cann-filter\b[^>]*>',
+    r"</cann-filter\b[^>]*>",
     re.IGNORECASE,
 )
 
-_OTHER_TAG_NAMES = r'term|ph|__gm__|__ubuf__'
+_OTHER_TAG_NAMES = r"term|ph|__gm__|__ubuf__"
 
 _OTHER_TAG_LINE_RE = re.compile(
-    r'^[ \t]*</?(' + _OTHER_TAG_NAMES + r')\b[^>]*>[ \t]*$',
+    r"^[ \t]*</?(" + _OTHER_TAG_NAMES + r")\b[^>]*>[ \t]*$",
     re.IGNORECASE,
 )
 
 _OTHER_TAG_WRAP_RE = re.compile(
-    r'<(' + _OTHER_TAG_NAMES + r')\b[^>]*>([\s\S]*?)</\1>',
+    r"<(" + _OTHER_TAG_NAMES + r")\b[^>]*>([\s\S]*?)</\1>",
     re.IGNORECASE,
 )
 
 _OTHER_TAG_ANY_RE = re.compile(
-    r'</?(' + _OTHER_TAG_NAMES + r')\b[^>]*>',
+    r"</?(" + _OTHER_TAG_NAMES + r")\b[^>]*>",
     re.IGNORECASE,
 )
 
 
-_FENCE_OPEN_RE = re.compile(r'^[ \t]{0,3}(`{3,}|~{3,})', re.MULTILINE)
+_FENCE_OPEN_RE = re.compile(r"^[ \t]{0,3}(`{3,}|~{3,})", re.MULTILINE)
 
-_INLINE_CODE_SPAN_RE = re.compile(r'`+[^\n]*?`+')
+_INLINE_CODE_SPAN_RE = re.compile(r"`+[^\n]*?`+")
 
-_LONE_TILDE_RE = re.compile(r'(?<!\\)(?<!~)~(?!~)')
+_LONE_TILDE_RE = re.compile(r"(?<!\\)(?<!~)~(?!~)")
 
 
 def _escape_lone_tildes_in_line(line: str) -> str:
     result = []
     last_end = 0
     for m in _INLINE_CODE_SPAN_RE.finditer(line):
-        before = line[last_end:m.start()]
-        result.append(_LONE_TILDE_RE.sub(r'\\~', before))
+        before = line[last_end : m.start()]
+        result.append(_LONE_TILDE_RE.sub(r"\\~", before))
         result.append(m.group())
         last_end = m.end()
     remaining = line[last_end:]
-    result.append(_LONE_TILDE_RE.sub(r'\\~', remaining))
-    return ''.join(result)
+    result.append(_LONE_TILDE_RE.sub(r"\\~", remaining))
+    return "".join(result)
 
 
 def _escape_lone_tildes(md_text: str) -> str:
-    lines = md_text.split('\n')
+    lines = md_text.split("\n")
     result = []
     in_fence = False
     fence_char = None
 
     for line in lines:
-        stripped = line.lstrip(' \t')
+        stripped = line.lstrip(" \t")
 
         if in_fence:
             result.append(line)
             if fence_char and re.match(
-                rf'^{re.escape(fence_char)}{{3,}}[ \t]*$', stripped
+                rf"^{re.escape(fence_char)}{{3,}}[ \t]*$", stripped
             ):
                 in_fence = False
                 fence_char = None
             continue
 
-        fence_match = re.match(r'^(`{3,}|~{3,})', stripped)
+        fence_match = re.match(r"^(`{3,}|~{3,})", stripped)
         if fence_match:
             in_fence = True
             fence_char = fence_match.group(1)[0]
@@ -129,41 +129,41 @@ def _escape_lone_tildes(md_text: str) -> str:
 
         result.append(_escape_lone_tildes_in_line(line))
 
-    return '\n'.join(result)
+    return "\n".join(result)
 
 
-_MATH_BLOCK_RE = re.compile(r'(?<!\\)\$\$[\s\S]*?(?<!\\)\$\$')
+_MATH_BLOCK_RE = re.compile(r"(?<!\\)\$\$[\s\S]*?(?<!\\)\$\$")
 
-_MATH_INLINE_RE = re.compile(r'(?<!\\)(?<!\$)\$(?!\$)[^\n$]+?(?<!\\)\$(?!\$)')
+_MATH_INLINE_RE = re.compile(r"(?<!\\)(?<!\$)\$(?!\$)[^\n$]+?(?<!\\)\$(?!\$)")
 
-_MATH_PLACEHOLDER_FMT = '@@MATH{n}@@'
+_MATH_PLACEHOLDER_FMT = "@@MATH{n}@@"
 
 
 def _split_by_fences(md_text: str):
-    lines = md_text.split('\n')
+    lines = md_text.split("\n")
     segments = []
     current = []
     is_code = False
     fence_char = None
 
     for line in lines:
-        stripped = line.lstrip(' \t')
+        stripped = line.lstrip(" \t")
 
         if is_code:
             current.append(line)
             if fence_char and re.match(
-                rf'^{re.escape(fence_char)}{{3,}}[ \t]*$', stripped
+                rf"^{re.escape(fence_char)}{{3,}}[ \t]*$", stripped
             ):
                 is_code = False
                 fence_char = None
-                segments.append((True, '\n'.join(current)))
+                segments.append((True, "\n".join(current)))
                 current = []
             continue
 
-        fence_match = re.match(r'^(`{3,}|~{3,})', stripped)
+        fence_match = re.match(r"^(`{3,}|~{3,})", stripped)
         if fence_match:
             if current:
-                segments.append((False, '\n'.join(current)))
+                segments.append((False, "\n".join(current)))
                 current = []
             is_code = True
             fence_char = fence_match.group(1)[0]
@@ -173,7 +173,7 @@ def _split_by_fences(md_text: str):
         current.append(line)
 
     if current:
-        segments.append((is_code, '\n'.join(current)))
+        segments.append((is_code, "\n".join(current)))
 
     return segments
 
@@ -183,7 +183,7 @@ def _make_code_stasher():
 
     def _stash(m):
         spans.append(m.group(0))
-        return f'\x00CODE{len(spans) - 1}\x00'
+        return f"\x00CODE{len(spans) - 1}\x00"
 
     return _stash, spans
 
@@ -213,17 +213,17 @@ def _extract_math_blocks(md_text: str) -> tuple:
         text = _MATH_INLINE_RE.sub(stash_math, text)
 
         for i, code in enumerate(code_spans):
-            text = text.replace(f'\x00CODE{i}\x00', code)
+            text = text.replace(f"\x00CODE{i}\x00", code)
 
         result.append(text)
 
-    return '\n'.join(result), blocks
+    return "\n".join(result), blocks
 
 
 def _restore_math_blocks(html: str, blocks: list) -> str:
     for i, block in enumerate(blocks):
         placeholder = _MATH_PLACEHOLDER_FMT.format(n=i)
-        encoded = block.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+        encoded = block.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
         html = html.replace(placeholder, encoded)
     return html
 
@@ -235,8 +235,8 @@ def _convert_cann_filter(md_text: str) -> str:
     若跨表格单元格/列表项边界则产生非法 HTML 结构。转为注释后 cmarkgfm
     透传为无害注释，不破坏结构。后续由 config.mjs 将注释还原为 div[data-filter]。
     """
-    md_text = _CANN_OPEN_RE.sub(r'<!--cann-filter:\1-->', md_text)
-    md_text = _CANN_CLOSE_RE.sub(r'<!--/cann-filter-->', md_text)
+    md_text = _CANN_OPEN_RE.sub(r"<!--cann-filter:\1-->", md_text)
+    md_text = _CANN_CLOSE_RE.sub(r"<!--/cann-filter-->", md_text)
     return md_text
 
 
@@ -245,16 +245,17 @@ def _strip_other_tags(md_text: str) -> str:
 
     这些标签同样会被 cmarkgfm 视为 raw HTML block，破坏 markdown 结构。
     """
-    lines = md_text.split('\n')
+    lines = md_text.split("\n")
     result = []
     for line in lines:
         if _OTHER_TAG_LINE_RE.match(line):
             continue
         result.append(line)
-    md_text = '\n'.join(result)
-    md_text = _OTHER_TAG_WRAP_RE.sub(r'\2', md_text)
-    md_text = _OTHER_TAG_ANY_RE.sub('', md_text)
+    md_text = "\n".join(result)
+    md_text = _OTHER_TAG_WRAP_RE.sub(r"\2", md_text)
+    md_text = _OTHER_TAG_ANY_RE.sub("", md_text)
     return md_text
+
 
 _CALLOUT_RE = re.compile(
     r"<blockquote>\s*\n<p>\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\](.*?)</p>\s*\n(.*?)</blockquote>",
@@ -552,7 +553,7 @@ def _highlight_code(html: str) -> str:
         lang = m.group(1)
         code = m.group(2)
         text = html_mod.unescape(code)
-        text = re.sub(r'<br\s*/?>', '\n', text)
+        text = re.sub(r"<br\s*/?>", "\n", text)
         if not lang:
             lang = "text"
         label = _PYGMENTS_LANG_LABELS.get(lang.lower(), lang.capitalize())

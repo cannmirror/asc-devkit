@@ -24,5 +24,6 @@ class get_buffer_manager:
     def set_tensor_index(self, tensor_list_index):
         return tensor_list_index
 
+
 class RemappedBuffer:
     pass

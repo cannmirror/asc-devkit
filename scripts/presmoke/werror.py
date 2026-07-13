@@ -17,9 +17,7 @@ import os
 from typing import Mapping
 
 
-WERROR_CMAKE_ARGS = (
-    "-DCMAKE_ASC_FLAGS=-Werror",
-)
+WERROR_CMAKE_ARGS = ("-DCMAKE_ASC_FLAGS=-Werror",)
 
 
 def truthy(value: str | None) -> bool:

@@ -9,13 +9,7 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
-import os
-import stat
-import ctypes
 import collections
-import shutil
-import subprocess
-import copy
 
 """CODE_* is used to cube/vector api is called in operator code
 CODE_MIX means both cube and vector api is called
@@ -38,8 +32,17 @@ def _is_v220(op_product: str):
     return False
 
 
-InfoCodeChannelParams = collections.namedtuple('InfoCodeChannelParams', \
-['src_file', 'tiling_header', 'kernel_name', 'outdir', 'op_product', 'compile_options'])
+InfoCodeChannelParams = collections.namedtuple(
+    "InfoCodeChannelParams",
+    [
+        "src_file",
+        "tiling_header",
+        "kernel_name",
+        "outdir",
+        "op_product",
+        "compile_options",
+    ],
+)
 
 
 def infer_code_channel(params: InfoCodeChannelParams):

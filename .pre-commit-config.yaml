@@ -36,6 +36,42 @@ repos:
           - "--verbose"
           - "-i"
 
+  # Python 代码检查
+  - repo: https://gitcode.com/gh_mirrors/ru/ruff-pre-commit
+    rev: v0.14.14
+    hooks:
+      - id: ruff-check
+        # 临时忽略存量问题，按目录治理后逐项移除。
+        args:
+          - "--output-format"
+          - "github"
+          - "--fix"
+          - "--extend-ignore"
+          - "E402,E711,E712,E721,F401,F403,F405,F811,F821,F841"
+        types: [python]
+        files: ^(cmake|docs|impl|scripts|tests)/
+        exclude: &ruff_exclude |
+          (?x)^(
+            \.agent/|
+            cmake/asc/legacy_modules/util/extract_host_stub\.py|
+            tests/python/aclrt_launch_kernel/test_aclrt_launch_kernel\.py|
+            tests/python/adapter/test_ascendc_super_kernel\.py|
+            tests/python/adapter/test_compile_op\.py|
+            tests/python/adapter/test_get_op_tiling\.py|
+            tests/python/asc_op_compiler/test_ascendc_super_kernel\.py|
+            tests/python/asc_op_compiler/test_compile_op\.py|
+            tests/python/asc_op_compiler/test_get_op_tiling\.py|
+            tests/python/asc_opc/stub/files/conv_compute\.py|
+            tests/python/asc_opc/stub/files/gather_v2\.py|
+            tests/python/asc_opc/stub/files/ge_ir_pb2\.py|
+            tools/build/asc_op_compile_base/adapter/compile_op\.py|
+            tools/build/asc_op_compile_base/asc_op_compiler/compile_op\.py
+          )$
+      - id: ruff-format
+        types: [python]
+        files: ^(cmake|docs|impl|scripts|tests)/
+        exclude: *ruff_exclude
+
   # OAT 合规性检查 (Open Source Audit Tool)
   - repo: local
     hooks:

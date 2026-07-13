@@ -40,7 +40,9 @@ from presmoke.scheduler import (
 
 
 def cell(tmp: Path, name: str) -> Cell:
-    spec = ExampleSpec(tmp / name, name, [Command(":", "build")], ["dav-2201"], ["npu"], "test")
+    spec = ExampleSpec(
+        tmp / name, name, [Command(":", "build")], ["dav-2201"], ["npu"], "test"
+    )
     spec.path.mkdir(parents=True, exist_ok=True)
     return Cell(spec, "dav-2201", "npu", spec.commands, spec.path / "build_npu")
 
@@ -76,11 +78,18 @@ class SchedulerTest(unittest.TestCase):
         self.assertEqual([item.example.rel_path for item in scheduled], ["a", "b", "c"])
 
     def test_custom_op_static_lib_is_always_before_custom_op(self) -> None:
-        custom_op = "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+        custom_op = (
+            "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+        )
         static_lib = "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op_static_lib"
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            cells = [cell(root, "a"), cell(root, custom_op), cell(root, "b"), cell(root, static_lib)]
+            cells = [
+                cell(root, "a"),
+                cell(root, custom_op),
+                cell(root, "b"),
+                cell(root, static_lib),
+            ]
 
             scheduled = schedule_cells(cells)
 
@@ -100,7 +109,9 @@ class SchedulerTest(unittest.TestCase):
         self.assertLess(names.index(static_lib), names.index(parallel_ops))
 
     def test_required_order_survives_build_desc_schedule(self) -> None:
-        custom_op = "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+        custom_op = (
+            "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+        )
         static_lib = "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op_static_lib"
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -109,8 +120,14 @@ class SchedulerTest(unittest.TestCase):
                 json.dumps(
                     {
                         "results": [
-                            {"example": custom_op, "steps": [{"kind": "build", "duration_s": 100}]},
-                            {"example": static_lib, "steps": [{"kind": "build", "duration_s": 1}]},
+                            {
+                                "example": custom_op,
+                                "steps": [{"kind": "build", "duration_s": 100}],
+                            },
+                            {
+                                "example": static_lib,
+                                "steps": [{"kind": "build", "duration_s": 1}],
+                            },
                         ]
                     }
                 ),
@@ -118,13 +135,17 @@ class SchedulerTest(unittest.TestCase):
             )
             cells = [cell(root, custom_op), cell(root, "a"), cell(root, static_lib)]
 
-            scheduled = schedule_cells(cells, ScheduleOptions(schedule="build-desc", schedule_report=report))
+            scheduled = schedule_cells(
+                cells, ScheduleOptions(schedule="build-desc", schedule_report=report)
+            )
 
         names = [item.example.rel_path for item in scheduled]
         self.assertLess(names.index(static_lib), names.index(custom_op))
 
     def test_custom_op_dependents_are_always_after_custom_op(self) -> None:
-        custom_op = "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+        custom_op = (
+            "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+        )
         dependents = [
             "01_simd_cpp_api/02_features/99_acl_based/01_acl_invocation/aclnn_invocation",
             "01_simd_cpp_api/02_features/99_acl_based/01_acl_invocation/aclop_invocation",
@@ -153,7 +174,9 @@ class SchedulerTest(unittest.TestCase):
             self.assertLess(names.index(custom_op), names.index(dependent))
 
     def test_npu_idle_min_preserves_custom_op_required_order(self) -> None:
-        custom_op = "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+        custom_op = (
+            "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+        )
         static_lib = "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op_static_lib"
         dependent = "01_simd_cpp_api/02_features/00_framework/02_onnx/onnx_plugin"
         with tempfile.TemporaryDirectory() as tmp:
@@ -167,18 +190,33 @@ class SchedulerTest(unittest.TestCase):
                     static_lib: (100, 1),
                 },
             )
-            cells = [cell(root, dependent), cell(root, custom_op), cell(root, static_lib)]
+            cells = [
+                cell(root, dependent),
+                cell(root, custom_op),
+                cell(root, static_lib),
+            ]
 
-            scheduled = schedule_cells(cells, ScheduleOptions(schedule="npu-idle-min", schedule_report=report, jobs=2))
+            scheduled = schedule_cells(
+                cells,
+                ScheduleOptions(
+                    schedule="npu-idle-min", schedule_report=report, jobs=2
+                ),
+            )
 
         names = [item.example.rel_path for item in scheduled]
         self.assertLess(names.index(static_lib), names.index(custom_op))
         self.assertLess(names.index(custom_op), names.index(dependent))
 
-    def test_npu_idle_min_delays_custom_op_dependents_until_custom_op_build_ready(self) -> None:
-        custom_op = "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+    def test_npu_idle_min_delays_custom_op_dependents_until_custom_op_build_ready(
+        self,
+    ) -> None:
+        custom_op = (
+            "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+        )
         static_lib = "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op_static_lib"
-        dependent = "04_aicpu/02_features/00_framework/00_pytorch/tiling_sink_programming"
+        dependent = (
+            "04_aicpu/02_features/00_framework/00_pytorch/tiling_sink_programming"
+        )
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             report = root / "report.json"
@@ -206,9 +244,16 @@ class SchedulerTest(unittest.TestCase):
                 cell(root, "short-e"),
             ]
 
-            scheduled = schedule_cells(cells, ScheduleOptions(schedule="npu-idle-min", schedule_report=report, jobs=4))
+            scheduled = schedule_cells(
+                cells,
+                ScheduleOptions(
+                    schedule="npu-idle-min", schedule_report=report, jobs=4
+                ),
+            )
 
-        self.assertEqual(custom_op_dependency_violation_s(scheduled, report, jobs=4), 0.0)
+        self.assertEqual(
+            custom_op_dependency_violation_s(scheduled, report, jobs=4), 0.0
+        )
 
     def test_build_desc_schedule_uses_historical_build_duration(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -225,7 +270,10 @@ class SchedulerTest(unittest.TestCase):
                                     {"kind": "build", "duration_s": 10},
                                 ],
                             },
-                            {"example": "b", "steps": [{"kind": "build", "duration_s": 2}]},
+                            {
+                                "example": "b",
+                                "steps": [{"kind": "build", "duration_s": 2}],
+                            },
                         ]
                     }
                 ),
@@ -233,7 +281,9 @@ class SchedulerTest(unittest.TestCase):
             )
             cells = [cell(root, "c"), cell(root, "b"), cell(root, "a")]
 
-            scheduled = schedule_cells(cells, ScheduleOptions(schedule="build-desc", schedule_report=report))
+            scheduled = schedule_cells(
+                cells, ScheduleOptions(schedule="build-desc", schedule_report=report)
+            )
 
         self.assertEqual([item.example.rel_path for item in scheduled], ["a", "b", "c"])
         self.assertIsInstance(scheduled[0], Cell)
@@ -246,14 +296,25 @@ class SchedulerTest(unittest.TestCase):
                 json.dumps(
                     {
                         "results": [
-                            {"example": "slow", "steps": [{"kind": "build", "duration_s": 30}]},
-                            {"example": "medium", "steps": [{"kind": "build", "duration_s": 20}]},
+                            {
+                                "example": "slow",
+                                "steps": [{"kind": "build", "duration_s": 30}],
+                            },
+                            {
+                                "example": "medium",
+                                "steps": [{"kind": "build", "duration_s": 20}],
+                            },
                         ]
                     }
                 ),
                 encoding="utf-8",
             )
-            cells = [cell(root, "fast-a"), cell(root, "slow"), cell(root, "fast-b"), cell(root, "medium")]
+            cells = [
+                cell(root, "fast-a"),
+                cell(root, "slow"),
+                cell(root, "fast-b"),
+                cell(root, "medium"),
+            ]
 
             scheduled = schedule_cells(
                 cells,
@@ -264,7 +325,10 @@ class SchedulerTest(unittest.TestCase):
                 ),
             )
 
-        self.assertEqual([item.example.rel_path for item in scheduled], ["slow", "fast-a", "fast-b", "medium"])
+        self.assertEqual(
+            [item.example.rel_path for item in scheduled],
+            ["slow", "fast-a", "fast-b", "medium"],
+        )
 
     def test_fixed_schedule_uses_schedule_file_and_appends_missing_cases(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -273,22 +337,36 @@ class SchedulerTest(unittest.TestCase):
             schedule_file.write_text("b\n# comment\nunknown\n\na\n", encoding="utf-8")
             cells = [cell(root, name) for name in ["a", "b", "c"]]
 
-            scheduled = schedule_cells(cells, ScheduleOptions(schedule="fixed", schedule_file=schedule_file))
+            scheduled = schedule_cells(
+                cells, ScheduleOptions(schedule="fixed", schedule_file=schedule_file)
+            )
 
         self.assertEqual([item.example.rel_path for item in scheduled], ["b", "a", "c"])
 
     def test_fixed_schedule_preserves_custom_op_required_order(self) -> None:
-        custom_op = "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+        custom_op = (
+            "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op"
+        )
         static_lib = "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op_static_lib"
         dependent = "01_simd_cpp_api/02_features/00_framework/02_onnx/onnx_plugin"
         parallel_ops = "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/parallel_ops_package"
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             schedule_file = root / "schedule.txt"
-            schedule_file.write_text(f"{dependent}\n{custom_op}\n{parallel_ops}\n{static_lib}\n", encoding="utf-8")
-            cells = [cell(root, dependent), cell(root, custom_op), cell(root, parallel_ops), cell(root, static_lib)]
+            schedule_file.write_text(
+                f"{dependent}\n{custom_op}\n{parallel_ops}\n{static_lib}\n",
+                encoding="utf-8",
+            )
+            cells = [
+                cell(root, dependent),
+                cell(root, custom_op),
+                cell(root, parallel_ops),
+                cell(root, static_lib),
+            ]
 
-            scheduled = schedule_cells(cells, ScheduleOptions(schedule="fixed", schedule_file=schedule_file))
+            scheduled = schedule_cells(
+                cells, ScheduleOptions(schedule="fixed", schedule_file=schedule_file)
+            )
 
         names = [item.example.rel_path for item in scheduled]
         self.assertLess(names.index(static_lib), names.index(custom_op))
@@ -301,19 +379,29 @@ class SchedulerTest(unittest.TestCase):
             cells = [cell(root, "a")]
 
             with self.assertRaises(FileNotFoundError):
-                schedule_cells(cells, ScheduleOptions(schedule="fixed", schedule_file=root / "missing.txt"))
+                schedule_cells(
+                    cells,
+                    ScheduleOptions(
+                        schedule="fixed", schedule_file=root / "missing.txt"
+                    ),
+                )
 
     def test_export_schedule_file_writes_selected_order(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             report = root / "report.json"
-            write_timing_report(report, {"slow-a": (100, 1), "fast-a": (1, 30), "fast-b": (1, 20)})
+            write_timing_report(
+                report, {"slow-a": (100, 1), "fast-a": (1, 30), "fast-b": (1, 20)}
+            )
             out = root / "fixed.txt"
             cells = [cell(root, name) for name in ["slow-a", "fast-a", "fast-b"]]
 
             export_schedule_file(cells, out)
 
-            self.assertEqual(out.read_text(encoding="utf-8").splitlines(), ["slow-a", "fast-a", "fast-b"])
+            self.assertEqual(
+                out.read_text(encoding="utf-8").splitlines(),
+                ["slow-a", "fast-a", "fast-b"],
+            )
 
     def test_cli_applies_schedule_before_dry_run(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -322,14 +410,28 @@ class SchedulerTest(unittest.TestCase):
                 runner = root / "scripts" / "presmoke" / "cases" / name / "run.sh"
                 runner.parent.mkdir(parents=True, exist_ok=True)
                 runner.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
-            manifest = root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            manifest = (
+                root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            )
             manifest.parent.mkdir(parents=True, exist_ok=True)
             manifest.write_text(
                 json.dumps(
                     [
-                        {"case": "c", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
-                        {"case": "b", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
-                        {"case": "a", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
+                        {
+                            "case": "c",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
+                        {
+                            "case": "b",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
+                        {
+                            "case": "a",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
                     ]
                 ),
                 encoding="utf-8",
@@ -339,8 +441,14 @@ class SchedulerTest(unittest.TestCase):
                 json.dumps(
                     {
                         "results": [
-                            {"example": "a", "steps": [{"kind": "build", "duration_s": 30}]},
-                            {"example": "b", "steps": [{"kind": "build", "duration_s": 10}]},
+                            {
+                                "example": "a",
+                                "steps": [{"kind": "build", "duration_s": 30}],
+                            },
+                            {
+                                "example": "b",
+                                "steps": [{"kind": "build", "duration_s": 10}],
+                            },
                         ]
                     }
                 ),
@@ -367,10 +475,14 @@ class SchedulerTest(unittest.TestCase):
                     ]
                 )
 
-            payload = json.loads((results_dir / "report.json").read_text(encoding="utf-8"))
+            payload = json.loads(
+                (results_dir / "report.json").read_text(encoding="utf-8")
+            )
 
         self.assertEqual(rc, 0)
-        self.assertEqual([item["example"] for item in payload["results"]], ["a", "b", "c"])
+        self.assertEqual(
+            [item["example"] for item in payload["results"]], ["a", "b", "c"]
+        )
 
     def test_cli_fixed_schedule_uses_builtin_schedule_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -379,19 +491,35 @@ class SchedulerTest(unittest.TestCase):
                 runner = root / "scripts" / "presmoke" / "cases" / name / "run.sh"
                 runner.parent.mkdir(parents=True, exist_ok=True)
                 runner.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
-            manifest = root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            manifest = (
+                root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            )
             manifest.parent.mkdir(parents=True, exist_ok=True)
             manifest.write_text(
                 json.dumps(
                     [
-                        {"case": "a", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
-                        {"case": "b", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
-                        {"case": "c", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
+                        {
+                            "case": "a",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
+                        {
+                            "case": "b",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
+                        {
+                            "case": "c",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
                     ]
                 ),
                 encoding="utf-8",
             )
-            schedule_file = root / "scripts" / "presmoke" / "schedules" / "dav-2201_npu.txt"
+            schedule_file = (
+                root / "scripts" / "presmoke" / "schedules" / "dav-2201_npu.txt"
+            )
             schedule_file.parent.mkdir(parents=True, exist_ok=True)
             schedule_file.write_text("b\na\n", encoding="utf-8")
             results_dir = root / "out"
@@ -413,10 +541,14 @@ class SchedulerTest(unittest.TestCase):
                     ]
                 )
 
-            payload = json.loads((results_dir / "report.json").read_text(encoding="utf-8"))
+            payload = json.loads(
+                (results_dir / "report.json").read_text(encoding="utf-8")
+            )
 
         self.assertEqual(rc, 0)
-        self.assertEqual([item["example"] for item in payload["results"]], ["b", "a", "c"])
+        self.assertEqual(
+            [item["example"] for item in payload["results"]], ["b", "a", "c"]
+        )
 
     def test_cli_strict_fixed_schedule_rejects_schedule_only_cases(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -425,18 +557,30 @@ class SchedulerTest(unittest.TestCase):
                 runner = root / "scripts" / "presmoke" / "cases" / name / "run.sh"
                 runner.parent.mkdir(parents=True, exist_ok=True)
                 runner.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
-            manifest = root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            manifest = (
+                root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            )
             manifest.parent.mkdir(parents=True, exist_ok=True)
             manifest.write_text(
                 json.dumps(
                     [
-                        {"case": "a", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
-                        {"case": "b", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
+                        {
+                            "case": "a",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
+                        {
+                            "case": "b",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
                     ]
                 ),
                 encoding="utf-8",
             )
-            schedule_file = root / "scripts" / "presmoke" / "schedules" / "dav-2201_npu.txt"
+            schedule_file = (
+                root / "scripts" / "presmoke" / "schedules" / "dav-2201_npu.txt"
+            )
             schedule_file.parent.mkdir(parents=True, exist_ok=True)
             schedule_file.write_text("a\nb\nmissing\n", encoding="utf-8")
 
@@ -467,19 +611,35 @@ class SchedulerTest(unittest.TestCase):
                 runner = root / "scripts" / "presmoke" / "cases" / name / "run.sh"
                 runner.parent.mkdir(parents=True, exist_ok=True)
                 runner.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
-            manifest = root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            manifest = (
+                root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            )
             manifest.parent.mkdir(parents=True, exist_ok=True)
             manifest.write_text(
                 json.dumps(
                     [
-                        {"case": "a", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
-                        {"case": "b", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
-                        {"case": "new-case", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
+                        {
+                            "case": "a",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
+                        {
+                            "case": "b",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
+                        {
+                            "case": "new-case",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
                     ]
                 ),
                 encoding="utf-8",
             )
-            schedule_file = root / "scripts" / "presmoke" / "schedules" / "dav-2201_npu.txt"
+            schedule_file = (
+                root / "scripts" / "presmoke" / "schedules" / "dav-2201_npu.txt"
+            )
             schedule_file.parent.mkdir(parents=True, exist_ok=True)
             schedule_file.write_text("a\nb\n", encoding="utf-8")
 
@@ -503,20 +663,32 @@ class SchedulerTest(unittest.TestCase):
 
         self.assertEqual(rc, 2)
 
-    def test_cli_fixed_schedule_falls_back_when_builtin_cpu_schedule_is_missing(self) -> None:
+    def test_cli_fixed_schedule_falls_back_when_builtin_cpu_schedule_is_missing(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             for name in ["a", "b"]:
                 runner = root / "scripts" / "presmoke" / "cases" / name / "run.sh"
                 runner.parent.mkdir(parents=True, exist_ok=True)
                 runner.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
-            manifest = root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            manifest = (
+                root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            )
             manifest.parent.mkdir(parents=True, exist_ok=True)
             manifest.write_text(
                 json.dumps(
                     [
-                        {"case": "a", "supported_archs": ["dav-2201"], "supported_modes": ["cpu"]},
-                        {"case": "b", "supported_archs": ["dav-2201"], "supported_modes": ["cpu"]},
+                        {
+                            "case": "a",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["cpu"],
+                        },
+                        {
+                            "case": "b",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["cpu"],
+                        },
                     ]
                 ),
                 encoding="utf-8",
@@ -540,15 +712,25 @@ class SchedulerTest(unittest.TestCase):
                     ]
                 )
 
-            payload = json.loads((results_dir / "report.json").read_text(encoding="utf-8"))
+            payload = json.loads(
+                (results_dir / "report.json").read_text(encoding="utf-8")
+            )
 
         self.assertEqual(rc, 0)
         self.assertEqual([item["example"] for item in payload["results"]], ["a", "b"])
 
     def test_builtin_910b_npu_schedule_matches_manifest(self) -> None:
         project_root = Path(__file__).resolve().parents[3]
-        manifest_path = project_root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
-        schedule_path = project_root / "scripts" / "presmoke" / "schedules" / "dav-2201_npu.txt"
+        manifest_path = (
+            project_root
+            / "scripts"
+            / "presmoke"
+            / "reports"
+            / "case_runner_manifest.json"
+        )
+        schedule_path = (
+            project_root / "scripts" / "presmoke" / "schedules" / "dav-2201_npu.txt"
+        )
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         planned = {
             item["case"]
@@ -568,7 +750,9 @@ class SchedulerTest(unittest.TestCase):
         missing_runners = [
             name
             for name in scheduled
-            if not (project_root / "scripts" / "presmoke" / "cases" / name / "run.sh").is_file()
+            if not (
+                project_root / "scripts" / "presmoke" / "cases" / name / "run.sh"
+            ).is_file()
         ]
         self.assertEqual(missing_runners, [])
 
@@ -579,14 +763,28 @@ class SchedulerTest(unittest.TestCase):
                 runner = root / "scripts" / "presmoke" / "cases" / name / "run.sh"
                 runner.parent.mkdir(parents=True, exist_ok=True)
                 runner.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
-            manifest = root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            manifest = (
+                root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            )
             manifest.parent.mkdir(parents=True, exist_ok=True)
             manifest.write_text(
                 json.dumps(
                     [
-                        {"case": "a", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
-                        {"case": "b", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
-                        {"case": "c", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
+                        {
+                            "case": "a",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
+                        {
+                            "case": "b",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
+                        {
+                            "case": "c",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
                     ]
                 ),
                 encoding="utf-8",
@@ -617,10 +815,14 @@ class SchedulerTest(unittest.TestCase):
                     ]
                 )
 
-            payload = json.loads((results_dir / "report.json").read_text(encoding="utf-8"))
+            payload = json.loads(
+                (results_dir / "report.json").read_text(encoding="utf-8")
+            )
 
         self.assertEqual(rc, 0)
-        self.assertEqual([item["example"] for item in payload["results"]], ["c", "b", "a"])
+        self.assertEqual(
+            [item["example"] for item in payload["results"]], ["c", "b", "a"]
+        )
 
     def test_cli_export_schedule_writes_current_order(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -629,14 +831,28 @@ class SchedulerTest(unittest.TestCase):
                 runner = root / "scripts" / "presmoke" / "cases" / name / "run.sh"
                 runner.parent.mkdir(parents=True, exist_ok=True)
                 runner.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
-            manifest = root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            manifest = (
+                root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            )
             manifest.parent.mkdir(parents=True, exist_ok=True)
             manifest.write_text(
                 json.dumps(
                     [
-                        {"case": "a", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
-                        {"case": "b", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
-                        {"case": "c", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
+                        {
+                            "case": "a",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
+                        {
+                            "case": "b",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
+                        {
+                            "case": "c",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
                     ]
                 ),
                 encoding="utf-8",
@@ -670,7 +886,9 @@ class SchedulerTest(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertEqual(exported_lines, ["c", "a", "b"])
 
-    def test_npu_idle_min_schedule_is_not_worse_than_build_desc_after_frontload(self) -> None:
+    def test_npu_idle_min_schedule_is_not_worse_than_build_desc_after_frontload(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             report = root / "report.json"
@@ -684,15 +902,28 @@ class SchedulerTest(unittest.TestCase):
                     "fast-c": (1, 30),
                 },
             )
-            cells = [cell(root, name) for name in ["slow-a", "slow-b", "fast-a", "fast-b", "fast-c"]]
+            cells = [
+                cell(root, name)
+                for name in ["slow-a", "slow-b", "fast-a", "fast-b", "fast-c"]
+            ]
 
-            build_desc = schedule_cells(cells, ScheduleOptions(schedule="build-desc", schedule_report=report, jobs=2))
-            idle_min = schedule_cells(cells, ScheduleOptions(schedule="npu-idle-min", schedule_report=report, jobs=2))
+            build_desc = schedule_cells(
+                cells,
+                ScheduleOptions(schedule="build-desc", schedule_report=report, jobs=2),
+            )
+            idle_min = schedule_cells(
+                cells,
+                ScheduleOptions(
+                    schedule="npu-idle-min", schedule_report=report, jobs=2
+                ),
+            )
 
             idle_min_s = simulate_pipeline_npu_idle(idle_min, report, jobs=2)
             build_desc_idle_s = simulate_pipeline_npu_idle(build_desc, report, jobs=2)
             idle_min_makespan_s = simulate_pipeline_makespan(idle_min, report, jobs=2)
-            build_desc_makespan_s = simulate_pipeline_makespan(build_desc, report, jobs=2)
+            build_desc_makespan_s = simulate_pipeline_makespan(
+                build_desc, report, jobs=2
+            )
 
         self.assertLessEqual(idle_min_s, build_desc_idle_s)
         self.assertLessEqual(idle_min_makespan_s, build_desc_makespan_s)
@@ -714,10 +945,23 @@ class SchedulerTest(unittest.TestCase):
             )
             cells = [cell(root, name) for name in ["c0", "c1", "c2", "c3", "c4", "c5"]]
 
-            one_job = schedule_cells(cells, ScheduleOptions(schedule="npu-idle-min", schedule_report=report, jobs=1))
-            two_jobs = schedule_cells(cells, ScheduleOptions(schedule="npu-idle-min", schedule_report=report, jobs=2))
+            one_job = schedule_cells(
+                cells,
+                ScheduleOptions(
+                    schedule="npu-idle-min", schedule_report=report, jobs=1
+                ),
+            )
+            two_jobs = schedule_cells(
+                cells,
+                ScheduleOptions(
+                    schedule="npu-idle-min", schedule_report=report, jobs=2
+                ),
+            )
 
-        self.assertNotEqual([item.example.rel_path for item in one_job], [item.example.rel_path for item in two_jobs])
+        self.assertNotEqual(
+            [item.example.rel_path for item in one_job],
+            [item.example.rel_path for item in two_jobs],
+        )
 
     def test_cli_accepts_npu_idle_min_schedule_before_dry_run(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -726,20 +970,37 @@ class SchedulerTest(unittest.TestCase):
                 runner = root / "scripts" / "presmoke" / "cases" / name / "run.sh"
                 runner.parent.mkdir(parents=True, exist_ok=True)
                 runner.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
-            manifest = root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            manifest = (
+                root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+            )
             manifest.parent.mkdir(parents=True, exist_ok=True)
             manifest.write_text(
                 json.dumps(
                     [
-                        {"case": "slow-a", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
-                        {"case": "fast-a", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
-                        {"case": "fast-b", "supported_archs": ["dav-2201"], "supported_modes": ["npu"]},
+                        {
+                            "case": "slow-a",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
+                        {
+                            "case": "fast-a",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
+                        {
+                            "case": "fast-b",
+                            "supported_archs": ["dav-2201"],
+                            "supported_modes": ["npu"],
+                        },
                     ]
                 ),
                 encoding="utf-8",
             )
             schedule_report = root / "schedule_report.json"
-            write_timing_report(schedule_report, {"slow-a": (100, 1), "fast-a": (1, 30), "fast-b": (1, 20)})
+            write_timing_report(
+                schedule_report,
+                {"slow-a": (100, 1), "fast-a": (1, 30), "fast-b": (1, 20)},
+            )
             results_dir = root / "out"
 
             with mock.patch.dict(os.environ, {"PRESMOKE_PROJECT_ROOT": str(root)}):
@@ -763,10 +1024,15 @@ class SchedulerTest(unittest.TestCase):
                     ]
                 )
 
-            payload = json.loads((results_dir / "report.json").read_text(encoding="utf-8"))
+            payload = json.loads(
+                (results_dir / "report.json").read_text(encoding="utf-8")
+            )
 
         self.assertEqual(rc, 0)
-        self.assertEqual([item["example"] for item in payload["results"]], ["slow-a", "fast-a", "fast-b"])
+        self.assertEqual(
+            [item["example"] for item in payload["results"]],
+            ["slow-a", "fast-a", "fast-b"],
+        )
 
     def test_auto_jobs_scales_with_available_cpu_count(self) -> None:
         self.assertEqual(resolve_jobs("auto", cpu_count=192), 12)
@@ -826,7 +1092,9 @@ class SchedulerTest(unittest.TestCase):
                             "auto",
                         ]
                     )
-            payload = json.loads((results_dir / "report.json").read_text(encoding="utf-8"))
+            payload = json.loads(
+                (results_dir / "report.json").read_text(encoding="utf-8")
+            )
 
         self.assertEqual(rc, 0)
         self.assertEqual(
@@ -851,7 +1119,9 @@ class SchedulerTest(unittest.TestCase):
 
         run.assert_called_once()
 
-    def test_npu_idle_min_does_not_frontload_long_builds_when_it_increases_idle(self) -> None:
+    def test_npu_idle_min_does_not_frontload_long_builds_when_it_increases_idle(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             report = root / "report.json"
@@ -868,10 +1138,24 @@ class SchedulerTest(unittest.TestCase):
             write_timing_report(report, timings)
             cells = [
                 cell(root, name)
-                for name in ["fast-a", "fast-b", "fast-c", "fast-d", "slow-a", "slow-b", "slow-c", "slow-d"]
+                for name in [
+                    "fast-a",
+                    "fast-b",
+                    "fast-c",
+                    "fast-d",
+                    "slow-a",
+                    "slow-b",
+                    "slow-c",
+                    "slow-d",
+                ]
             ]
 
-            scheduled = schedule_cells(cells, ScheduleOptions(schedule="npu-idle-min", schedule_report=report, jobs=4))
+            scheduled = schedule_cells(
+                cells,
+                ScheduleOptions(
+                    schedule="npu-idle-min", schedule_report=report, jobs=4
+                ),
+            )
             scheduled_idle = simulate_pipeline_npu_idle(scheduled, report, jobs=4)
 
         names = [item.example.rel_path for item in scheduled]
@@ -891,10 +1175,21 @@ class SchedulerTest(unittest.TestCase):
                     "short-run": (1, 1),
                 },
             )
-            cells = [cell(root, name) for name in ["short-run", "long-run-a", "long-build", "long-run-b"]]
+            cells = [
+                cell(root, name)
+                for name in ["short-run", "long-run-a", "long-build", "long-run-b"]
+            ]
 
-            scheduled = schedule_cells(cells, ScheduleOptions(schedule="npu-idle-min", schedule_report=report, jobs=3))
-            build_desc = schedule_cells(cells, ScheduleOptions(schedule="build-desc", schedule_report=report, jobs=3))
+            scheduled = schedule_cells(
+                cells,
+                ScheduleOptions(
+                    schedule="npu-idle-min", schedule_report=report, jobs=3
+                ),
+            )
+            build_desc = schedule_cells(
+                cells,
+                ScheduleOptions(schedule="build-desc", schedule_report=report, jobs=3),
+            )
 
             scheduled_idle = simulate_pipeline_npu_idle(scheduled, report, jobs=3)
             build_desc_idle = simulate_pipeline_npu_idle(build_desc, report, jobs=3)
@@ -921,10 +1216,19 @@ class SchedulerTest(unittest.TestCase):
             )
             cells = [cell(root, "short"), cell(root, "long-verify")]
 
-            scheduled = schedule_cells(cells, ScheduleOptions(schedule="npu-idle-min", schedule_report=report, jobs=2))
+            scheduled = schedule_cells(
+                cells,
+                ScheduleOptions(
+                    schedule="npu-idle-min", schedule_report=report, jobs=2
+                ),
+            )
 
-            self.assertEqual([item.example.rel_path for item in scheduled][0], "long-verify")
-            self.assertEqual(simulate_pipeline_npu_idle(scheduled, report, jobs=2), 20.0)
+            self.assertEqual(
+                [item.example.rel_path for item in scheduled][0], "long-verify"
+            )
+            self.assertEqual(
+                simulate_pipeline_npu_idle(scheduled, report, jobs=2), 20.0
+            )
 
 
 if __name__ == "__main__":

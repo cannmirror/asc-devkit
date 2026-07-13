@@ -14,29 +14,17 @@ import configparser
 import argparse
 import os
 import stat
-import configparser
 import hashlib
+
 
 def args_parse():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-p", "--auto-gen-path", required=True, help="auto gen path"
-    )
-    parser.add_argument(
-        "-n", "--target-name", required=True, help="kernel target name"
-    )
-    parser.add_argument(
-        "-t", "--op-type", required=True, help="op type"
-    )
-    parser.add_argument(
-        "-f", "--op-kernel-file", help="op kernel file"
-    )
-    parser.add_argument(
-        "-c", "--compute-unit", nargs="*", help="compute unit"
-    )
-    parser.add_argument(
-        "-d", "--op-kernel-dir", help="op kernel dir"
-    )
+    parser.add_argument("-p", "--auto-gen-path", required=True, help="auto gen path")
+    parser.add_argument("-n", "--target-name", required=True, help="kernel target name")
+    parser.add_argument("-t", "--op-type", required=True, help="op type")
+    parser.add_argument("-f", "--op-kernel-file", help="op kernel file")
+    parser.add_argument("-c", "--compute-unit", nargs="*", help="compute unit")
+    parser.add_argument("-d", "--op-kernel-dir", help="op kernel dir")
     return parser.parse_args()
 
 
@@ -52,7 +40,9 @@ def is_relative_path(path):
 
 
 def gen_custom_source_files(args):
-    gen_file_path = os.path.join(args.auto_gen_path, args.target_name + "_custom_source_files.ini")
+    gen_file_path = os.path.join(
+        args.auto_gen_path, args.target_name + "_custom_source_files.ini"
+    )
     src_ini_config = None
     if os.path.exists(gen_file_path):
         src_ini_config = configparser.ConfigParser()
@@ -60,25 +50,37 @@ def gen_custom_source_files(args):
     flags = os.O_WRONLY | os.O_CREAT
     modes = stat.S_IWUSR | stat.S_IRUSR
     try:
-        with os.fdopen(os.open(gen_file_path, flags, modes), 'a') as fd:
+        with os.fdopen(os.open(gen_file_path, flags, modes), "a") as fd:
             hash_value = hashlib.sha256(
-                (args.op_type + str(args.op_kernel_file) + \
-                str(args.op_kernel_dir) + str(args.compute_unit)).encode('utf-8')).hexdigest()
-            if src_ini_config is not None and hash_value + "_" + args.op_type in src_ini_config.sections():
+                (
+                    args.op_type
+                    + str(args.op_kernel_file)
+                    + str(args.op_kernel_dir)
+                    + str(args.compute_unit)
+                ).encode("utf-8")
+            ).hexdigest()
+            if (
+                src_ini_config is not None
+                and hash_value + "_" + args.op_type in src_ini_config.sections()
+            ):
                 return True
-            fd.write("[" + hash_value + "_" + args.op_type + "]" + '\n')
+            fd.write("[" + hash_value + "_" + args.op_type + "]" + "\n")
             if args.op_kernel_dir is not None:
                 flag = is_relative_path(args.op_kernel_dir)
                 if not flag:
-                    print("[ERROR] op kernel dir should be relative path to kernel base dir")
+                    print(
+                        "[ERROR] op kernel dir should be relative path to kernel base dir"
+                    )
                     return flag
-                fd.write("kernel_dir=" + args.op_kernel_dir + '\n')
+                fd.write("kernel_dir=" + args.op_kernel_dir + "\n")
             if args.op_kernel_file is not None:
-                fd.write("kernel_file=" + args.op_kernel_file + '\n')
+                fd.write("kernel_file=" + args.op_kernel_file + "\n")
             if args.compute_unit is not None:
-                tmp_compute_unit = ",".join(x.strip() for x in args.compute_unit[0].strip().split())
-                fd.write("compute_unit=" + tmp_compute_unit + '\n')
-    except Exception as err:
+                tmp_compute_unit = ",".join(
+                    x.strip() for x in args.compute_unit[0].strip().split()
+                )
+                fd.write("compute_unit=" + tmp_compute_unit + "\n")
+    except Exception:
         print("write custom source files ini failed")
         return False
     return True

@@ -12,13 +12,14 @@
 
 from tbe.dsl import classify
 
-class _op():
+
+class _op:
     def __init__(self):
         self.value = []
         self.idx = []
 
 
-class NormClassifyFusion():
+class NormClassifyFusion:
     def __init__(self, op_list, pattern, mode="norm"):
         self.op_list = op_list
         self.pattern = pattern
@@ -34,7 +35,6 @@ class NormClassifyFusion():
         self.placeholder_op = _op()
         self.init()
 
-
     @staticmethod
     def _handle_input_range(input_desc_vec):
         for input_desc in input_desc_vec:
@@ -46,16 +46,14 @@ class NormClassifyFusion():
                     if range_item[1] == -1:
                         range_item[1] = None
 
-
     @staticmethod
     def _is_input_dynamic_shape(input_desc_vec):
         for input_desc in input_desc_vec:
             if input_desc.get("shape") is None:
                 continue
-            if [dim for dim in input_desc['shape'] if dim < 0]:
+            if [dim for dim in input_desc["shape"] if dim < 0]:
                 return True
         return False
-
 
     @staticmethod
     def _get_input_desc_key(input_desc):
@@ -68,7 +66,6 @@ class NormClassifyFusion():
             for dim in input_desc.get("shape"):
                 key += str(dim)
         return key
-
 
     @staticmethod
     def _add_disable_fuse_axes(norm_format, shape_size, axes, extra_params):
@@ -86,7 +83,6 @@ class NormClassifyFusion():
                 disable_fuse_axes_val.append(shape_size - 2)
             if len(disable_fuse_axes_val) > 0:
                 extra_params["disable_fuse_axes"] = disable_fuse_axes_val
-
 
     def get_attrs_and_options(self):
         attrs = []
@@ -108,7 +104,6 @@ class NormClassifyFusion():
             options.append(option)
         return attrs, options
 
-
     def assemble_extra_params(self, input_desc_vec, extra_params):
         input_shape_size = []
         input_desc_dict = {}
@@ -117,7 +112,7 @@ class NormClassifyFusion():
                 input_shape_size.append(1)
                 continue
             shape_size = 1
-            for dim in input_desc['shape']:
+            for dim in input_desc["shape"]:
                 shape_size = shape_size * dim
             input_shape_size.append(shape_size)
 
@@ -150,8 +145,9 @@ class NormClassifyFusion():
                 input_shape_type.append(1)
 
         extra_params["input_shape_type"] = input_shape_type
-        self._add_disable_fuse_axes(norm_format, norm_shape_size, self.axes, extra_params)
-
+        self._add_disable_fuse_axes(
+            norm_format, norm_shape_size, self.axes, extra_params
+        )
 
     def _update_axes(self):
         if self.norm_op is None:
@@ -174,7 +170,6 @@ class NormClassifyFusion():
                 new_axes.append(val)
         self.axes = new_axes
 
-
     def builtin_classify(self, input_desc_vec):
         if not self.axes or len(input_desc_vec) == 0:
             self.ins_list = []
@@ -189,16 +184,19 @@ class NormClassifyFusion():
 
         extra_params = {}
         if is_dynamic_shape:
-            self._add_disable_fuse_axes(input_desc_vec[0].get("format"), len(input_desc_vec[0].get("shape")),
-                                        self.axes, extra_params)
-            #0:complete shape, 1:partial shape, need broadcast
+            self._add_disable_fuse_axes(
+                input_desc_vec[0].get("format"),
+                len(input_desc_vec[0].get("shape")),
+                self.axes,
+                extra_params,
+            )
+            # 0:complete shape, 1:partial shape, need broadcast
             extra_params["input_shape_type"] = [0]
         else:
             self.assemble_extra_params(input_desc_vec, extra_params)
 
         input_desc_vec.append(self.axes)
         self.ins_list = classify(inputs_desc_list, self.mode, extra_params)
-
 
     def init(self):
         norm_op_type = None
@@ -211,7 +209,9 @@ class NormClassifyFusion():
                 if input_descs is not None and len(input_descs) > 0:
                     norm_input_name = input_descs[0].get("name")
                 if node.get("attr_desc") is not None:
-                    if len(node.get("attr_desc")) > 0 and isinstance(node.get("attr_desc")[-1], list):
+                    if len(node.get("attr_desc")) > 0 and isinstance(
+                        node.get("attr_desc")[-1], list
+                    ):
                         self.axes = node.get("attr_desc")[-1]
 
         input_desc_vec = []

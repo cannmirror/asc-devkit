@@ -64,7 +64,9 @@ def build_case_runner_cells_with_skips(
     runners_root = project_root / "scripts" / "presmoke" / "cases"
     manifest = load_manifest(project_root)
     runner_dirs = sorted(path.parent for path in runners_root.rglob("run.sh"))
-    runner_dirs = filter_examples(runner_dirs, options.includes, options.excludes, options.exact_includes)
+    runner_dirs = filter_examples(
+        runner_dirs, options.includes, options.excludes, options.exact_includes
+    )
     modes_list = list(options.modes)
     context = CaseRunnerContext(
         project_root=project_root,
@@ -81,7 +83,9 @@ def build_case_runner_cells_with_skips(
     return context.cells, context.suggestions, context.skipped
 
 
-def add_runner_cells(context: CaseRunnerContext, runner_dir: Path, manifest: dict[str, dict]) -> None:
+def add_runner_cells(
+    context: CaseRunnerContext, runner_dir: Path, manifest: dict[str, dict]
+) -> None:
     info = load_runner_info(context, runner_dir, manifest)
     if append_skip_result(context, info):
         return
@@ -92,7 +96,9 @@ def add_runner_cells(context: CaseRunnerContext, runner_dir: Path, manifest: dic
         context.cells.append(make_runner_cell(context, runner_dir, info, mode))
 
 
-def load_runner_info(context: CaseRunnerContext, runner_dir: Path, manifest: dict[str, dict]) -> RunnerInfo:
+def load_runner_info(
+    context: CaseRunnerContext, runner_dir: Path, manifest: dict[str, dict]
+) -> RunnerInfo:
     rel_path = runner_dir.relative_to(context.runners_root).as_posix()
     info = manifest.get(rel_path, {})
     return RunnerInfo(
@@ -113,9 +119,21 @@ def append_skip_result(context: CaseRunnerContext, info: RunnerInfo) -> bool:
         return False
     for mode in context.modes:
         context.skipped.append(
-            RunResult(info.rel_path, context.arch, mode, "SKIP", info.skip_reason, duration_s=0, source="case-runner")
+            RunResult(
+                info.rel_path,
+                context.arch,
+                mode,
+                "SKIP",
+                info.skip_reason,
+                duration_s=0,
+                source="case-runner",
+            )
         )
-    context.suggestions.append(Suggestion(info.rel_path, "case-runner", "info", "Explicitly skipped", info.skip_reason))
+    context.suggestions.append(
+        Suggestion(
+            info.rel_path, "case-runner", "info", "Explicitly skipped", info.skip_reason
+        )
+    )
     return True
 
 
@@ -136,12 +154,24 @@ def append_confidence_suggestion(context: CaseRunnerContext, info: RunnerInfo) -
 def mode_supported(context: CaseRunnerContext, info: RunnerInfo, mode: str) -> bool:
     if mode in info.skip_modes:
         context.skipped.append(
-            RunResult(info.rel_path, context.arch, mode, "SKIP",
-                f"Mode {mode} in skip_modes", duration_s=0, source="case-runner")
+            RunResult(
+                info.rel_path,
+                context.arch,
+                mode,
+                "SKIP",
+                f"Mode {mode} in skip_modes",
+                duration_s=0,
+                source="case-runner",
+            )
         )
         context.suggestions.append(
-            Suggestion(info.rel_path, "case-runner", "info",
-                f"Excluded on skip_modes list", f"Skip modes: {', '.join(info.skip_modes)}")
+            Suggestion(
+                info.rel_path,
+                "case-runner",
+                "info",
+                "Excluded on skip_modes list",
+                f"Skip modes: {', '.join(info.skip_modes)}",
+            )
         )
         return False
     if context.arch not in info.supported_archs:
@@ -169,7 +199,9 @@ def mode_supported(context: CaseRunnerContext, info: RunnerInfo, mode: str) -> b
     return True
 
 
-def make_runner_cell(context: CaseRunnerContext, runner_dir: Path, info: RunnerInfo, mode: str) -> Cell:
+def make_runner_cell(
+    context: CaseRunnerContext, runner_dir: Path, info: RunnerInfo, mode: str
+) -> Cell:
     runner = runner_dir / "run.sh"
     command_env = {
         "PRESMOKE_PROJECT_ROOT": str(context.project_root),
@@ -197,7 +229,9 @@ def make_runner_cell(context: CaseRunnerContext, runner_dir: Path, info: RunnerI
 
 
 def load_manifest(project_root: Path) -> dict[str, dict]:
-    manifest = project_root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+    manifest = (
+        project_root / "scripts" / "presmoke" / "reports" / "case_runner_manifest.json"
+    )
     if not manifest.exists():
         return {}
     data = json.loads(manifest.read_text(encoding="utf-8"))

@@ -13,11 +13,7 @@
 import argparse
 import glob
 import os
-import shutil
 import subprocess
-import sys
-import stat
-from typing import List
 
 
 class TooFewLinkCmd(Exception):
@@ -37,7 +33,7 @@ class CompileCMDError(Exception):
 
 
 def get_link_file(root_dir, target_name):
-    link_file = f'{root_dir}/CMakeFiles/{target_name}.dir/link.txt'
+    link_file = f"{root_dir}/CMakeFiles/{target_name}.dir/link.txt"
 
     if os.path.exists(link_file):
         return link_file
@@ -48,7 +44,7 @@ def get_link_file(root_dir, target_name):
 def read_file(source_file):
     """read file content."""
     try:
-        with open(source_file, encoding='utf-8') as file:
+        with open(source_file, encoding="utf-8") as file:
             content = file.readlines()
         return content
     except Exception as err:
@@ -59,20 +55,22 @@ def read_file(source_file):
 def get_link_cmd(link_file):
     contents = read_file(link_file)
     if not contents:
-        raise TooFewLinkCmd(f"There are too few compilation commands in the file: {link_file}")
+        raise TooFewLinkCmd(
+            f"There are too few compilation commands in the file: {link_file}"
+        )
     return contents
 
 
 def get_add_obj(add_dir):
-    objs = glob.glob(f'{add_dir}/**/*.o', recursive=True)
+    objs = glob.glob(f"{add_dir}/**/*.o", recursive=True)
     if not objs:
         raise TooFewObj(f"There is no obj file in this directory: {add_dir}")
     else:
-        return ' '.join(sorted(objs))
+        return " ".join(sorted(objs))
 
 
 def get_recompile_cmd(origin_cmd, insert_cmd):
-    key_words = 'host_stub.cpp.o'
+    key_words = "host_stub.cpp.o"
     index = origin_cmd.find(key_words)
     if index != -1:
         index += len(key_words)
@@ -84,24 +82,22 @@ def get_recompile_cmd(origin_cmd, insert_cmd):
 def run_recompile_cmd(root_dir, compile_cmd):
     """run cmds"""
     cmds = compile_cmd.split()
-    print(f'recompile: {compile_cmd}', flush=True)
+    print(f"recompile: {compile_cmd}", flush=True)
     result = subprocess.run(cmds, check=True, cwd=root_dir)
     if result.returncode != 0:
-        raise CompileCMDError(f"recompile command failed, return code: {result.returncode}")
+        raise CompileCMDError(
+            f"recompile command failed, return code: {result.returncode}"
+        )
 
 
 def parse_args():
     """parse parameters"""
     parser = argparse.ArgumentParser()
-    parser.add_argument('--root-dir',
-                        required=True,
-                        help='target root directory')
-    parser.add_argument('--target-name',
-                        required=True,
-                        help='target name')
-    parser.add_argument('--add-dir',
-                        required=True,
-                        help='the directory where the added obj is located')
+    parser.add_argument("--root-dir", required=True, help="target root directory")
+    parser.add_argument("--target-name", required=True, help="target name")
+    parser.add_argument(
+        "--add-dir", required=True, help="the directory where the added obj is located"
+    )
     args = parser.parse_args()
     return args
 
@@ -117,5 +113,5 @@ def main():
         run_recompile_cmd(args.root_dir, recompile_cmd)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -11,23 +11,32 @@
 # ----------------------------------------------------------------------------------------------------------
 import os
 import sys
-import shutil
 import unittest
-from unittest import mock
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 
 THIS_FILE_NAME = __file__
 FILE_PATH = os.path.dirname(os.path.realpath(THIS_FILE_NAME))
 TOP_PATH = os.path.join(FILE_PATH, "../../../")
-FRAMEWORK_PATH = os.path.join(
-    TOP_PATH, "tools/build/")
+FRAMEWORK_PATH = os.path.join(TOP_PATH, "tools/build/")
 sys.path.insert(0, FRAMEWORK_PATH)
 
-from asc_op_compile_base.common.register import set_fusion_buildcfg
-from asc_op_compile_base.common.platform import get_soc_spec, set_current_compile_soc_info, get_block_size
-from asc_op_compile_base.common.platform.platform_info import set_soc_spec, te_update_version, set_platform_info_res, \
-    set_core_num_by_core_type, CORE_NUM, CUBE_SIZE, CORE_TYPE_LIST, L0A_LAYOUT_IS_zN, UB_BLOCK_SIZE
+from asc_op_compile_base.common.platform import (
+    get_soc_spec,
+    set_current_compile_soc_info,
+    get_block_size,
+)
+from asc_op_compile_base.common.platform.platform_info import (
+    set_soc_spec,
+    te_update_version,
+    set_platform_info_res,
+    set_core_num_by_core_type,
+    CORE_NUM,
+    CUBE_SIZE,
+    CORE_TYPE_LIST,
+    L0A_LAYOUT_IS_zN,
+    UB_BLOCK_SIZE,
+)
 
 
 def _get_soc_spec_mock(key):
@@ -46,15 +55,13 @@ def _get_soc_spec_mock(key):
 class TestPlatformInfo(unittest.TestCase):
     def setUp(self):
         # operator before each testcase
-        print(f"-------------------SetUp----------------")
-
+        print("-------------------SetUp----------------")
 
     def tearDown(self):
         # operator after each testcase
-        print(f"-------------------TearDown-------------")
+        print("-------------------TearDown-------------")
 
-
-    @patch('asc_op_compile_base.common.platform.platform_info._get_soc_spec')
+    @patch("asc_op_compile_base.common.platform.platform_info._get_soc_spec")
     def test_get_soc_spec(self, mock_get_soc_spec):
         mock_get_soc_spec.side_effect = _get_soc_spec_mock
         self.assertEqual(get_soc_spec(CORE_NUM), 4)
@@ -63,9 +70,8 @@ class TestPlatformInfo(unittest.TestCase):
         self.assertEqual(get_soc_spec(L0A_LAYOUT_IS_zN), True)
         self.assertEqual(get_block_size(), 2048)
 
-
-    @patch('asc_op_compile_base.common.platform.platform_info._init_soc_spec')
-    @patch('asc_op_compile_base.common.platform.platform_info._set_soc_spec')
+    @patch("asc_op_compile_base.common.platform.platform_info._init_soc_spec")
+    @patch("asc_op_compile_base.common.platform.platform_info._set_soc_spec")
     def test_set_soc_info(self, _set_soc_spec_mock, _init_soc_spec_mock):
         _init_soc_spec_mock.return_value = "success"
         _set_soc_spec_mock.return_value = "success"
@@ -78,12 +84,17 @@ class TestPlatformInfo(unittest.TestCase):
         set_soc_spec(225)
         set_soc_spec(CORE_NUM)
 
-
-    @patch('asc_op_compile_base.common.platform.platform_info._te_update_version')
-    @patch('asc_op_compile_base.common.platform.platform_info._set_platform_info_res')
-    @patch('asc_op_compile_base.common.platform.platform_info._set_core_num_by_core_type')
-    def test_update_soc_infos(self, _set_core_num_by_core_type_mock, \
-                                _set_platform_info_res_mock, _te_update_version_mock):
+    @patch("asc_op_compile_base.common.platform.platform_info._te_update_version")
+    @patch("asc_op_compile_base.common.platform.platform_info._set_platform_info_res")
+    @patch(
+        "asc_op_compile_base.common.platform.platform_info._set_core_num_by_core_type"
+    )
+    def test_update_soc_infos(
+        self,
+        _set_core_num_by_core_type_mock,
+        _set_platform_info_res_mock,
+        _te_update_version_mock,
+    ):
         _te_update_version_mock.return_value = "success"
         _set_platform_info_res_mock.return_value = "success"
         _set_core_num_by_core_type_mock.return_value = "success"

@@ -11,17 +11,14 @@
 # ----------------------------------------------------------------------------------------------------------
 import os
 import sys
-import shutil
 import unittest
 from unittest import mock
-from unittest.mock import patch
 
 
 THIS_FILE_NAME = __file__
 FILE_PATH = os.path.dirname(os.path.realpath(THIS_FILE_NAME))
 TOP_PATH = os.path.join(FILE_PATH, "../../../")
-FRAMEWORK_PATH = os.path.join(
-    TOP_PATH, "tools/build/")
+FRAMEWORK_PATH = os.path.join(TOP_PATH, "tools/build/")
 sys.path.insert(0, FRAMEWORK_PATH)
 
 from asc_op_compile_base.common.error_mgr import TBEPythonError, raise_tbe_python_err
@@ -31,13 +28,11 @@ from asc_op_compile_base.common.error_mgr.error_manager_util import get_error_me
 class TestErrMgr(unittest.TestCase):
     def setUp(self):
         # operator before each testcase
-        print(f"-------------------SetUp----------------")
-
+        print("-------------------SetUp----------------")
 
     def tearDown(self):
         # operator after each testcase
-        print(f"-------------------TearDown-------------")
-
+        print("-------------------TearDown-------------")
 
     def test_tbe_python_error_init(self):
         error_info = {
@@ -45,7 +40,7 @@ class TestErrMgr(unittest.TestCase):
             "errClass": "RuntimeError",
             "errPcause": "params error",
             "errSolution": "check param formats",
-            "message": "invalid param format"
+            "message": "invalid param format",
         }
         error = TBEPythonError(error_info)
         self.assertEqual(error.args[0], "EB0001")
@@ -54,7 +49,6 @@ class TestErrMgr(unittest.TestCase):
         self.assertEqual(error.args[3], "check param formats")
         self.assertEqual(error.args[4], "invalid param format")
         self.assertEqual(error.errorinfo, error_info)
-
 
     def test_raise_tbe_python_err_basic(self):
         err_code = "EB0003"
@@ -72,7 +66,6 @@ class TestErrMgr(unittest.TestCase):
         self.assertEqual(exception.errorinfo["errPcause"], "")
         self.assertEqual(exception.errorinfo["errSolution"], "")
 
-
     def test_raise_tbe_python_err_with_tuple_msg(self):
         err_code = "EB0004"
         inner_error_info = {
@@ -80,7 +73,7 @@ class TestErrMgr(unittest.TestCase):
             "errClass": "InnerError",
             "errPcause": "inner reason",
             "errSolution": "inner solution",
-            "message": "inner error msg"
+            "message": "inner error msg",
         }
         inner_error = TBEPythonError(inner_error_info)
         tuple_msg = ("outter error", inner_error)
@@ -92,13 +85,12 @@ class TestErrMgr(unittest.TestCase):
         self.assertEqual(exception.args[0], err_code)
         self.assertEqual(exception.errorinfo["message"], expected_message)
 
-
     def test_get_error_message(self):
         self.mock_error_data = [
             {
                 "errCode": "TEST001",
                 "argList": "arg1,arg2,arg3",
-                "errMessage": "error type: %s, reason: %s, soulution: %s"
+                "errMessage": "error type: %s, reason: %s, soulution: %s",
             },
         ]
 
@@ -107,12 +99,12 @@ class TestErrMgr(unittest.TestCase):
             "errCode": "TEST001",
             "arg1": "data type not match",
             "arg2": "wrong param types",
-            "arg3": "check param types"
+            "arg3": "check param types",
         }
         expected_message = "error type: data type not match, reason: wrong param types, soulution: check param types"
 
-        with mock.patch('builtins.open', mock.mock_open()) as mock_file:
-            with mock.patch('json.load', return_value=mock_json_data):
+        with mock.patch("builtins.open", mock.mock_open()) as mock_file:
+            with mock.patch("json.load", return_value=mock_json_data):
                 result = get_error_message(args)
                 self.assertEqual(result, expected_message)
                 mock_file.assert_called_once()

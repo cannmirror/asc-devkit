@@ -14,12 +14,7 @@ Copyright (C) 2021. Huawei Technologies Co., Ltd. All rights reserved.
 
 Description:
 """
-from enum import IntEnum, auto
-import tbe
-from tbe.common import platform
-from tbe.dsl.base import operation
-from tbe.common.context import get_context
-from tbe.common.utils import log
+
 
 def is_conv2d_binary():
     """
@@ -27,6 +22,7 @@ def is_conv2d_binary():
     false: dynamic variable shape
     """
     return
+
 
 def replace_conv2d_vector_tvm_shapes(vector_inputs, ins_attrs_options):
     res_shapes = [-1, -1, -1, -1]

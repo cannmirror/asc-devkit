@@ -38,7 +38,9 @@ def filter_examples(
     result: List[Path] = []
     for path in paths:
         text = path.as_posix()
-        exact_match = any(text == term or text.endswith(f"/{term}") for term in exact_include_terms)
+        exact_match = any(
+            text == term or text.endswith(f"/{term}") for term in exact_include_terms
+        )
         if exact_include_terms and not exact_match:
             continue
         if include_terms and not any(term in text for term in include_terms):

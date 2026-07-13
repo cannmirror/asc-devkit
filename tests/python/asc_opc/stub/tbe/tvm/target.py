@@ -19,5 +19,6 @@ class Cce:
     def __exit__(self, exc_type, exc_val, exc_tb):
         return
 
-def cce(x = None):
+
+def cce(x=None):
     return Cce()

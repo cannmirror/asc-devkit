@@ -13,12 +13,14 @@
 """
 op compile
 """
+
 import os
 from shutil import copy
-from pathlib import Path
 
 
 current_dir = os.path.abspath(os.getcwd())
+
+
 def check_args(args: tuple, expect_args: list, msg: str) -> None:
     """
     check args
@@ -26,6 +28,7 @@ def check_args(args: tuple, expect_args: list, msg: str) -> None:
     if args not in expect_args:
         return False
     return True
+
 
 def check_and_config_para(input_x1: dict, input_x2: dict, output_z: dict) -> bool:
     """
@@ -39,66 +42,75 @@ def check_and_config_para(input_x1: dict, input_x2: dict, output_z: dict) -> boo
     dtype_b = input_x2.get("dtype").lower()
     dtype_out = output_z.get("dtype").lower()
 
-    expect_args = [('FRACTAL_NZ', 'float16', 'FRACTAL_NZ', 'float16', 'FRACTAL_NZ', 'float16'),
-                   ('ND', 'float16', 'ND', 'float16', 'ND', 'float16'),
-                   ('ND', 'float16', 'FRACTAL_NZ', 'float16', 'ND', 'float16')]
-    return check_args((format_a, dtype_a, format_b, dtype_b, format_out, dtype_out),
-                      expect_args, "format_a, dtype_a, format_b, dtype_b, format_out, dtype_out")
+    expect_args = [
+        ("FRACTAL_NZ", "float16", "FRACTAL_NZ", "float16", "FRACTAL_NZ", "float16"),
+        ("ND", "float16", "ND", "float16", "ND", "float16"),
+        ("ND", "float16", "FRACTAL_NZ", "float16", "ND", "float16"),
+    ]
+    return check_args(
+        (format_a, dtype_a, format_b, dtype_b, format_out, dtype_out),
+        expect_args,
+        "format_a, dtype_a, format_b, dtype_b, format_out, dtype_out",
+    )
+
 
 def copy_compile_res_files_to_output(kernel_name):
-        """copy .o and .json file to output path"""
-        print("stub opc stub files MatMul. copy_compile_res_files_to_output")
-        # if output path not exist, creat it
-        test_file_dir = os.path.abspath(os.path.dirname(__file__))
-        json_res_path = test_file_dir + "/kernel_meta/MatMul_build_res.json"
-        o_res_path = test_file_dir + "/kernel_meta/MatMul_build_res.o"
+    """copy .o and .json file to output path"""
+    print("stub opc stub files MatMul. copy_compile_res_files_to_output")
+    # if output path not exist, creat it
+    test_file_dir = os.path.abspath(os.path.dirname(__file__))
+    json_res_path = test_file_dir + "/kernel_meta/MatMul_build_res.json"
+    o_res_path = test_file_dir + "/kernel_meta/MatMul_build_res.o"
 
-        json_file_name = kernel_name + ".json"
-        o_file_name = kernel_name + ".o"
+    json_file_name = kernel_name + ".json"
+    o_file_name = kernel_name + ".o"
 
-        test_root_dir =  os.path.abspath(os.path.join(test_file_dir, "../.."))
+    test_root_dir = os.path.abspath(os.path.join(test_file_dir, "../.."))
 
-        debug_dir = test_root_dir + "/debug_dir" # same as testcase
-        json_output_path = debug_dir + "/kernel_meta/" + json_file_name
-        o_output_path = debug_dir + "/kernel_meta/" + o_file_name
-        print("json_res_path:")
-        print(json_res_path)
-        print("json_output_path:")
-        print(json_output_path)
-        print("current_dir:")
-        print(current_dir)
+    debug_dir = test_root_dir + "/debug_dir"  # same as testcase
+    json_output_path = debug_dir + "/kernel_meta/" + json_file_name
+    o_output_path = debug_dir + "/kernel_meta/" + o_file_name
+    print("json_res_path:")
+    print(json_res_path)
+    print("json_output_path:")
+    print(json_output_path)
+    print("current_dir:")
+    print(current_dir)
 
-        try:
-            copy(os.path.realpath(json_res_path), json_output_path)
-            copy(os.path.realpath(o_res_path), o_output_path)
-        except Exception as e:
-            raise RuntimeError("Copy [%s] to [%s] field, reason: %s." %
-                            (json_res_path, json_output_path, str(e)))
-        finally:
-            pass
+    try:
+        copy(os.path.realpath(json_res_path), json_output_path)
+        copy(os.path.realpath(o_res_path), o_output_path)
+    except Exception as e:
+        raise RuntimeError(
+            "Copy [%s] to [%s] field, reason: %s."
+            % (json_res_path, json_output_path, str(e))
+        )
+    finally:
+        pass
+
 
 def gn_training_reduce(inputs, outputs, attrs, e, a, b, c, d, kernel_name):
     """gn_training_reduce"""
     print("stub opc stub files MatMul.py mat_mul")
-    #mat_mul start args:
-    #inputs:
-    #{'shape': [-1, -1, 16, 16], 'ori_shape': [-1, -1], 'format': 'FRACTAL_NZ', 'ori_format': 'ND', 'dtype': 'float16', 'range': [[4, 7], [4, 7], [16, 16], [16, 16]], 'ori_range': [[49, 112], [49, 112]]}
-    #outputs:
-    #{'shape': [-1, -1, 16, 16], 'ori_shape': [-1, -1], 'format': 'FRACTAL_NZ', 'ori_format': 'ND', 'dtype': 'float16', 'range': [[4, 7], [4, 7], [16, 16], [16, 16]], 'ori_range': [[49, 112], [49, 112]]}
-    #attrs:
-    #{'shape': [1, 1, 16, 16], 'ori_shape': [1, 1], 'format': 'FRACTAL_NZ', 'ori_format': 'ND', 'dtype': 'float16', 'range': None, 'ori_range': None}
-    #kernel_name:
-    #None
-    #a:
-    #{'shape': [-1, -1, 16, 16], 'ori_shape': [-1, -1], 'format': 'FRACTAL_NZ', 'ori_format': 'ND', 'dtype': 'float16', 'range': [[4, 7], [4, 7], [16, 16], [16, 16]], 'ori_range': [[49, 112], [49, 112]]}
-    #b:
-    #False
-    #c:
-    #False
-    #d:
-    #0
-    #e:
-    #MatMul_3c5cc7048dba0ba86df3f19ef07c72edaabcbff7783646e68d8f48d787faf4f7
+    # mat_mul start args:
+    # inputs:
+    # {'shape': [-1, -1, 16, 16], 'ori_shape': [-1, -1], 'format': 'FRACTAL_NZ', 'ori_format': 'ND', 'dtype': 'float16', 'range': [[4, 7], [4, 7], [16, 16], [16, 16]], 'ori_range': [[49, 112], [49, 112]]}
+    # outputs:
+    # {'shape': [-1, -1, 16, 16], 'ori_shape': [-1, -1], 'format': 'FRACTAL_NZ', 'ori_format': 'ND', 'dtype': 'float16', 'range': [[4, 7], [4, 7], [16, 16], [16, 16]], 'ori_range': [[49, 112], [49, 112]]}
+    # attrs:
+    # {'shape': [1, 1, 16, 16], 'ori_shape': [1, 1], 'format': 'FRACTAL_NZ', 'ori_format': 'ND', 'dtype': 'float16', 'range': None, 'ori_range': None}
+    # kernel_name:
+    # None
+    # a:
+    # {'shape': [-1, -1, 16, 16], 'ori_shape': [-1, -1], 'format': 'FRACTAL_NZ', 'ori_format': 'ND', 'dtype': 'float16', 'range': [[4, 7], [4, 7], [16, 16], [16, 16]], 'ori_range': [[49, 112], [49, 112]]}
+    # b:
+    # False
+    # c:
+    # False
+    # d:
+    # 0
+    # e:
+    # MatMul_3c5cc7048dba0ba86df3f19ef07c72edaabcbff7783646e68d8f48d787faf4f7
     if check_and_config_para(inputs, a, outputs):
         print("stub opc stub files MatMul. py mat_mul param check ok")
         copy_compile_res_files_to_output(kernel_name)

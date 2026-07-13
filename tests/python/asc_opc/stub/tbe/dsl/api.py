@@ -23,12 +23,14 @@ def build(sch, config_map=None):
 
     return
 
+
 # def compute(_operator=None):
 #     """
 #     :param _compute:
 #     :return:
 #     """
 #     return
+
 
 def auto_schedule(outs, option=None):
     """
@@ -41,6 +43,7 @@ class Sch:
     def __init__(self):
         cce_special["real_out_tensor"] = false
 
+
 class Compute:
     def __init__(self):
         pass
@@ -50,6 +53,7 @@ class Compute:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         return
+
 
 def build(sch, config_map=None):
     """
@@ -72,5 +76,6 @@ def classify(ins, mode, extra_params=None):
 
     return [ins]
 
-def compute(x = None):
+
+def compute(x=None):
     return Compute()
