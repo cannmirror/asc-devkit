@@ -305,7 +305,7 @@ asc_mem_bar(VST_LD);
 asc_load(vreg1, ub_addr);
 ```
 
-同步的方向包括多个指定的[枚举值](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/C-API/reg/reg_vector/asc_mem_bar.md)，用于指定需要同步的两条流水方向。如下图**操作相同UB地址时**，读写依赖需要插入`Load->Store`同步`asc_mem_bar(VLD_ST)` ；写写依赖需要插入Store->Store同步`asc_mem_bar(VST_ST)`  。仅当在读写相同UB地址中间存在寄存器变量依赖计算时，同一数据串行处理，无需插入同步。
+同步的方向包括多个指定的[枚举值](https://gitcode.com/cann/asc-devkit/blob/master/docs/api/SIMD-API/C-API/reg/sync_control/asc_mem_bar.md)，用于指定需要同步的两条流水方向。如下图**操作相同UB地址时**，读写依赖需要插入`Load->Store`同步`asc_mem_bar(VLD_ST)` ；写写依赖需要插入Store->Store同步`asc_mem_bar(VST_ST)`  。仅当在读写相同UB地址中间存在寄存器变量依赖计算时，同一数据串行处理，无需插入同步。
 
 **图5** 流水线同步示意
 

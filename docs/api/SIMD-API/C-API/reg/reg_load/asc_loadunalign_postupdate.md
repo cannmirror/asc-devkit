@@ -65,7 +65,7 @@ __simd_callee__ inline void asc_loadunalign_postupdate(vector_int4x2_t& dst, vec
 | count | 输入 | 搬运元素个数。 |
 | inc | 输入 | 在多次循环中，多次调用该接口时，每次搬运完成后，下次搬运的offset在自增前会更新为offset + inc。建议设置为0。|
 
-矢量数据寄存器和掩码寄存器的详细说明请参见[reg数据类型定义.md](../reg数据类型定义.md)。
+矢量数据寄存器和掩码寄存器的详细说明请参见[data_type_definition.md](../reg_data_types/data_type_definition.md)。
 
 ## 返回值说明
 

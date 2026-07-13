@@ -45,7 +45,7 @@ __simd_callee__ inline void asc_storeunalign(__ubuf__ int4b_t* dst, vector_store
 | src1 | 输入 | 源操作数（矢量数据寄存器）。 |
 | count | 输入 | 存储搬运的个数。 |
 
-矢量数据寄存器和非对齐寄存器的详细说明请参见[reg数据类型定义.md](../reg数据类型定义.md)。
+矢量数据寄存器和非对齐寄存器的详细说明请参见[data_type_definition.md](../reg_data_types/data_type_definition.md)。
 
 ## 返回值说明
 
@@ -58,7 +58,7 @@ PIPE_V
 ## 约束说明
 
 - 该接口中的dst不需要32B对齐。
-- 调用该接口之后，需要调用[asc_storeunalign_post](./asc_storeunalign_post.md)处理非对齐搬出的尾块。
+- 调用该接口之后，需要调用[asc_storeunalign_post](asc_storeunalign_post.md)处理非对齐搬出的尾块。
 
 ## 调用示例
 

@@ -34,7 +34,7 @@ __simd_callee__ inline void asc_storealign_1st_postupdate(__ubuf__ bfloat16_t*& 
 | src | 输入 | 源操作数（矢量数据寄存器）。 |
 | offset | 输入 | 地址偏移量。 |
 
-矢量数据寄存器的详细说明请参见[reg数据类型定义.md](../reg数据类型定义.md)。
+矢量数据寄存器的详细说明请参见[data_type_definition.md](../reg_data_types/data_type_definition.md)。
 
 ## 返回值说明
 

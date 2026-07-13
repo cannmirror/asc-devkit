@@ -64,7 +64,7 @@
 | src | 输入    | 源操作数（矢量）的起始地址。            |
 | offset | 输入    | 偏移量。            |
 
-矢量数据寄存器的详细说明请参见[reg数据类型定义.md](../reg数据类型定义.md)。
+矢量数据寄存器的详细说明请参见[data_type_definition.md](../reg_data_types/data_type_definition.md)。
 
 ## 返回值说明
 

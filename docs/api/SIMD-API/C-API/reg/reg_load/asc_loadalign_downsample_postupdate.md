@@ -38,7 +38,7 @@ __simd_callee__ inline void asc_loadalign_downsample_postupdate(vector_bfloat16_
 | src       | 输入/输出 | 源操作数（矢量）的起始地址，接口调用后自动更新。            |
 | offset    | 输入    | 偏移量。            |
 
-矢量数据寄存器的详细说明请参见[reg数据类型定义.md](../reg数据类型定义.md)。
+矢量数据寄存器的详细说明请参见[data_type_definition.md](../reg_data_types/data_type_definition.md)。
 
 ## 返回值说明
 

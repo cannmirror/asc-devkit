@@ -44,7 +44,7 @@ __simd_callee__ inline void asc_loadunalign(vector_int4x2_t& dst, vector_load_un
 | src0 | 输入/输出 | 非对齐寄存器，用于保存非对齐数据，长度32B。 |
 | src1 | 输入 | 源操作数（矢量）的起始地址。 |
 
-矢量数据寄存器和非对齐寄存器的详细说明请参见[reg数据类型定义.md](../reg数据类型定义.md)。
+矢量数据寄存器和非对齐寄存器的详细说明请参见[data_type_definition.md](../reg_data_types/data_type_definition.md)。
 
 ## 返回值说明
 
@@ -57,7 +57,7 @@ PIPE_V
 ## 约束说明
 
 - 该接口中的src1不需要32B对齐。
-- 调用该接口之前，需要调用[asc_loadunalign_pre](./asc_loadunalign_pre.md)进行非对齐搬入前的初始化。
+- 调用该接口之前，需要调用[asc_loadunalign_pre](asc_loadunalign_pre.md)进行非对齐搬入前的初始化。
 
 ## 调用示例
 

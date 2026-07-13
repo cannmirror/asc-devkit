@@ -43,7 +43,7 @@ __simd_callee__ inline void asc_load(vector_int4x2_t& dst, __ubuf__ int4b_t* src
 | dst | 输出 | 目的操作数（矢量数据寄存器）。 |
 | src | 输入 | 源操作数（矢量）的起始地址。 |
 
-矢量数据寄存器的详细说明请参见[reg数据类型定义.md](../reg数据类型定义.md)。
+矢量数据寄存器的详细说明请参见[data_type_definition.md](../reg_data_types/data_type_definition.md)。
 
 ## 返回值说明
 

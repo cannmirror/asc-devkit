@@ -70,7 +70,7 @@ __simd_callee__ inline void asc_loadalign_deintlv(vector_int4x2_t& dst0, vector_
 
 ### 地址寄存器偏移寻址接口<a name="base-register-indexed-api"></a>
 
-该类接口通过地址寄存器`addr_reg offset`生成实际访问地址。地址寄存器通常在循环场景中使用，需配合[`asc_create_addr_reg`](../reg_vector/asc_create_addr_reg.md)完成初始化。实际访问地址必须满足32B对齐要求。
+该类接口通过地址寄存器`addr_reg offset`生成实际访问地址。地址寄存器通常在循环场景中使用，需配合[`asc_create_addr_reg`](../addr_reg_compute/asc_create_addr_reg.md)完成初始化。实际访问地址必须满足32B对齐要求。
 
 ```cpp
 __simd_callee__ inline void asc_loadalign_deintlv(vector_fp4x2_e1m2_t& dst0, vector_fp4x2_e1m2_t& dst1, __ubuf__ fp4x2_e1m2_t* src, addr_reg offset)
@@ -100,7 +100,7 @@ __simd_callee__ inline void asc_loadalign_deintlv(vector_int4x2_t& dst0, vector_
 | src | 输入 | 源数据在UB中的起始地址。对于不同寻址接口，`src`分别表示基址或参与地址计算的基地址。 |
 | offset | 输入 | 地址偏移量。对于标量偏移寻址接口，单位为元素个数；对于地址寄存器偏移寻址接口，表示地址寄存器。 |
 
-寄存器类型的详细说明请参见[reg数据类型定义.md](../reg数据类型定义.md)。
+寄存器类型的详细说明请参见[data_type_definition.md](../reg_data_types/data_type_definition.md)。
 
 ## 数据类型<a name="data-type"></a>
 
@@ -137,7 +137,7 @@ __simd_callee__ inline void asc_loadalign_deintlv(vector_int4x2_t& dst0, vector_
 
 - 对于[基址寻址接口](#base-addressing-api)，`src`必须为32B对齐地址，且访问范围不能超过UB有效地址上界减去`2 x VL`。
 - 对于[标量偏移寻址接口](#base-scalar-offset-api)和[地址寄存器偏移寻址接口](#base-register-indexed-api)，实际访问地址必须为32B对齐，且访问范围不能超过UB有效地址上界减去`2 x VL`。
-- 使用地址寄存器偏移寻址接口时，需要先通过[`asc_create_addr_reg`](../reg_vector/asc_create_addr_reg.md)完成地址寄存器初始化。
+- 使用地址寄存器偏移寻址接口时，需要先通过[`asc_create_addr_reg`](../addr_reg_compute/asc_create_addr_reg.md)完成地址寄存器初始化。
 
 ## 调用示例
 

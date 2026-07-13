@@ -12,7 +12,7 @@
 
 `asc_loadalign_deintlv_postupdate`用于从UB中读取以32B对齐地址`src`为起始位置的连续`2 x VL`长度数据。数据按元素类型宽度进行解释，在Load过程中完成解交织后，分别写入两个目的向量寄存器`dst0`和`dst1`。
 
-与[`asc_loadalign_deintlv`](./asc_loadalign_deintlv.md)不同，该接口在完成数据加载后，会对源地址参数`src`执行后更新操作：
+与[`asc_loadalign_deintlv`](asc_loadalign_deintlv.md)不同，该接口在完成数据加载后，会对源地址参数`src`执行后更新操作：
 
 ```cpp
 src = src + offset
@@ -27,7 +27,7 @@ src = src + offset
 > 提示：
 >
 > 1. 使用本接口需要包含头文件`reg_load.h`。
-> 2. 本接口会修改输入的UB地址参数`src`。若需要保留原始地址，请使用[`asc_loadalign_deintlv`](./asc_loadalign_deintlv.md)。
+> 2. 本接口会修改输入的UB地址参数`src`。若需要保留原始地址，请使用[`asc_loadalign_deintlv`](asc_loadalign_deintlv.md)。
 
 ## 函数原型
 
@@ -61,7 +61,7 @@ __simd_callee__ inline void asc_loadalign_deintlv_postupdate(vector_float& dst0,
 | src | 输入/输出 | 源数据在UB中的起始地址，要求32B对齐。接口执行完成后，`src`会更新为`src + offset`。 |
 | offset | 输入 | 地址偏移量，单位为元素个数。 |
 
-向量寄存器类型的详细说明请参见[reg数据类型定义.md](../reg数据类型定义.md)。
+向量寄存器类型的详细说明请参见[data_type_definition.md](../reg_data_types/data_type_definition.md)。
 
 ## 数据类型<a name="data-type"></a>
 
