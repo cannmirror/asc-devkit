@@ -160,7 +160,7 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>
 
 **图1** 连续搬运示意图<a id="zh-cn_topic_0000002566658905_fig769164701717"></a>
 
-![](../../../../../figures/datacopy_gm2l1_continuous_copy_highdim.png)
+![](../../../../../figures/continuous_data_copy_diagram.png)
 
 ### 非连续搬运<a id="zh-cn_topic_0000002566658905_section1084342081618"></a>
 
@@ -175,7 +175,7 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>
 
 **图2** 非连续搬运示意图<a id="zh-cn_topic_0000002566658905_fig12371910189"></a>
 
-![](../../../../../figures/datacopy_gm2l1_noncontinuous_copy_highdim.png)
+![](../../../../../figures/discontinuous_data_copy_diagram.png)
 
 ## 调用示例<a id="zh-cn_topic_0000002566658905_section088124295117"></a>
 

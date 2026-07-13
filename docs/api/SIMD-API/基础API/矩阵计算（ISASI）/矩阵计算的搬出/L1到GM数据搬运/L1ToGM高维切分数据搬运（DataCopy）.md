@@ -144,7 +144,7 @@ Kirin 9030，支持数据类型为：int8_t、uint8_t、int16_t、uint16_t、hal
 
 **图1** 连续搬运示意图<a id="zh-cn_topic_0000002540558032_fig187115784817"></a>  
 
-![](../../../../../figures/L12GM_HighDim_Continuous_Transporting.png)
+![](../../../../../figures/continuous_data_copy_diagram.png)
 
 **非连续搬运**
 
@@ -159,7 +159,7 @@ Kirin 9030，支持数据类型为：int8_t、uint8_t、int16_t、uint16_t、hal
 
 **图2** 非连续搬运示意图<a id="zh-cn_topic_0000002540558032_fig123821924175312"></a>  
 
-![](../../../../../figures/L12GM_HighDim_Discontinuous_Transporting.png)
+![](../../../../../figures/discontinuous_data_copy_diagram.png)
 
 ## 调用示例<a name="zh-cn_topic_0000002540558032_section088124295117"></a>
 

@@ -10,6 +10,9 @@ Key directory structure is as follows:
 ├── asc_adv_api_contributing.md    # Ascend C high-level API contribution guide
 ├── asc_basic_api_contributing.md  # Ascend C basic API contribution guide
 ├── asc_c_api_contributing.md      # Ascend C C API contribution guide
+├── asc_doc_contributing.md        # Ascend C documentation contribution guide
+├── asc_doc_design_rules.md        # Ascend C documentation design rules
+├── asc_950_feature_guide.md       # Ascend 950PR/Ascend 950DT new feature guide
 ├── quick_start.md                 # Quick start documentation
 └── README.md
 ```
@@ -23,8 +26,8 @@ To help developers quickly familiarize with this project, corresponding document
 | [High-level API Contribution Guide](./en/asc_adv_api_contributing.md) | Users developing customized APIs based on Ascend C open source repository. | Introduces how to extend or develop Ascend C high-level API. High-level API abstracts and encapsulates common algorithms based on single-core, implementing commonly used computational algorithms to improve operator development efficiency. |
 | [Basic API Contribution Guide](./en/asc_basic_api_contributing.md) | Users developing customized APIs based on Ascend C open source repository. | Introduces how to extend or develop Ascend C basic API. Basic API implements abstraction of hardware capabilities, opening chip capabilities, ensuring completeness and compatibility. |
 | [C API Contribution Guide](./en/asc_c_api_contributing.md) | Users developing customized APIs based on Ascend C open source repository. | Introduces how to extend or develop Ascend C C API. C API provides pure C style interfaces, conforming to C language operator development habits, opening complete chip programming capabilities. |
-| [Ascend C Programming Guide](https://hiascend.com/document/redirect/CannCommunityOpdevAscendC) | Developers writing operator programs using Ascend C based on Ascend AI hardware, developing custom operators. | Ascend C is a programming language launched by CANN for operator development scenarios, with native support for C and C++ standard specifications, balancing development efficiency and runtime performance. Write operator programs using Ascend C, running on Ascend AI processors to implement custom innovative algorithms. |
-| [Ascend C Best Practices](https://hiascend.com/document/redirect/CannCommunityAscendCBestPractice) | Developers needing to further optimize operator performance based on already developed Ascend C operators. | Characteristics of heterogeneous computing, operator debugging methods, and operator performance optimization strategies. Introduces debugging and optimization concepts in Ascend C programming, combining various performance optimization methods with specific cases to help developers achieve high-performance operator development. |
+| [Documentation Contribution Guide](./en/asc_doc_contributing.md) | Developers improving existing Ascend C documentation. | Introduces the writing and contribution specifications for each chapter of Ascend C documentation. |
+| [Documentation Design Rules](./en/asc_doc_design_rules.md) | Developers improving existing Ascend C documentation. | Introduces the Ascend C documentation architecture and overall design principles. |
 
 
 ## Appendix
