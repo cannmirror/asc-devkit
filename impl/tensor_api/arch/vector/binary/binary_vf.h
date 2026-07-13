@@ -31,17 +31,19 @@ namespace Te {
 template<typename CalcFunc, typename TraitType>
 class BinaryVF {
 public:
-    template<typename T>
-    __simd_vf__ inline static void Run(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, uint16_t repeat, uint16_t oneRepSize, uint32_t dataSize)
+    template<typename RegType, typename T>
+    __simd_vf__ inline static void Run(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, uint32_t dataSize)
     {
-        using RegType = typename VectorTypeTransform::template Get<T>;
+        constexpr uint32_t oneRepSize = static_cast<uint32_t>(asc_get_vf_len() / sizeof(T));
+        uint16_t repeat = static_cast<uint16_t>((dataSize + oneRepSize - 1) / oneRepSize);
 
         vector_bool vmask;
         RegType reg_src0;
         RegType reg_src1;
         RegType reg_dst;
-        for (uint16_t i = 0; i < repeat; i++) {
-            vmask = Inst::UpdateMask::template Run<T>(dataSize);
+
+        for (uint16_t i = 0; i < repeat; ++i) {
+            vmask = Inst::UpdateMask::template Run<uint32_t>(dataSize);
             asc_loadalign(reg_src0, src0 + i * oneRepSize);
             asc_loadalign(reg_src1, src1 + i * oneRepSize);
             CalcFunc::template Run<RegType>(reg_dst, reg_src0, reg_src1, vmask);
@@ -57,13 +59,10 @@ public:
     __aicore__ inline static void Run(const T& dst, const U& src0, const V& src1)
     {
         using type = GetAttributeElementType<typename T::elementType*>;
+        using RegType = typename VectorTypeTransform::template Get<type>;
         uint32_t dataSize = dst.Size();
-
-        uint16_t VECTOR_REG_WIDTH = asc_get_vf_len();
-        uint16_t oneRepSize = VECTOR_REG_WIDTH / sizeof(type);
-        uint16_t repeat = Std::ceil_division(dataSize, oneRepSize);
         
-        BinaryVF<CalcFunc, TraitType>::template Run<type>(dst.Data().Get(), src0.Data().Get(), src1.Data().Get(), repeat, oneRepSize, dataSize);
+        BinaryVF<CalcFunc, TraitType>::template Run<RegType, type>(dst.Data().Get(), src0.Data().Get(), src1.Data().Get(), dataSize);
     }
 };
 

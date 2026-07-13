@@ -31,20 +31,18 @@ namespace Te {
 template<typename CalcFunc, typename TraitType>
 class AxpyVF {
 public:
-    template<typename T, typename U, typename S>
-    __simd_vf__ inline static void Run(
-        __ubuf__ T* dst, __ubuf__ U* src, S value,
-        uint16_t repeat, uint16_t oneRepSize, uint32_t dataSize)
+    template<typename DstRegType, typename SrcRegType, typename T, typename U, typename S>
+    __simd_vf__ inline static void Run(__ubuf__ T* dst, __ubuf__ U* src, S value, uint32_t dataSize)
     {
-        using SrcRegType = typename VectorTypeTransform::template Get<U>;
-        using DstRegType = typename VectorTypeTransform::template Get<T>;
+        constexpr uint32_t oneRepSize = static_cast<uint32_t>(asc_get_vf_len() / sizeof(T));
+        uint16_t repeat = static_cast<uint16_t>((dataSize + oneRepSize - 1) / oneRepSize);
 
         vector_bool vmask;
         DstRegType reg_dst;
         SrcRegType reg_src;
 
-        for (uint16_t i = 0; i < repeat; i++) {
-            vmask = Inst::UpdateMask::template Run<U>(dataSize);
+        for (uint16_t i = 0; i < repeat; ++i) {
+            vmask = Inst::UpdateMask::template Run<uint32_t>(dataSize);
             asc_loadalign(reg_src, src + i * oneRepSize);
             asc_loadalign(reg_dst, dst + i * oneRepSize);
             CalcFunc::template Run(reg_dst, reg_src, value, vmask);
@@ -56,18 +54,17 @@ public:
 template<typename CalcFunc, typename TraitType>
 class Transform2AxpyVF {
 public:
-    template<typename T, typename U, typename V>
-    __aicore__ inline static void Run(const T& dst, const U& src, const V& value)
+    template<typename T, typename U, typename S>
+    __aicore__ inline static void Run(const T& dst, const U& src, const S& value)
     {
   		using srcType = GetAttributeElementType<typename U::elementType*>;
   		using dstType = GetAttributeElementType<typename T::elementType*>;
-        uint32_t dataSize = dst.Size();
+        using SrcRegType = typename VectorTypeTransform::template Get<srcType>;
+        using DstRegType = typename VectorTypeTransform::template Get<dstType>;
 
-        uint16_t VECTOR_REG_WIDTH = asc_get_vf_len();
-        uint16_t oneRepSize = VECTOR_REG_WIDTH / sizeof(srcType);
-        uint16_t repeat = Std::ceil_division(dataSize, oneRepSize);
+        const uint32_t dataSize = dst.Size();
 
-        AxpyVF<CalcFunc, TraitType>::template Run<dstType, srcType>(dst.Data().Get(), src.Data().Get(), value, repeat, oneRepSize, dataSize);
+        AxpyVF<CalcFunc, TraitType>::template Run<DstRegType, SrcRegType>(dst.Data().Get(), src.Data().Get(), value, dataSize);
     }
 };
 

@@ -31,20 +31,18 @@ namespace Te {
 template<typename CalcFunc, typename TraitType>
 class BinaryScalarVF {
 public:
-    template<typename T, typename U, typename S>
-    __simd_vf__ inline static void Run(
-        __ubuf__ T* dst, __ubuf__ U* src, S value,
-        uint16_t repeat, uint16_t oneRepSize, uint32_t dataSize)
+    template<typename DstRegType, typename SrcRegType, typename T, typename U, typename S>
+    __simd_vf__ inline static void Run(__ubuf__ T* dst, __ubuf__ U* src, S value, uint32_t dataSize)
     {
-        using SrcRegType = typename VectorTypeTransform::template Get<U>;
-        using DstRegType = typename VectorTypeTransform::template Get<T>;
+        constexpr uint32_t oneRepSize = static_cast<uint32_t>(asc_get_vf_len() / sizeof(T));
+        uint16_t repeat = static_cast<uint16_t>((dataSize + oneRepSize - 1) / oneRepSize);
 
         vector_bool vmask;
         SrcRegType reg_src;
         DstRegType reg_dst;
 
-        for (uint16_t i = 0; i < repeat; i++) {
-            vmask = Inst::UpdateMask::template Run<U>(dataSize);
+        for (uint16_t i = 0; i < repeat; ++i) {
+            vmask = Inst::UpdateMask::template Run<uint32_t>(dataSize);
             asc_loadalign(reg_src, src + i * oneRepSize);
             CalcFunc::template Run(reg_dst, reg_src, value, vmask);
             asc_storealign(dst + i * oneRepSize, reg_dst, vmask);
@@ -60,15 +58,13 @@ public:
     {
  		using dstType = GetAttributeElementType<typename T::elementType*>;
  		using srcType = GetAttributeElementType<typename U::elementType*>;
+        using SrcRegType = typename VectorTypeTransform::template Get<srcType>;
+        using DstRegType = typename VectorTypeTransform::template Get<dstType>;
+
         uint32_t dataSize = dst.Size();
 
-        uint16_t VECTOR_REG_WIDTH = asc_get_vf_len();
-        uint16_t oneRepSize = VECTOR_REG_WIDTH / sizeof(srcType);
-        uint16_t repeat = Std::ceil_division(dataSize, oneRepSize);
-
-        BinaryScalarVF<CalcFunc, TraitType>::template Run<dstType, srcType>(
-            dst.Data().Get(), src.Data().Get(), value,
-            repeat, oneRepSize, dataSize);
+        BinaryScalarVF<CalcFunc, TraitType>::template Run<DstRegType, SrcRegType, dstType, srcType>(
+                                                        dst.Data().Get(), src.Data().Get(), value, dataSize);
     }
 };
 

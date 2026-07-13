@@ -31,16 +31,18 @@ namespace Te {
 template<typename CalcFunc, typename TraitType>
 class UnaryVF {
 public:
-    template<typename T>
-    __simd_vf__ inline static void Run(__ubuf__ T* dst, __ubuf__ T* src, uint16_t repeat, uint16_t oneRepSize, uint32_t dataSize)
+    template<typename RegType, typename T>
+    __simd_vf__ inline static void Run(__ubuf__ T* dst, __ubuf__ T* src, uint32_t dataSize)
     {
-        using RegType = typename VectorTypeTransform::template Get<T>;
+        constexpr uint32_t oneRepSize = static_cast<uint32_t>(asc_get_vf_len() / sizeof(T));
+        uint16_t repeat = static_cast<uint16_t>((dataSize + oneRepSize - 1) / oneRepSize);
 
         vector_bool vmask;
         RegType reg_src;
         RegType reg_dst;
-        for (uint16_t i = 0; i < repeat; i++) {
-            vmask = Inst::UpdateMask::template Run<T>(dataSize);
+
+        for (uint16_t i = 0; i < repeat; ++i) {
+            vmask = Inst::UpdateMask::template Run<uint32_t>(dataSize);
             asc_loadalign(reg_src, src + i * oneRepSize);
             CalcFunc::template Run<RegType>(reg_dst, reg_src, vmask);
             asc_storealign(dst + i * oneRepSize, reg_dst, vmask);
@@ -55,13 +57,10 @@ public:
     __aicore__ inline static void Run(const T& dst, const U& src)
     {
         using type = GetAttributeElementType<typename T::elementType*>;
+        using RegType = typename VectorTypeTransform::template Get<type>;
         uint32_t dataSize = dst.Size();
 
-        uint16_t VECTOR_REG_WIDTH = asc_get_vf_len();
-        uint16_t oneRepSize = VECTOR_REG_WIDTH / sizeof(type);
-        uint16_t repeat = Std::ceil_division(dataSize, oneRepSize);
-
-        UnaryVF<CalcFunc, TraitType>::template Run<type>(dst.Data().Get(), src.Data().Get(), repeat, oneRepSize, dataSize);
+        UnaryVF<CalcFunc, TraitType>::template Run<RegType, type>(dst.Data().Get(), src.Data().Get(), dataSize);
     }
 };
 
