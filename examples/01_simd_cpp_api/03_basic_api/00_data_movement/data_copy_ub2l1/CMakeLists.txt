@@ -11,6 +11,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_ASC_ARCHITECTURES "dav-3510" CACHE STRING "NPU architecture: dav-3510")
+set(SCENARIO_NUM 1 CACHE STRING "1: UB->L1 without ND2NZ; 2: UB->L1 with ND2NZ")
 
 find_package(ASC REQUIRED)
 
@@ -27,4 +28,5 @@ target_compile_options(demo PRIVATE
 # 开启SSBUF通信
 ascendc_compile_definitions(demo PRIVATE
     -DENABLE_CV_COMM_VIA_SSBUF=true
+    -DSCENARIO_NUM=${SCENARIO_NUM}
 )
