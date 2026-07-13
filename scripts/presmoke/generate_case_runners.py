@@ -47,9 +47,13 @@ PARALLEL_OPS_PACKAGE_CASE = (
 TILING_SINK_PROGRAMMING_CASE = (
     "04_aicpu/02_features/00_framework/00_pytorch/tiling_sink_programming"
 )
+TILING_SINK_GENERATE_TASK_PATTERN_PREFIX = (
+    "GenerateTaskForSinkOp:Node [AddCustomTilingSink, AddCustomTilingSink] "
+    "starts to generate tasks"
+)
+TILING_SINK_GENERATE_TASK_PATTERN_SUFFIX = " for the tiling sink, sk_flag [0]."
 TILING_SINK_GENERATE_TASK_PATTERN = (
-    "GenerateTaskForSinkOp:Node [AddCustomTilingSink, AddCustomTilingSink] starts to generate tasks "
-    "for the tiling sink, sk_flag [0]."
+    TILING_SINK_GENERATE_TASK_PATTERN_PREFIX + TILING_SINK_GENERATE_TASK_PATTERN_SUFFIX
 )
 
 CUSTOM_OP_PACKAGE_DEPENDENTS = {
@@ -811,9 +815,11 @@ def render_tiling_sink_programming_runner(spec: RunnerRenderSpec) -> str:
         *runner_function(
             "case_run",
             [
-                "    presmoke_clear_plog",
+                "    local sink_log_pattern",
+                f"    sink_log_pattern={shlex.quote(TILING_SINK_GENERATE_TASK_PATTERN_PREFIX)}",
+                f"    sink_log_pattern+={shlex.quote(TILING_SINK_GENERATE_TASK_PATTERN_SUFFIX)}",
                 *indent_tiling_sink_run_commands(spec.run_cmds),
-                f"    presmoke_verify_tiling_sink_task_log {shlex.quote(TILING_SINK_GENERATE_TASK_PATTERN)}",
+                '    presmoke_verify_tiling_sink_task_log_for_pid "$case_pid" "$sink_log_pattern"',
             ],
         ),
         *runner_function(
@@ -937,15 +943,26 @@ def indent_commands(
 
 
 def indent_tiling_sink_run_commands(commands: Iterable[Command]) -> List[str]:
-    lines: List[str] = []
+    lines: List[str] = ["    local case_pid case_rc=0"]
     for command in commands:
         raw = rewrite_runtime_arch_options(command.raw)
         raw = rewrite_runtime_cmake_options(raw)
-        quoted = shlex.quote(raw)
+        quoted = shlex.quote(f"exec {raw}")
         env_prefix = command_env_prefix(command)
-        runner = f"ASCEND_GLOBAL_LOG_LEVEL=1 {env_prefix}bash -lc {quoted}"
-        lines.append(
-            f'    (cd "{command_workdir(raw, default_cd_build=True)}" && {runner})'
+        lines.extend(
+            [
+                "    (",
+                f'        cd "{command_workdir(raw, default_cd_build=True)}"',
+                "        exec env \\",
+                "            ASCEND_GLOBAL_LOG_LEVEL=1 \\",
+                f"            {env_prefix}bash -lc {quoted}",
+                "    ) &",
+                "    case_pid=$!",
+                '    wait "$case_pid" || case_rc=$?',
+                "    if (( case_rc != 0 )); then",
+                '        return "$case_rc"',
+                "    fi",
+            ]
         )
     return lines
 

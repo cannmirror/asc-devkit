@@ -58,6 +58,7 @@ fi
 shift 2
 results=""
 dry_run=0
+stages="all"
 filters=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -67,6 +68,14 @@ while [[ $# -gt 0 ]]; do
             ;;
         --dry-run)
             dry_run=1
+            shift
+            ;;
+        --stages)
+            stages="$2"
+            shift 2
+            ;;
+        --stages=*)
+            stages="${1#--stages=}"
             shift
             ;;
         --filter)
@@ -96,6 +105,7 @@ run_file="$(dirname "$results")/run_env.txt"
     echo "device=${ASCEND_RT_VISIBLE_DEVICES:-}"
     printf 'filters=%s\\n' "${filters[*]:-}"
     echo "dry_run=$dry_run"
+    echo "stages=$stages"
 } > "$run_file"
 if [[ "$dry_run" == "1" ]]; then
 cat > "$results/report.json" <<'JSON'
@@ -392,13 +402,15 @@ EOF
             self.assertTrue((root / "out/full_card0/results/report.json").exists())
             self.assertTrue((root / "out/full_card1/results/report.json").exists())
             self.assertTrue((root / "out/full_card2/results/report.json").exists())
-            self.assertTrue(
-                (root / "out/.workspaces/card_0/scripts/run_presmoke_v2.sh").exists()
-            )
+            self.assertFalse((root / "out/.workspaces").exists())
+            self.assertFalse((root / "out/.plan").exists())
+            self.assertFalse((root / "out/.state").exists())
             self.assertIn("multi_card_start cards=0 1 2 cases=5", result.stdout)
             self.assertIn(
-                f"project_root={root / 'out/.workspaces/card_0'}",
-                (root / "out/full_card0/meta.txt").read_text(encoding="utf-8"),
+                f"project_root={root}",
+                (root / "out/full_card0/meta.txt")
+                .read_text(encoding="utf-8")
+                .splitlines(),
             )
             self.assertIn(
                 "device=0",
@@ -425,6 +437,121 @@ EOF
                 (root / "out/full_card2/run_env.txt").read_text(encoding="utf-8"),
             )
             self.assertIn("Cases: total=5 pass=5 fail=0 skip=0", result.stdout)
+
+    def test_matching_fixed_shards_override_dynamic_balancing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            script = self.copy_orchestrate_fixture(root)
+            shards = root / "scripts/presmoke/schedules/shards/dav-2201_npu_3cards"
+            shards.mkdir(parents=True)
+            (shards / "card_0.txt").write_text("case/e\n", encoding="utf-8")
+            (shards / "card_1.txt").write_text("case/d\ncase/c\n", encoding="utf-8")
+            (shards / "card_2.txt").write_text("case/b\ncase/a\n", encoding="utf-8")
+            env = self.base_env(
+                root,
+                PROJECT_ROOT=str(root),
+                OUT_ROOT=str(root / "out"),
+                ASCEND_OPP_PATH=str(root / "opp"),
+            )
+
+            result = subprocess.run(
+                ["bash", str(script)],
+                text=True,
+                capture_output=True,
+                env=env,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("multi_card_fixed_shards", result.stdout)
+            self.assertIn(
+                "filters=case/e",
+                (root / "out/full_card0/run_env.txt").read_text(encoding="utf-8"),
+            )
+            self.assertIn(
+                "filters=case/d case/c",
+                (root / "out/full_card1/run_env.txt").read_text(encoding="utf-8"),
+            )
+            self.assertIn(
+                "filters=case/b case/a",
+                (root / "out/full_card2/run_env.txt").read_text(encoding="utf-8"),
+            )
+
+    def test_build_only_uses_single_run_and_forwards_stage(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            script = self.copy_orchestrate_fixture(root)
+            env = self.base_env(
+                root,
+                PROJECT_ROOT=str(root),
+                OUT_ROOT=str(root / "out"),
+                ASCEND_OPP_PATH=str(root / "opp"),
+            )
+
+            result = subprocess.run(
+                ["bash", str(script), "--stages", "build"],
+                text=True,
+                capture_output=True,
+                env=env,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue((root / "out/full_card0").exists())
+            self.assertFalse((root / "out/full_multi").exists())
+            run_env = (root / "out/full_card0/run_env.txt").read_text(encoding="utf-8")
+            self.assertIn("stages=build", run_env)
+
+    def test_explicit_all_stages_keeps_multi_card_execution(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            script = self.copy_orchestrate_fixture(root)
+            env = self.base_env(
+                root,
+                PROJECT_ROOT=str(root),
+                OUT_ROOT=str(root / "out"),
+                ASCEND_OPP_PATH=str(root / "opp"),
+            )
+
+            result = subprocess.run(
+                ["bash", str(script), "--stages", "all"],
+                text=True,
+                capture_output=True,
+                env=env,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("multi_card_start cards=0 1 2 cases=5", result.stdout)
+
+    def test_failed_run_cleans_transient_plan_and_state(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            script = self.copy_orchestrate_fixture(root)
+            (root / "out").mkdir()
+            (root / "out/.plan").mkdir()
+            (root / "out/.state").mkdir()
+            env = self.base_env(
+                root,
+                PROJECT_ROOT=str(root),
+                OUT_ROOT=str(root / "out"),
+                ASCEND_OPP_PATH=str(root / "opp"),
+                PRESMOKE_STUB_RC="1",
+                NPU_CARDS="0",
+            )
+
+            result = subprocess.run(
+                ["bash", str(script)],
+                text=True,
+                capture_output=True,
+                env=env,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1)
+            self.assertTrue((root / "out/FINAL_REPORT.md").exists())
+            self.assertFalse((root / "out/.plan").exists())
+            self.assertFalse((root / "out/.state").exists())
 
     def test_auto_npu_cards_prefers_davinci_devices_over_npu_smi(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

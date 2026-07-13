@@ -445,7 +445,11 @@ def enforce_required_order(cells: List[Cell]) -> List[Cell]:
         cells,
         {
             CUSTOM_OP_CASE: {CUSTOM_OP_STATIC_LIB_CASE},
-            PARALLEL_OPS_PACKAGE_CASE: {CUSTOM_OP_STATIC_LIB_CASE},
+            PARALLEL_OPS_PACKAGE_CASE: {
+                CUSTOM_OP_STATIC_LIB_CASE,
+                CUSTOM_OP_CASE,
+                *CUSTOM_OP_DEPENDENT_CASES,
+            },
             **{dependent: {CUSTOM_OP_CASE} for dependent in CUSTOM_OP_DEPENDENT_CASES},
         },
     )

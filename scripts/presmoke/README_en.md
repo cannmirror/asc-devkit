@@ -34,6 +34,19 @@ Check which cases would run without executing them:
 bash scripts/run_presmoke.sh --dry-run
 ```
 
+Run only the build stage, without run or verify. This mode uses one workspace and preserves build artifacts:
+
+```bash
+bash scripts/run_presmoke.sh --stages build
+```
+
+Build one case only:
+
+```bash
+bash scripts/run_presmoke.sh --stages build \
+  --exact-filter 01_simd_cpp_api/01_utilities/02_dump/simple_dump
+```
+
 Run 910B on a specific card:
 
 ```bash
@@ -124,6 +137,7 @@ ARCH=dav-2201 PRIMARY_CARD=7 bash scripts/run_presmoke.sh --dry-run
 | `CPU_RUN_TIMEOUT` | `300` | Timeout in seconds for CPU run commands. Increase this when CPU-only validation is slower than expected. |
 | `SCHEDULE` | `fixed` | Case submit order. Watch runs should use `fixed`. |
 | `SCHEDULE_FILE` | built-in | Optional fixed order override. |
+| `SCHEDULE_REPORT` | empty | Optional historical report or `ALL_CASE_TIMINGS.tsv`. When set explicitly, multi-card assignments are recalculated from the report instead of using a built-in fixed shard. |
 | `OUT_ROOT` | `presmoke_reports/presmoke_<arch>_<timestamp>` | Output directory for CI archive. |
 | `MODES` | `npu` | Presmoke modes. |
 | `MODE` | unset | Alias used only when `MODES` is unset. For example, `MODE=cpu`. |
@@ -131,6 +145,44 @@ ARCH=dav-2201 PRIMARY_CARD=7 bash scripts/run_presmoke.sh --dry-run
 CPU debug mode is opt-in. Use `MODES=cpu` or `MODE=cpu`; the default watch path remains `npu`. CPU mode does not use the NPU fixed schedule unless `SCHEDULE_FILE` is explicitly provided.
 
 For CPU mode, the default parallelism is computed from the host CPU count instead of hard-coded for specific machines. For example, a 192-CPU host resolves to `JOBS=48`, `MAKE_JOBS=4`, and `CPU_RUN_SLOTS=192`; an 88-CPU host resolves to `JOBS=22`, `MAKE_JOBS=4`, and `CPU_RUN_SLOTS=88`.
+
+## Multi-card Sharding and Execution Model
+
+A full NPU run follows the model of one planning pass, multi-card sharding, an independent pipeline per card, and one final merged report:
+
+1. With `NPU_CARDS=auto`, the orchestrator scans `/dev/davinci*` first, falls back to `npu-smi`, and uses `PRIMARY_CARD` if neither method detects a card.
+2. The orchestrator performs one dry-run to obtain the complete case list after architecture, mode, schedule, and skip rules are applied.
+3. If a built-in fixed shard matches the architecture, mode, and card count, and `SCHEDULE_REPORT` is not set, the orchestrator uses that shard directly. Otherwise, the sharder reads historical `build`, `run`, and `verify` durations and simulates pipeline completion time; without stage timings, it falls back to longest-job-first greedy balancing using total case duration.
+4. Each card starts one independent runner with `JOBS` build workers, `NPU_SLOTS` NPU run workers, and `JOBS` verify workers. The default `NPU_SLOTS=1` keeps one NPU FIFO execution queue per card.
+5. Per-card reports are merged after all cards finish. Full-run elapsed time is measured from the earliest start to the latest finish, so sharding aims to make card durations and finish times as close as possible rather than assigning the same number of cases to every card.
+
+The following options force a single run instead of multi-card sharding: `--dry-run`, `--filter`, `--exact-filter`, `--exclude`, and `--stages build`.
+
+For multi-card runs, per-card CPU capacity is computed as `ceil(CPU(s) / card_count)`, then `JOBS`, `MAKE_JOBS`, and `CPU_RUN_SLOTS` are resolved independently for each card. Explicit environment values override the automatic values.
+
+The `make -j binary package` command for the `custom_op` package uses 16-way parallelism to shorten the custom-op build on the full-run critical path. Other cases in the same shard keep the `MAKE_JOBS` value calculated from their per-card CPU capacity.
+
+To avoid cross-card conflicts between custom-op package installation and consumers, the following cases form one indivisible shard group and always run on the same card:
+
+```text
+custom_op_static_lib
+└── custom_op
+    ├── aclnn_invocation
+    ├── aclop_invocation
+    ├── onnx_plugin
+    ├── tensorflow_builtin
+    ├── tensorflow_custom
+    └── tiling_sink_programming
+
+After the dependent cases finish
+└── parallel_ops_package
+```
+
+If `custom_op_static_lib` or `custom_op` fails, hard dependents are marked `SKIP: prerequisite failed` and their commands are not executed. `parallel_ops_package` may build early, but its run waits until `custom_op` and all dependent cases finish. Other cases, including scenarios from the same source case, may be assigned to different cards.
+
+The shard plan is written to `presmoke_reports/<run>/.plan/shards.tsv` and `.plan/shards/card_<id>.txt`; these temporary files are removed after the final report is generated. The actual case list, stage durations, and start/finish times for each card remain in `full_card<id>/results/report.json` and can be used to evaluate load and finish-time balance.
+
+The fixed shard for an 8-card 910B watch run is stored under `scripts/presmoke/schedules/shards/dav-2201_npu_8cards/card_<index>.txt`. These files contain only the logical-shard-to-case mapping; historical timing TSV files are not stored or committed. Logical shards are mapped in order to the detected physical card ids, and coverage validation requires every planned case to appear exactly once. Added, removed, duplicated, or missing cases fail fast. Set `SCHEDULE_REPORT` explicitly to bypass the fixed shard and recalculate assignments from that report.
 
 ## Reports
 
@@ -147,6 +199,10 @@ The orchestrator writes:
 - `ALL_CASE_TIMINGS.tsv`: per-case timing, NPU wait, step details, and executed commands.
 - `FAILURES.tsv`: failed or skipped primary results plus retry outcome.
 
+After each run, the orchestrator retains summaries, JUnit, TSV files, per-card metadata, machine-readable reports,
+and case/stage logs. Scheduling `.plan`, runtime `.state`, shard `.locks`, and case build
+artifacts are removed automatically and are not part of the CI artifacts.
+
 ## Fixed Schedule
 
 The default fixed schedules are:
@@ -157,7 +213,7 @@ The default fixed schedules are:
 They preserve the required custom-op ordering:
 
 - `custom_op_static_lib` runs before `custom_op`.
-- `parallel_ops_package` runs after `custom_op_static_lib`.
+- The run stage of `parallel_ops_package` starts after `custom_op` and all of its dependent cases finish.
 - `aclnn`, `aclop`, `onnx`, `tensorflow`, and `tiling_sink` run after `custom_op`.
 
 New cases not listed in a schedule file are appended to the end, then the custom-op dependency order is enforced again.

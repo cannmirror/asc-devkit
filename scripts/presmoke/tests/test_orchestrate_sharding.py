@@ -22,27 +22,49 @@ from presmoke.orchestrate_report import shard_examples
 
 
 class OrchestrateShardingTest(unittest.TestCase):
-    def test_sharding_keeps_same_source_case_on_one_card(self) -> None:
+    def test_custom_op_dependents_and_parallel_package_stay_on_one_card(self) -> None:
+        dependency_group = [
+            "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op_static_lib",
+            "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/custom_op",
+            "01_simd_cpp_api/02_features/99_acl_based/01_acl_invocation/aclnn_invocation",
+            "01_simd_cpp_api/02_features/99_acl_based/01_acl_invocation/aclop_invocation",
+            "01_simd_cpp_api/02_features/00_framework/02_onnx/onnx_plugin",
+            "04_aicpu/02_features/00_framework/00_pytorch/tiling_sink_programming",
+            "01_simd_cpp_api/02_features/99_acl_based/00_acl_compilation/parallel_ops_package",
+        ]
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            report = write_plan_report(root, ["case/a", "case/b", "case/c", "case/d"])
-            manifest = root / "manifest.json"
-            manifest.write_text(
-                json.dumps(
-                    [
-                        {"case": "case/a", "source_case": "case/source"},
-                        {"case": "case/b", "source_case": "case/source"},
-                    ]
-                ),
-                encoding="utf-8",
+            report = write_plan_report(
+                root, [*dependency_group, "case/a", "case/b", "case/c"]
+            )
+            assignments = dict(
+                (example, card)
+                for card, example in shard_examples(report, ["0", "1", "2"])
+            )
+
+        self.assertEqual(len({assignments[example] for example in dependency_group}), 1)
+
+    def test_sharding_can_split_same_source_case_across_cards(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            report = write_plan_report(
+                root,
+                [
+                    "case/source__scenario_1",
+                    "case/source__scenario_2",
+                    "case/c",
+                    "case/d",
+                ],
             )
 
             assignments = dict(
-                (example, card)
-                for card, example in shard_examples(report, ["0", "1"], manifest)
+                (example, card) for card, example in shard_examples(report, ["0", "1"])
             )
 
-        self.assertEqual(assignments["case/a"], assignments["case/b"])
+        self.assertNotEqual(
+            assignments["case/source__scenario_1"],
+            assignments["case/source__scenario_2"],
+        )
 
     def test_sharding_uses_duration_report_to_balance_cards(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -100,54 +122,33 @@ class OrchestrateShardingTest(unittest.TestCase):
         self.assertNotEqual(assignments["case/a"], assignments["case/b"])
         self.assertIn(assignments["case/c"], {"0", "1"})
 
-    def test_sharding_interleaves_same_card_source_groups(self) -> None:
+    def test_fixed_shards_map_logical_shards_to_detected_cards(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            report = write_plan_report(
-                root, ["case/a1", "case/a2", "case/b1", "case/b2"]
-            )
-            manifest = root / "manifest.json"
-            manifest.write_text(
-                json.dumps(
-                    [
-                        {"case": "case/a1", "source_case": "case/a"},
-                        {"case": "case/a2", "source_case": "case/a"},
-                        {"case": "case/b1", "source_case": "case/b"},
-                        {"case": "case/b2", "source_case": "case/b"},
-                    ]
-                ),
-                encoding="utf-8",
-            )
+            report = write_plan_report(root, ["case/a", "case/b", "case/c"])
+            shards = root / "shards"
+            shards.mkdir()
+            (shards / "card_0.txt").write_text("case/b\ncase/a\n", encoding="utf-8")
+            (shards / "card_1.txt").write_text("case/c\n", encoding="utf-8")
 
-            assignments = [
-                example for _, example in shard_examples(report, ["0"], manifest)
-            ]
+            assignments = shard_examples(report, ["4", "6"], fixed_shards=shards)
 
-        self.assertEqual(assignments, ["case/a1", "case/b1", "case/a2", "case/b2"])
+        self.assertEqual(
+            assignments,
+            [("4", "case/b"), ("4", "case/a"), ("6", "case/c")],
+        )
 
-    def test_sharding_can_split_source_groups_for_isolated_workspaces(self) -> None:
+    def test_fixed_shards_reject_incomplete_case_coverage(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            report = write_plan_report(root, ["case/a1", "case/a2"])
-            manifest = root / "manifest.json"
-            manifest.write_text(
-                json.dumps(
-                    [
-                        {"case": "case/a1", "source_case": "case/a"},
-                        {"case": "case/a2", "source_case": "case/a"},
-                    ]
-                ),
-                encoding="utf-8",
-            )
+            report = write_plan_report(root, ["case/a", "case/b"])
+            shards = root / "shards"
+            shards.mkdir()
+            (shards / "card_0.txt").write_text("case/a\n", encoding="utf-8")
+            (shards / "card_1.txt").write_text("", encoding="utf-8")
 
-            assignments = dict(
-                (example, card)
-                for card, example in shard_examples(
-                    report, ["0", "1"], manifest, keep_source_groups=False
-                )
-            )
-
-        self.assertNotEqual(assignments["case/a1"], assignments["case/a2"])
+            with self.assertRaisesRegex(ValueError, "missing planned cases.*case/b"):
+                shard_examples(report, ["0", "1"], fixed_shards=shards)
 
 
 def write_plan_report(root: Path, examples: list[str]) -> Path:

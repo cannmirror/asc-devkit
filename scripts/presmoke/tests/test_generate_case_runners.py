@@ -304,6 +304,8 @@ class GenerateCaseRunnersTest(unittest.TestCase):
             script,
         )
         self.assertIn('rm -rf "$CASE_DIR/build" "$BUILD_DIR"', script)
+        self.assertNotIn("presmoke_with_lock", script)
+        self.assertNotIn("_case_run_locked", script)
 
     def test_no_arch_injection_cases_do_not_pass_unused_cmake_arch(self) -> None:
         for rel_path in sorted(
@@ -407,15 +409,51 @@ class GenerateCaseRunnersTest(unittest.TestCase):
             custom_op_dependency=True,
         )
 
-        self.assertIn("presmoke_clear_plog", script)
+        self.assertNotIn("presmoke_clear_plog", script)
         self.assertIn("ASCEND_GLOBAL_LOG_LEVEL=1", script)
         self.assertIn("python3 test_add_custom_tiling_sink.py", script)
-        self.assertIn("presmoke_verify_tiling_sink_task_log", script)
+        self.assertIn("case_pid=$!", script)
         self.assertIn(
-            "GenerateTaskForSinkOp:Node [AddCustomTilingSink, AddCustomTilingSink] starts to generate tasks "
-            "for the tiling sink, sk_flag [0].",
+            'presmoke_verify_tiling_sink_task_log_for_pid "$case_pid"', script
+        )
+        self.assertIn(
+            "GenerateTaskForSinkOp:Node [AddCustomTilingSink, AddCustomTilingSink]",
             script,
         )
+        self.assertIn("for the tiling sink, sk_flag [0].", script)
+
+    def test_tiling_sink_log_verification_only_reads_target_pid(self) -> None:
+        project_root = Path(__file__).resolve().parents[3]
+        case_common = project_root / "scripts/presmoke/case_common.sh"
+        marker = (
+            "GenerateTaskForSinkOp:Node [AddCustomTilingSink, AddCustomTilingSink] starts to generate tasks "
+            "for the tiling sink, sk_flag [0]."
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            log_root = Path(tmp) / "ascend/log"
+            debug_plog = log_root / "debug/plog"
+            debug_plog.mkdir(parents=True)
+            (debug_plog / "plog-111_20260713120000.log").write_text(
+                marker, encoding="utf-8"
+            )
+            script = f"""
+source {case_common}
+PRESMOKE_ASCEND_LOG_ROOT={log_root}
+PRESMOKE_PLOG_FLUSH_TIMEOUT=0
+presmoke_verify_tiling_sink_task_log_for_pid 222 '{marker}'
+"""
+            result = subprocess.run(
+                ["bash", "-c", script], text=True, capture_output=True, check=False
+            )
+            self.assertNotEqual(result.returncode, 0)
+
+            (debug_plog / "plog-222_20260713120001.log").write_text(
+                marker, encoding="utf-8"
+            )
+            result = subprocess.run(
+                ["bash", "-c", script], text=True, capture_output=True, check=False
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_custom_op_provider_runner_uses_locked_installer_in_run_step(self) -> None:
         script = render_runner_from_parts(

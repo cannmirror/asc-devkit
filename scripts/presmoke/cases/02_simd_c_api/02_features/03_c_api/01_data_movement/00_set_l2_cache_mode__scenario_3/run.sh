@@ -11,34 +11,23 @@
 
 set -euo pipefail
 
-CASE_REL=04_aicpu/02_features/00_framework/00_pytorch/tiling_sink_programming
+CASE_REL=02_simd_c_api/02_features/03_c_api/01_data_movement/00_set_l2_cache_mode
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../../../../../_case_entry.sh"
 presmoke_case_init "$CASE_REL"
+BUILD_DIR="$CASE_DIR/build_${MODE}_scenario_3"
+export BUILD_DIR
 
 case_build() {
     mkdir -p "$BUILD_DIR"
-    presmoke_ensure_custom_op_package
+    (cd "$BUILD_DIR" && ASC_ARCH=$ARCH SCENARIO_NUM=3 soc_version=$SOC_VERSION bash -lc 'cmake -DSCENARIO_NUM=3 .. -DCMAKE_ASC_ARCHITECTURES="$ARCH" $RUN_MODE_ARG')
+    (cd "$BUILD_DIR" && ASC_ARCH=$ARCH SCENARIO_NUM=3 soc_version=$SOC_VERSION bash -lc 'make -j')
+    (cd "$BUILD_DIR" && ASC_ARCH=$ARCH SCENARIO_NUM=3 soc_version=$SOC_VERSION bash -lc 'python3 ../scripts/gen_data.py -scenarioNum 3')
 }
 
 case_run() {
     mkdir -p "$BUILD_DIR"
-    local sink_log_pattern
-    sink_log_pattern='GenerateTaskForSinkOp:Node [AddCustomTilingSink, AddCustomTilingSink] starts to generate tasks'
-    sink_log_pattern+=' for the tiling sink, sk_flag [0].'
-    local case_pid case_rc=0
-    (
-        cd "$CASE_DIR"
-        exec env \
-            ASCEND_GLOBAL_LOG_LEVEL=1 \
-            soc_version=$SOC_VERSION bash -lc 'exec python3 test_add_custom_tiling_sink.py'
-    ) &
-    case_pid=$!
-    wait "$case_pid" || case_rc=$?
-    if (( case_rc != 0 )); then
-        return "$case_rc"
-    fi
-    presmoke_verify_tiling_sink_task_log_for_pid "$case_pid" "$sink_log_pattern"
+    (cd "$BUILD_DIR" && ASC_ARCH=$ARCH SCENARIO_NUM=3 soc_version=$SOC_VERSION bash -lc ./demo)
 }
 
 case_verify() {
