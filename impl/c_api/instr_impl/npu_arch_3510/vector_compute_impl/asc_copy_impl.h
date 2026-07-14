@@ -14,7 +14,7 @@
  */
 
 #if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
-#warning                                                                                                               \
+#warning \
     "impl/c_api/instr_impl/npu_arch_3510/vector_compute_impl/asc_copy_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "c_api/asc_simd.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
@@ -23,7 +23,7 @@
 #ifndef IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_VECTOR_COMPUTEMOVE_IMPL_ASC_COPY_IMPL_H
 #define IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_VECTOR_COMPUTEMOVE_IMPL_ASC_COPY_IMPL_H
 
-#include "instr_impl/npu_arch_3510/utils_impl.h"
+#include "impl/c_api/instr_impl/npu_arch_3510/utils_impl.h"
 
 __simd_callee__ inline void asc_copy_impl(vector_int8_t& dst, vector_int8_t src, vector_bool mask)
 {
@@ -90,28 +90,28 @@ __simd_callee__ inline void asc_copy_impl(vector_bfloat16_t& dst, vector_bfloat1
 
 __simd_callee__ inline void asc_copy_impl(vector_bool& dst, vector_bool src, vector_bool mask)
 {
-    if ASC_IS_AIV{
+    if ASC_IS_AIV {
         pmov(dst, src, mask);
     }
 }
 
 __simd_callee__ inline void asc_copy_impl(vector_bool& dst, vector_bool src)
 {
-    if ASC_IS_AIV{
+    if ASC_IS_AIV {
         pmov(dst, src);
     }
 }
 
 __simd_callee__ inline void asc_copy_impl(vector_bool& dst, vector_uint16_t src, int16_t part)
 {
-    if ASC_IS_AIV{
+    if ASC_IS_AIV {
         movvp(dst, src, part);
     }
 }
 
 __simd_callee__ inline void asc_copy_impl(vector_bool& dst, vector_uint32_t src, int16_t part)
 {
-    if ASC_IS_AIV{
+    if ASC_IS_AIV {
         movvp(dst, src, part);
     }
 }

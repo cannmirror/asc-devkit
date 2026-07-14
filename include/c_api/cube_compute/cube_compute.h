@@ -8,22 +8,25 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
+#if defined(__NPU_COMPILER_INTERNAL_PURE_SIMT__)
+#error "cube_compute.h cannot be used with compile flag --enable-simt enabled."
+#endif
 
-#if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)  
-#define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
-#define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H  
-#endif     
+#if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
+#define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H
+#endif
 
 #ifndef INCLUDE_C_API_CUBE_COMPUTE_CUBE_COMPUTE_H
 #define INCLUDE_C_API_CUBE_COMPUTE_CUBE_COMPUTE_H
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 
-#include "instr_impl/npu_arch_2201/cube_compute_impl.h"
+#include "impl/c_api/instr_impl/npu_arch_2201/cube_compute_impl.h"
 
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 
-#include "instr_impl/npu_arch_3510/cube_compute_impl.h"
+#include "impl/c_api/instr_impl/npu_arch_3510/cube_compute_impl.h"
 
 #endif
 
@@ -86,7 +89,7 @@ __aicore__ inline void asc_mmad(__cc__ int32_t* c_matrix, __ca__ int8_t* a_matri
     bool is_weight_offset, bool c_matrix_source, bool c_matrix_init_val);
 
 __aicore__ inline void asc_mmad_sync(__cc__ int32_t* c_matrix, __ca__ int8_t* a_matrix, __cb__ int8_t* b_matrix, uint16_t left_height,
-     uint16_t n_dim, uint16_t right_width, uint8_t feat_offset, uint8_t smask_offset, uint8_t unit_flag, bool k_direction_align, 
+     uint16_t n_dim, uint16_t right_width, uint8_t feat_offset, uint8_t smask_offset, uint8_t unit_flag, bool k_direction_align,
     bool is_weight_offset, bool c_matrix_source, bool c_matrix_init_val);
 
 __aicore__ inline void asc_mmad_s4(__cc__ int32_t* c_matrix, __ca__ int4b_t* a_matrix, __cb__ int4b_t* b_matrix, uint16_t left_height,
@@ -104,11 +107,11 @@ __aicore__ inline void asc_mmad_s4_sync(__cc__ int32_t* c_matrix, __ca__ int4b_t
     bool c_matrix_source, bool c_matrix_init_val);
 
 __aicore__ inline void asc_mmad_sparse(__cc__ int32_t* c, __ca__ int8_t* a, __cb__ int8_t* b, uint16_t m, uint16_t k,
-                                       uint16_t n, uint8_t unit_flag, bool cmatrix_source, bool cmatrix_init_val);
+                                       uint16_t n, uint8_t unit_flag, bool c_matrix_source, bool c_matrix_init_val);
 
 __aicore__ inline void asc_mmad_sparse_sync(__cc__ int32_t* c, __ca__ int8_t* a, __cb__ int8_t* b, uint16_t m,
-                                            uint16_t k, uint16_t n, uint8_t unit_flag, bool cmatrix_source,
-                                            bool cmatrix_init_val);
+                                            uint16_t k, uint16_t n, uint8_t unit_flag, bool c_matrix_source,
+                                            bool c_matrix_init_val);
 
 __aicore__ inline void asc_set_mmad_direction_m();
 
@@ -204,39 +207,39 @@ __aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ bfloat16_t* 
                                      uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag,
                                      bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
 
-__aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ float8_e4m3_t* a_matrix, __cb__ float8_e4m3_t* b_matrix,
+__aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ fp8_e4m3fn_t* a_matrix, __cb__ fp8_e4m3fn_t* b_matrix,
                                 uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag,
                                 bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
 
-__aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ float8_e4m3_t* a_matrix,
-                                     __cb__ float8_e4m3_t* b_matrix, uint16_t left_height, uint16_t n_dim,
+__aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ fp8_e4m3fn_t* a_matrix,
+                                     __cb__ fp8_e4m3fn_t* b_matrix, uint16_t left_height, uint16_t n_dim,
                                      uint16_t right_width, uint8_t unit_flag, bool disable_gemv, bool c_matrix_source,
                                      bool c_matrix_init_val);
 
-__aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ float8_e4m3_t* a_matrix, __cb__ float8_e5m2_t* b_matrix,
+__aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ fp8_e4m3fn_t* a_matrix, __cb__ fp8_e5m2_t* b_matrix,
                                 uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag,
                                 bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
 
-__aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ float8_e4m3_t* a_matrix,
-                                     __cb__ float8_e5m2_t* b_matrix, uint16_t left_height, uint16_t n_dim,
+__aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ fp8_e4m3fn_t* a_matrix,
+                                     __cb__ fp8_e5m2_t* b_matrix, uint16_t left_height, uint16_t n_dim,
                                      uint16_t right_width, uint8_t unit_flag, bool disable_gemv, bool c_matrix_source,
                                      bool c_matrix_init_val);
 
-__aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ float8_e5m2_t* a_matrix, __cb__ float8_e4m3_t* b_matrix,
+__aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ fp8_e5m2_t* a_matrix, __cb__ fp8_e4m3fn_t* b_matrix,
                                 uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag,
                                 bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
 
-__aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ float8_e5m2_t* a_matrix,
-                                     __cb__ float8_e4m3_t* b_matrix, uint16_t left_height, uint16_t n_dim,
+__aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ fp8_e5m2_t* a_matrix,
+                                     __cb__ fp8_e4m3fn_t* b_matrix, uint16_t left_height, uint16_t n_dim,
                                      uint16_t right_width, uint8_t unit_flag, bool disable_gemv, bool c_matrix_source,
                                      bool c_matrix_init_val);
 
-__aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ float8_e5m2_t* a_matrix, __cb__ float8_e5m2_t* b_matrix,
+__aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ fp8_e5m2_t* a_matrix, __cb__ fp8_e5m2_t* b_matrix,
                                 uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag,
                                 bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
 
-__aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ float8_e5m2_t* a_matrix,
-                                     __cb__ float8_e5m2_t* b_matrix, uint16_t left_height, uint16_t n_dim,
+__aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ fp8_e5m2_t* a_matrix,
+                                     __cb__ fp8_e5m2_t* b_matrix, uint16_t left_height, uint16_t n_dim,
                                      uint16_t right_width, uint8_t unit_flag, bool disable_gemv, bool c_matrix_source,
                                      bool c_matrix_init_val);
 
@@ -264,11 +267,33 @@ __aicore__ inline void asc_mmad_sync(__cc__ int32_t* c_matrix, __ca__ int8_t* a_
                                      uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag,
                                      bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
 
-#endif
+__aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ hifloat8_t* a_matrix, __cb__ hifloat8_t* b_matrix,
+                                        uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag,
+                                        bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+
+__aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ hifloat8_t* a_matrix, __cb__ hifloat8_t* b_matrix,
+                                             uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag,
+                                             bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+
+__aicore__ inline void asc_enable_hf32_trans(uint32_t mode);
+
+__aicore__ inline void asc_enable_hf32();
+
+__aicore__ inline void asc_set_fp32_mode();
+
+__aicore__ inline void asc_enable_hif8();
+
+__aicore__ inline void asc_enable_fp8();
+
+__aicore__ inline void asc_set_mmad_direction_m();
+
+__aicore__ inline void asc_set_mmad_direction_n();
 
 #endif
 
-#if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H)  
-#undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
-#undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H  
-#endif    
+#endif
+
+#if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H)
+#undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H
+#endif

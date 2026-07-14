@@ -14,7 +14,7 @@
  */
 
 #if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
-#warning                                                                                                               \
+#warning \
     "impl/c_api/instr_impl/npu_arch_2201/atomic_impl/asc_set_atomic_add_int8_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "c_api/asc_simd.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
@@ -23,7 +23,7 @@
 #ifndef IMPL_C_API_INSTR_IMPL_NPU_ARCH_2201_ATOMIC_IMPL_ASC_SET_ATOMIC_ADD_INT8_IMPL_H
 #define IMPL_C_API_INSTR_IMPL_NPU_ARCH_2201_ATOMIC_IMPL_ASC_SET_ATOMIC_ADD_INT8_IMPL_H
 
-#include "instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
+#include "impl/c_api/instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
 
 __aicore__ inline void asc_set_atomic_add_int8_impl()
 {

@@ -8,22 +8,25 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
+#if defined(__NPU_COMPILER_INTERNAL_PURE_SIMT__)
+#error "sync.h cannot be used with compile flag --enable-simt enabled."
+#endif
 
-#if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)  
-#define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
-#define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H  
-#endif     
+#if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
+#define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H
+#endif
 
 #ifndef INCLUDE_C_API_SYNC_SYNC_H
 #define INCLUDE_C_API_SYNC_SYNC_H
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 
-#include "instr_impl/npu_arch_2201/sync_impl.h"
+#include "impl/c_api/instr_impl/npu_arch_2201/sync_impl.h"
 
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 
-#include "instr_impl/npu_arch_3510/sync_impl.h"
+#include "impl/c_api/instr_impl/npu_arch_3510/sync_impl.h"
 
 #endif
 
@@ -43,13 +46,19 @@ __aicore__ inline void asc_sync();
 
 #define asc_sync_block_arrive(pipe, flag_id) asc_sync_block_arrive_impl((pipe), (flag_id))
 
+#define asc_sync_subblock_arrive(pipe, flag_id) asc_sync_subblock_arrive_impl((pipe), (flag_id))
+
+#define asc_sync_inter_arrive(pipe, flag_id) asc_sync_inter_arrive_impl((pipe), (flag_id))
+
 #define asc_sync_data_barrier(arg) asc_sync_data_barrier_impl((arg))
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 
-#define asc_sync_block_wait(pipe, flagID) wait_flag_dev((flagID))
+#define asc_sync_subblock_wait(pipe, flag_id) wait_flag_dev((pipe), (flag_id))
 
-#define asc_sync_inter_wait(pipe, flagID) wait_flag_dev((flagID))
+#define asc_sync_block_wait(pipe, flag_id) wait_flag_dev((flag_id))
+
+#define asc_sync_inter_wait(pipe, flag_id) wait_flag_dev((flag_id))
 
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 
@@ -57,19 +66,26 @@ __aicore__ inline void asc_sync();
 
 #define asc_sync_intra_wait(pipe, sync_id) wait_intra_block((pipe), (sync_id))
 
+#define asc_sync_subblock_wait(pipe, flag_id) wait_flag_dev((pipe), (flag_id))
+
 #define asc_sync_inter_wait(pipe, flag_id) wait_flag_dev((pipe), (flag_id))
 
 #define asc_sync_block_wait(pipe, flag_id) wait_flag_dev((pipe), (flag_id))
 
-#define asc_release_buf(pipe, buf_id, mode) rls_buf((pipe), (buf_id), (mode))
+enum ascMutexExecuteMode {
+    ASC_LOCK_BLOCK = 0,    // Block the execution of the pipeline indicated by pipe (Default).
+    ASC_LOCK_NON_BLOCK = 1 // Won't block execution of the pipeline.
+};
 
-#define asc_get_buf(pipe, buf_id, mode) asc_get_buf_impl((pipe), (buf_id), (mode))
+#define asc_lock(pipe, mutex_id, ...) asc_lock_impl((pipe), (mutex_id), (ASC_LOCK_BLOCK, ##__VA_ARGS__))
+
+#define asc_unlock(pipe, mutex_id, ...) asc_unlock_impl((pipe), (mutex_id), (ASC_LOCK_BLOCK, ##__VA_ARGS__))
 
 #endif
 
 #endif
 
-#if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H)  
-#undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
-#undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H  
-#endif    
+#if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H)
+#undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
+#undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H
+#endif

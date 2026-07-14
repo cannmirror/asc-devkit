@@ -11,10 +11,11 @@
 #ifndef IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_SYS_VAR_IMPL_ASC_GET_VF_LEN_IMPL_H
 #define IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_SYS_VAR_IMPL_ASC_GET_VF_LEN_IMPL_H
 
-#include "instr_impl/npu_arch_3510/utils_impl.h"
+#include "impl/c_api/instr_impl/npu_arch_3510/utils_impl.h"
 
 __aicore__ inline constexpr int64_t asc_get_vf_len_impl()
 {
+    constexpr int64_t VECTOR_REG_WIDTH_3510 = 256;
     return VECTOR_REG_WIDTH_3510;
 }
 

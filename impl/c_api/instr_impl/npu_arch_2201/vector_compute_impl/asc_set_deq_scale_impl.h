@@ -9,7 +9,7 @@
  */
 
 #if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
-#warning                                                                                                               \
+#warning \
     "impl/c_api/instr_impl/npu_arch_2201/vector_compute_impl/asc_set_deq_scale_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "c_api/asc_simd.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
@@ -18,19 +18,22 @@
 #ifndef IMPL_CAPI_INSTR_IMPL_NPU_ARCH_2201_VECTOR_COMPUTE_IMPL_ASC_SET_DEQSCALE_IMPL_H
 #define IMPL_CAPI_INSTR_IMPL_NPU_ARCH_2201_VECTOR_COMPUTE_IMPL_ASC_SET_DEQSCALE_IMPL_H
 
-#include "instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
+#include "impl/c_api/instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
 
 __aicore__ inline uint64_t asc_make_deq_scale_config(float scale, int16_t offset, bool sign_mode)
 {
     constexpr uint64_t sign_mode_bit = 46;
     constexpr uint64_t offset_mask = 0x1ff;
     constexpr uint64_t offset_bit = 37;
-    uint64_t cfg = ((static_cast<uint64_t>(sign_mode) << sign_mode_bit) | ((offset & offset_mask) << offset_bit)
-                        | *(reinterpret_cast<uint32_t*>(&scale)));
+    uint64_t cfg =
+        ((static_cast<uint64_t>(sign_mode) << sign_mode_bit) | ((offset & offset_mask) << offset_bit) |
+         *(reinterpret_cast<uint32_t*>(&scale)));
     return cfg;
 }
 
-__aicore__ inline void asc_set_deq_scale_impl(__ubuf__ uint64_t* tmp, float scale_arr[ASC_VDEQ_SIZE], int16_t offset_arr[ASC_VDEQ_SIZE], bool sign_mode_arr[ASC_VDEQ_SIZE])
+__aicore__ inline void asc_set_deq_scale_impl(
+    __ubuf__ uint64_t* tmp, float scale_arr[ASC_VDEQ_SIZE], int16_t offset_arr[ASC_VDEQ_SIZE],
+    bool sign_mode_arr[ASC_VDEQ_SIZE])
 {
     if ASC_IS_AIV {
         for (uint8_t i = 0; i < ASC_VDEQ_SIZE; i++) {

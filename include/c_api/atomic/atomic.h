@@ -8,6 +8,10 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
+#if defined(__NPU_COMPILER_INTERNAL_PURE_SIMT__)
+#error "atomic.h cannot be used with compile flag --enable-simt enabled."
+#endif
+
 #if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H
@@ -18,11 +22,11 @@
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 
-#include "instr_impl/npu_arch_2201/atomic_impl.h"
+#include "impl/c_api/instr_impl/npu_arch_2201/atomic_impl.h"
 
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 
-#include "instr_impl/npu_arch_3510/atomic_impl.h"
+#include "impl/c_api/instr_impl/npu_arch_3510/atomic_impl.h"
 
 #endif
 
@@ -76,7 +80,25 @@ __aicore__ inline void asc_set_atomic_add_float16();
 
 __aicore__ inline void asc_set_atomic_max_float();
 
+[[deprecated("NOTICE: asc_get_store_atomic_config is deprecated on Ascend 950PR/Ascend 950DT."
+             "Please use asc_atomic_add instead for atomic add operation.")]]
+__aicore__ inline void asc_get_store_atomic_config(asc_store_atomic_config& config);
+
+[[deprecated("NOTICE: asc_set_store_atomic_config_v2 is deprecated."
+             "Please use asc_atomic_add instead for atomic add operation.")]]
 __aicore__ inline void asc_set_store_atomic_config_v2(uint16_t type, uint16_t op);
+
+__aicore__ inline void asc_set_atomic_max_int();
+
+__aicore__ inline void asc_set_atomic_max_int8();
+
+__aicore__ inline void asc_set_atomic_max_int16();
+
+__aicore__ inline void asc_set_atomic_min_int();
+
+__aicore__ inline void asc_set_atomic_min_int8();
+
+__aicore__ inline void asc_set_atomic_min_int16();
 
 #endif
 

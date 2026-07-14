@@ -14,7 +14,8 @@
  */
 
 #if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
-#warning "impl/c_api/instr_impl/npu_arch_2201/cube_compute_impl/asc_enable_hf32_trans_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "c_api/asc_simd.h"" and use public functions or variables defined in interface headers files."
+#warning \
+    "impl/c_api/instr_impl/npu_arch_2201/cube_compute_impl/asc_enable_hf32_trans_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "c_api/asc_simd.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
@@ -22,16 +23,16 @@
 #ifndef IMPL_C_API_INSTR_IMPL_NPU_ARCH_2201_CUBE_COMPUTE_IMPL_ASC_ENABLE_HF32_TRANS_IMPL_H
 #define IMPL_C_API_INSTR_IMPL_NPU_ARCH_2201_CUBE_COMPUTE_IMPL_ASC_ENABLE_HF32_TRANS_IMPL_H
 
-#include "instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
+#include "impl/c_api/instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
 
 __aicore__ inline void asc_enable_hf32_trans_impl(uint32_t mode)
 {
-    constexpr uint64_t hf32_trans_mode_or_bit = 0x0000000000800000ULL;
-    constexpr uint64_t hf32_trans_mode_and_bit = 0xFFFFFFFFFF7FFFFFULL;
-    uint64_t trans_mode = mode;
-    uint64_t ctrl_val = get_ctrl();
-    ctrl_val = trans_mode ? (ctrl_val | hf32_trans_mode_or_bit) : (ctrl_val & hf32_trans_mode_and_bit);
-    set_ctrl(ctrl_val);
+    constexpr int32_t HF32_TRANS_MODE_BIT = 47;
+    if (mode) {
+        set_ctrl(sbitset1(get_ctrl(), HF32_TRANS_MODE_BIT));
+    } else {
+        set_ctrl(sbitset0(get_ctrl(), HF32_TRANS_MODE_BIT));
+    }
 }
 
 #endif

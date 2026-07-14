@@ -8,6 +8,10 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
+#if defined(__NPU_COMPILER_INTERNAL_PURE_SIMT__)
+#error "scalar_compute.h cannot be used with compile flag --enable-simt enabled."
+#endif
+
 #if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H
@@ -18,11 +22,11 @@
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 
-#include "instr_impl/npu_arch_2201/scalar_compute_impl.h"
+#include "impl/c_api/instr_impl/npu_arch_2201/scalar_compute_impl.h"
 
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 
-#include "instr_impl/npu_arch_3510/scalar_compute_impl.h"
+#include "impl/c_api/instr_impl/npu_arch_3510/scalar_compute_impl.h"
 
 #endif
 
@@ -73,6 +77,101 @@ __aicore__ inline void asc_store_dev(__gm__ uint64_t* addr, uint64_t value);
 __aicore__ inline uint64_t asc_clear_nthbit(uint64_t bits, int64_t idx);
 
 __aicore__ inline uint64_t asc_set_nthbit(uint64_t bits, int64_t idx);
+
+namespace __asc_aicore {
+
+__aicore__ inline int32_t asc_atomic_add(__gm__ int32_t* address, int32_t val);
+
+__aicore__ inline uint32_t asc_atomic_add(__gm__ uint32_t* address, uint32_t val);
+
+__aicore__ inline float asc_atomic_add(__gm__ float* address, float val);
+
+__aicore__ inline int64_t asc_atomic_add(__gm__ int64_t* address, int64_t val);
+
+__aicore__ inline uint64_t asc_atomic_add(__gm__ uint64_t* address, uint64_t val);
+
+__aicore__ inline int32_t asc_atomic_sub(__gm__ int32_t* address, int32_t val);
+
+__aicore__ inline uint32_t asc_atomic_sub(__gm__ uint32_t* address, uint32_t val);
+
+__aicore__ inline float asc_atomic_sub(__gm__ float* address, float val);
+
+__aicore__ inline int64_t asc_atomic_sub(__gm__ int64_t* address, int64_t val);
+
+__aicore__ inline uint64_t asc_atomic_sub(__gm__ uint64_t* address, uint64_t val);
+
+__aicore__ inline int32_t asc_atomic_exch(__gm__ int32_t* address, int32_t val);
+
+__aicore__ inline uint32_t asc_atomic_exch(__gm__ uint32_t* address, uint32_t val);
+
+__aicore__ inline float asc_atomic_exch(__gm__ float* address, float val);
+
+__aicore__ inline int64_t asc_atomic_exch(__gm__ int64_t* address, int64_t val);
+
+__aicore__ inline uint64_t asc_atomic_exch(__gm__ uint64_t* address, uint64_t val);
+
+__aicore__ inline int32_t asc_atomic_max(__gm__ int32_t* address, int32_t val);
+
+__aicore__ inline uint32_t asc_atomic_max(__gm__ uint32_t* address, uint32_t val);
+
+__aicore__ inline float asc_atomic_max(__gm__ float* address, float val);
+
+__aicore__ inline int64_t asc_atomic_max(__gm__ int64_t* address, int64_t val);
+
+__aicore__ inline uint64_t asc_atomic_max(__gm__ uint64_t* address, uint64_t val);
+
+__aicore__ inline int32_t asc_atomic_min(__gm__ int32_t* address, int32_t val);
+
+__aicore__ inline uint32_t asc_atomic_min(__gm__ uint32_t* address, uint32_t val);
+
+__aicore__ inline float asc_atomic_min(__gm__ float* address, float val);
+
+__aicore__ inline int64_t asc_atomic_min(__gm__ int64_t* address, int64_t val);
+
+__aicore__ inline uint64_t asc_atomic_min(__gm__ uint64_t* address, uint64_t val);
+
+__aicore__ inline int32_t asc_atomic_cas(__gm__ int32_t* address, int32_t compare, int32_t val);
+
+__aicore__ inline uint32_t asc_atomic_cas(__gm__ uint32_t* address, uint32_t compare, uint32_t val);
+
+__aicore__ inline float asc_atomic_cas(__gm__ float* address, float compare, float val);
+
+__aicore__ inline int64_t asc_atomic_cas(__gm__ int64_t* address, int64_t compare, int64_t val);
+
+__aicore__ inline uint64_t asc_atomic_cas(__gm__ uint64_t* address, uint64_t compare, uint64_t val);
+
+__aicore__ inline int32_t asc_atomic_and(__gm__ int32_t* address, int32_t val);
+
+__aicore__ inline uint32_t asc_atomic_and(__gm__ uint32_t* address, uint32_t val);
+
+__aicore__ inline int64_t asc_atomic_and(__gm__ int64_t* address, int64_t val);
+
+__aicore__ inline uint64_t asc_atomic_and(__gm__ uint64_t* address, uint64_t val);
+
+__aicore__ inline int32_t asc_atomic_or(__gm__ int32_t* address, int32_t val);
+
+__aicore__ inline uint32_t asc_atomic_or(__gm__ uint32_t* address, uint32_t val);
+
+__aicore__ inline int64_t asc_atomic_or(__gm__ int64_t* address, int64_t val);
+
+__aicore__ inline uint64_t asc_atomic_or(__gm__ uint64_t* address, uint64_t val);
+
+__aicore__ inline int32_t asc_atomic_xor(__gm__ int32_t* address, int32_t val);
+
+__aicore__ inline uint32_t asc_atomic_xor(__gm__ uint32_t* address, uint32_t val);
+
+__aicore__ inline int64_t asc_atomic_xor(__gm__ int64_t* address, int64_t val);
+
+__aicore__ inline uint64_t asc_atomic_xor(__gm__ uint64_t* address, uint64_t val);
+
+__aicore__ inline uint32_t asc_atomic_inc(__gm__ uint32_t* address, uint32_t val);
+
+__aicore__ inline uint64_t asc_atomic_inc(__gm__ uint64_t* address, uint64_t val);
+
+__aicore__ inline uint32_t asc_atomic_dec(__gm__ uint32_t* address, uint32_t val);
+
+__aicore__ inline uint64_t asc_atomic_dec(__gm__ uint64_t* address, uint64_t val);
+}
 
 #endif
 
