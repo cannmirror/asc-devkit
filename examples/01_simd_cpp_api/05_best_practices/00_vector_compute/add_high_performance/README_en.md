@@ -541,7 +541,7 @@ The table below shows performance data comparison for this example running on As
 | 4 | Double buffer | 64 | 21760 | 247.665 | 10.976 | 4.965 | NA | 1.712 | 4960.2x |
 | 5 | L2 Cache bypass | 64 | 21760 | 182.04 | 10.997 | 4.965 | NA | 2.256 | 6748.4x |
 
-The main reason `dataCopyLen` is increased on Ascend 950 Series is that UB capacity increases from 192KB to 256KB. In double buffer scenarios, this example needs to simultaneously place `x/y/z` Ping-Pong totaling 6 buffer blocks, so single block available space can be approximated as `UBSIZE/6`:
+The main reason `dataCopyLen` is increased on Ascend 950 Series is that UB capacity increases. In double buffer scenarios, this example needs to simultaneously place `x/y/z` Ping-Pong totaling 6 buffer blocks, so single block available space can be approximated as `UBSIZE/6`:
 - Atlas A2/A3 Series: `192KB / 6 = 32KB`, corresponding to `32KB / 2B = 16384` `half` elements
 - Ascend 950 Series: `256KB / 6 ≈ 42.67KB`, corresponding to approximately `21840` `half` elements
 
