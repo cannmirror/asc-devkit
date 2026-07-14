@@ -217,7 +217,7 @@ Cube                                               | Mmad Ping ---|   | Mmad Pon
 L0C->GM                                                           | Copy L0C to GM ---
 ```
 
-图中横线长度只用于表达不同阶段耗时可能不同，并不代表实测比例；真实耗时需要以 `msprof` 采集结果为准。
+图中横线长度只用于表达不同阶段耗时可能不同，并不代表实测比例；真实耗时需要以 `msopprof` 采集结果为准。
 
 在 K 循环中，当前 K block 进入 Cube 计算时，下一批 A/B/ScaleA/ScaleB 可以提前发起搬运。Ping 和 Pong 交替使用，生产者和消费者通过事件同步确认缓冲区是否可写、数据是否可读。
 
@@ -484,27 +484,36 @@ test pass!
 
 ### NPU模式性能分析
 
-使用 `msprof` 工具获取NPU模式运行时详细的性能数据：
+### msOpProf工具介绍
+msOpProf工具是单算子性能分析工具。包含msopprof和msopprof simulator两种使用方式。该工具协助用户定位算子内存、算子代码以及算子指令的异常，实现全方位的算子调优。当前支持基于不同运行模式（上板或仿真）和不同文件形式（可执行文件或算子二进制.o文件）进行性能数据的采集和自动解析。
 
-```bash
-msprof ./demo
-```
+- 上板性能采集
 
-当前目录下会生成 PROF_ 前缀的文件夹，`mindstudio_profiler_output` 目录保存性能数据汇总，性能数据分析推荐查看该目录下文件：
+    通过上板性能采集，可以直接测定算子昇腾AI处理器上的运行时间。该方式适合在板环境中快速定位算子性能问题。
 
-```bash
-PROF_xxxx_XXXXXX
-├── device_{id}
-├── host
-├── mindstudio_profiler_log
-└── mindstudio_profiler_output
-    ├── msprof_*.json
-    ├── xx_*.csv
-    └── README.txt
-```
+    基于可执行文件demo通过msopprof执行算子调优：
+    ```
+    msopprof ./demo
+    ```
+
+    - 性能数据说明  
+      命令完成后，会在默认目录下生成以“OPPROF_{timestamp}_XXX”命名的文件夹,性能数据文件夹结构示例如下：
+
+      ```bash
+      ├──dump                       # 原始的性能数据，用户无需关注
+      ├──ArithmeticUtilization.csv  # cube/vector指令cycle占比
+      ├──L2Cache.csv                # L2 Cache命中率，影响MTE2，建议合理规划数据搬运逻辑，增加命中率
+      ├──Memory.csv                 # UB，L1和主存储器读写带宽速率
+      ├──MemoryL0.csv               # L0A，L0B，和L0C读写带宽速率
+      ├──MemoryUB.csv               # Vector和Scalar到UB的读写带宽速率
+      ├──OpBasicInfo.csv            # 算子基础信息
+      ├──PipeUtilization.csv        # 采集计算单元和搬运单元耗时和占比
+      ├──ResourceConflictRatio.csv  # UB上的bank group、bank conflict和资源冲突率在所有指令中的占比
+      └──visualize_data.bin         # MindStudio Insight呈现文件
+      ```
 
 查看具体的性能分析结果：
 
 ```bash
-cat ./PROF_*/mindstudio_profiler_output/op_summary_*.csv
+cat ./OPPROF_*/PipeUtilization.csv
 ```

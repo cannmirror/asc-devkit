@@ -451,7 +451,7 @@
     "commands": [
       "cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-2201",
       "make -j",
-      "msprof op ./demo"
+      "msopprof ./demo"
     ]
   },
   {
@@ -557,7 +557,7 @@
       "cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-2201",
       "make -j",
       "python3 ../scripts/gen_data.py",
-      "msprof op simulator --soc-version=Ascend910B1 ./demo",
+      "msopprof simulator --soc-version=Ascend910B1 ./demo",
       "python3 ../scripts/verify_result.py ./output/output.bin ./output/golden.bin"
     ]
   },
@@ -13229,7 +13229,7 @@
     "commands": [
       "cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-2201",
       "make -j",
-      "msprof op ./demo"
+      "msopprof ./demo"
     ]
   },
   {
@@ -13255,7 +13255,7 @@
       "cmake .. -DCMAKE_ASC_ARCHITECTURES=dav-2201",
       "make -j",
       "python3 ../scripts/gen_data.py",
-      "msprof op simulator --soc-version=<soc_version> ./demo",
+      "msopprof simulator --soc-version=<soc_version> ./demo",
       "python3 ../scripts/verify_result.py ./output/output.bin ./output/golden.bin"
     ]
   },

@@ -212,7 +212,7 @@ In the unaligned scenario of this example, the full tile transfer volume for GM 
 
 ### Optimization Point 3: Repeated Transfer and L2Cache Reuse
 
-**Implementation**: The repeated transfer scenario performs multiple rounds of GM reads on the same data scale, using `msprof --ai-core=on --aic-metrics=L2Cache` to collect L2Cache read hit and miss allocate data.
+**Implementation**: The repeated transfer scenario performs multiple rounds of GM reads on the same data scale, using `msopprof --ai-core=on --aic-metrics=L2Cache` to collect L2Cache read hit and miss allocate data.
 
 For full-block repeated transfer, `RepeatCopy(0, n, 4)` means `nStart=0`, `nCount=N`, `repeatTimes=4`, with each round reading the same data block along the full N direction. A2/A3 has an L2Cache size of 192MB, and 950PR has an L2Cache size of 128MB. In this example, a single `M * N` matrix is approximately 301.99MB. During full-block repeated transfer, the single-round working set exceeds L2Cache capacity, making write eviction likely and resulting in low L2Cache hit rates.
 
@@ -441,29 +441,32 @@ Run the following steps in the root directory of this example to build and run t
 
 - Performance collection
 
-  Use the `msprof` tool to obtain detailed performance data:
+  Use the `msOpProf` tool to obtain detailed performance data:
 
   ```bash
-  msprof ./demo
-  msprof --ai-core=on --aic-metrics=L2Cache ./demo    # Use for L2Cache related scenarios
+  msopprof ./demo
+  msopprof --ai-core=on --aic-metrics=L2Cache ./demo    # Use for L2Cache related scenarios
   ```
 
-  After collection, a `PROF_` prefixed directory is generated in the current directory. Performance summary files are located in the `mindstudio_profiler_output` directory.
+    - Performance data description  
+      After the command completes, a folder named "OPPROF_{timestamp}_XXX" will be generated in the default directory. The performance data folder structure is as follows:
 
-  ```txt
-  PROF_xxxx_XXXXXX
-  ├── device_{id}
-  ├── host
-  ├── mindstudio_profiler_log
-  └── mindstudio_profiler_output
-      ├── msprof_*.json
-      ├── op_summary_*.csv
-      └── README.txt
-  ```
+      ```bash
+      ├──dump                       # Raw performance data, no user attention needed
+      ├──ArithmeticUtilization.csv  # Cube/Vector instruction cycle ratio
+      ├──L2Cache.csv                # L2 Cache hit rate, affects MTE2, suggests reasonable data transfer logic to increase hit rate
+      ├──Memory.csv                 # UB, L1 and main memory read/write bandwidth rate
+      ├──MemoryL0.csv               # L0A, L0B, and L0C read/write bandwidth rate
+      ├──MemoryUB.csv               # Vector and Scalar to UB read/write bandwidth rate
+      ├──OpBasicInfo.csv            # Operator basic information
+      ├──PipeUtilization.csv        # Computation unit and transfer unit time and ratio
+      ├──ResourceConflictRatio.csv  # Bank group, bank conflict and resource conflict ratio on UB in all instructions
+      └──visualize_data.bin         # MindStudio Insight presentation file
+      ```
 
   View the specific performance analysis results:
 
   ```bash
   # View Task Duration and various data
-  cat ./PROF_*/mindstudio_profiler_output/op_summary_*.csv
+  cat ./OPPROF_*/PipeUtilization*.csv
   ```

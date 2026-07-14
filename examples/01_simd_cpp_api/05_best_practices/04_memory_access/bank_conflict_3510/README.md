@@ -102,11 +102,11 @@ Ascend 950PR/Ascend 950DT的UB 18位地址采用**低位交织**编码规则：
 
 本文围绕连续对齐搬入/搬出、离散与聚合、非连续对齐搬入/搬出三类API的bank冲突场景展开验证分析。所有场景的输入数据类型为 `float`（离散与聚合场景的index为 `uint32_t`），VF重复执行1000次以放大性能差异。
 
-> **性能说明**：下表"打点性能"为VF连续执行1000次的总cycles数（使用`GetSystemCycle` 打点），数值越低性能越好。"LDU冲突率"和"STU冲突率"来自 `msprof op --aic-metrics=Default` 采集的 `ResourceConflictRatio` 指标，分别表示向量单元的load单元冲突比例和store单元冲突比例（单位：%）。
+> **性能说明**：下表"打点性能"为VF连续执行1000次的总cycles数（使用`GetSystemCycle` 打点），数值越低性能越好。"LDU冲突率"和"STU冲突率"来自 `msopprof --aic-metrics=Default` 采集的 `ResourceConflictRatio` 指标，分别表示向量单元的load单元冲突比例和store单元冲突比例（单位：%）。
 
 ### 连续对齐搬入/搬出的bank冲突场景（Case 1-8）
 
-**注意：在Ascend 950PR/Ascend 950DT中，src0/src1/dst首地址分布在不同bank group的不同bank的场景不存在，二读一写场景无法避免读写冲突**  
+**注意：在Ascend 950PR/Ascend 950DT中，src0/src1/dst首地址分布在不同bank group的不同bank的场景不存在，二读一写场景无法避免读写冲突**
 
 | case | 计算公式 | 场景描述 | bank冲突情况 | src0首地址 | src1首地址 | dst首地址 | 单次VF计算数据量(B) | 打点性能(cycles) | LDU冲突率(%) | STU冲突率(%) | 备注 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -564,11 +564,11 @@ python3 ../scripts/verify_result.py output/output_z.bin output/golden.bin
 
 ### 冲突性能采集
 
-通过 `msprof` 采集硬件性能计数器，量化bank冲突程度：
+通过 `msopprof` 采集硬件性能计数器，量化bank冲突程度：
 
 ```bash
 # 编译特定case后，在build目录执行
-msprof op --aic-metrics=Default ./demo
+msopprof --aic-metrics=Default ./demo
 ```
 
 监控结果保存在 `OPPROF_<timestamp>/` 目录下，关键指标如下：

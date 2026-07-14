@@ -23,16 +23,16 @@
 ## 算子描述
   gather算子实现了从shape为[100000,128]的二维向量中获取指定索引的12288行数据的功能，具体功能描述可参考[Gather算子详情](../../../00_introduction/01_gather/basic_gather/gather_2d/README.md)章节。
 
-## msProf工具介绍
-msProf工具是单算子性能分析工具。包含msprof op和msprof op simulator两种使用方式。该工具协助用户定位算子内存、算子代码以及算子指令的异常，实现全方位的算子调优。当前支持基于不同运行模式（上板或仿真）和不同文件形式（可执行文件或算子二进制.o文件）进行性能数据的采集和自动解析。
+## msOpProf工具介绍
+msOpProf工具是单算子性能分析工具。包含msopprof和msopprof simulator两种使用方式。该工具协助用户定位算子内存、算子代码以及算子指令的异常，实现全方位的算子调优。当前支持基于不同运行模式（上板或仿真）和不同文件形式（可执行文件或算子二进制.o文件）进行性能数据的采集和自动解析。
 
 - 上板性能采集
 
     通过上板性能采集，可以直接测定算子在昇腾AI处理器上的运行时间。该方式适合在板环境中快速定位算子性能问题。
 
-    基于可执行文件demo通过msprof op执行算子调优：
+    基于可执行文件demo通过msopprof执行算子调优：
     ```
-    msprof op ./demo
+    msopprof ./demo
     ```
 
     - 性能数据说明
@@ -53,13 +53,13 @@ msProf工具是单算子性能分析工具。包含msprof op和msprof op simulat
       └──visualize_data.bin         # MindStudio Insight呈现文件
       ```
 
-用户可以使用 MindStudio Insight 打开 `visualize_data.bin` 文件可视化查看算子信息，包含算子基础信息、核间负载分析、计算工作负载分析、内存负载分析等。更多msProf工具使用方式请参考[《算子开发工具》](https://www.hiascend.com/document/redirect/CannCommercialToolOpDev)中“算子调优 msOpProf”的内容。
+用户可以使用 MindStudio Insight 打开 `visualize_data.bin` 文件可视化查看算子信息，包含算子基础信息、核间负载分析、计算工作负载分析、内存负载分析等。更多msOpProf工具使用方式请参考[《算子开发工具》](https://www.hiascend.com/document/redirect/CannCommercialToolOpDev)中“算子调优 msOpProf”的内容。
 
 
 ## 编译运行
 
 在本样例根目录下执行如下步骤，编译并执行算子。
-- 配置环境变量  
+- 配置环境变量
 
   请根据当前环境上CANN开发套件包的[安装方式](../../../../../docs/quick_start.md#prepare&install)，配置环境变量。
   ```bash
@@ -75,7 +75,7 @@ msProf工具是单算子性能分析工具。包含msprof op和msprof op simulat
   ```bash
   mkdir -p build && cd build;           # 创建并进入build目录
   cmake -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j;   # 编译工程
-  msprof op ./demo                      # 基于可执行文件demo通过msprof op执行算子调优
+  msopprof ./demo                      # 基于可执行文件demo通过msopprof执行算子调优
   ```
 
   编译选项说明

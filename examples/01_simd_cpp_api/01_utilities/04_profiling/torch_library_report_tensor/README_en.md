@@ -2,7 +2,7 @@
 
 ## Overview
 
-This example demonstrates how to display operator input/output Shape, data type, and Format information in `msprof` results when using the `torch.library` custom operator invocation method.
+This example demonstrates how to display operator input/output Shape, data type, and Format information in `msopprof` results when using the `torch.library` custom operator invocation method.
 
 ## Supported Products and CANN Software Versions
 
@@ -58,9 +58,9 @@ This example demonstrates how to display operator input/output Shape, data type,
 
   2. Profiling Shape Information Recording
 
-     The `ascendc_add` function constructs Profiling metadata before dispatching the Kernel and passes it to `msprof` through `aclprofRangePushEx`. After the Kernel dispatch completes, `aclprofRangePop` is called to end the current Profiling range.
+     The `ascendc_add` function constructs Profiling metadata before dispatching the Kernel and passes it to `msopprof` through `aclprofRangePushEx`. After the Kernel dispatch completes, `aclprofRangePop` is called to end the current Profiling range.
 
-     The purpose is to enable `msprof` to display input/output Tensor information in the current custom operator record when generating `op_summary_*.csv`, for example:
+     The purpose is to enable `msopprof` to display input/output Tensor information in the current custom operator record when generating `PipeUtilization.csv`, for example:
 
      ```text
      Input Shapes: "8,2048;8,2048"
@@ -119,7 +119,7 @@ This example demonstrates how to display operator input/output Shape, data type,
   ```bash
   mkdir -p build; cd build
   cmake -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..; make -j
-  msprof --application="python3 ../torch_library_report_tensor.py" --output="../result"
+  msopprof --application="python3 ../torch_library_report_tensor.py" --output="../result"
   ```
 
 - Build options
@@ -139,7 +139,7 @@ This example demonstrates how to display operator input/output Shape, data type,
 
 - Shape information display
 
-  Open `../result/PROF_000001_*/mindstudio_profiler_output/op_summary_*.csv` to view Shape information. The Shape information in this example is written to the following fields.
+  Open `../result/OPPROF_*/PipeUtilization.csv` to view Shape information. The Shape information in this example is written to the following fields.
 
   <table>
     <tr>

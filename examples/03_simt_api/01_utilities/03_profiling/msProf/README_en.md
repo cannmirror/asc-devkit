@@ -24,15 +24,15 @@ This example is based on the Gather operator and demonstrates how to collect on-
   The gather operator implements the function of obtaining 12288 rows of data at specified indices from a 2D vector with shape [100000,128]. For detailed function description, refer to the [Gather Operator Details](../../../00_introduction/01_gather/basic_gather/gather_2d/README.md) section.
 
 ## msProf Tool Introduction
-The msProf tool is a single-operator performance analysis tool. It includes two usage modes: msprof op and msprof op simulator. This tool helps users identify anomalies in operator memory, operator code, and operator instructions, enabling comprehensive operator tuning. It currently supports performance data collection and automatic parsing based on different run modes (on-board or simulation) and different file formats (executable files or operator binary .o files).
+The msProf tool is a single-operator performance analysis tool. It includes two usage modes: msopprof and msopprof simulator. This tool helps users identify anomalies in operator memory, operator code, and operator instructions, enabling comprehensive operator tuning. It currently supports performance data collection and automatic parsing based on different run modes (on-board or simulation) and different file formats (executable files or operator binary .o files).
 
 - On-board Performance Collection
 
     Through on-board performance collection, the operator running time on the Ascend AI Processor can be directly measured. This method is suitable for quickly locating operator performance issues in an on-board environment.
 
-    Perform operator tuning through msprof op based on the executable file demo:
+    Perform operator tuning through msopprof based on the executable file demo:
     ```
-    msprof op ./demo
+    msopprof ./demo
     ```
 
     - Performance Data Description
@@ -75,7 +75,7 @@ Run the following steps in the root directory of this example to build and execu
   ```bash
   mkdir -p build && cd build;           # Create and enter the build directory
   cmake -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..;make -j;   # Build the project
-  msprof op ./demo                      # Perform operator tuning through msprof op based on the executable file demo
+  msopprof ./demo                      # Perform operator tuning through msopprof based on the executable file demo
   ```
 
   Build Options Description

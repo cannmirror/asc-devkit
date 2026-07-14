@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例展示在`torch.library`自定义算子调用方式下，如何让`msprof`结果中显示算子的输入输出Shape、数据类型和Format信息。
+本样例展示在`torch.library`自定义算子调用方式下，如何让`msopprof`结果中显示算子的输入输出Shape、数据类型和Format信息。
 
 ## 本样例支持的产品及CANN软件版本
 
@@ -58,9 +58,9 @@
 
   2. Profiling Shape信息记录
 
-     `ascendc_add`函数在下发Kernel前构造Profiling元信息，并通过`aclprofRangePushEx`传递给`msprof`。Kernel下发完成后调用`aclprofRangePop`结束本次Profiling范围。
+     `ascendc_add`函数在下发Kernel前构造Profiling元信息，并通过`aclprofRangePushEx`传递给`msopprof`。Kernel下发完成后调用`aclprofRangePop`结束本次Profiling范围。
 
-     这样做的目的是让`msprof`在生成`op_summary_*.csv`时，能够在当前自定义算子记录中展示输入输出Tensor信息，例如：
+     这样做的目的是让`msopprof`在生成`PipeUtilization.csv`时，能够在当前自定义算子记录中展示输入输出Tensor信息，例如：
 
      ```text
      Input Shapes: "8,2048;8,2048"
@@ -119,7 +119,7 @@
   ```bash
   mkdir -p build; cd build
   cmake -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..; make -j
-  msprof --application="python3 ../torch_library_report_tensor.py" --output="../result"
+  msopprof --application="python3 ../torch_library_report_tensor.py" --output="../result"
   ```
 
 - 编译选项说明
@@ -139,7 +139,7 @@
 
 - Shape信息展示
 
-  打开`../result/PROF_000001_*/mindstudio_profiler_output/op_summary_*.csv`，查看Shape信息，样例中Shape信息写入如下字段。
+  打开`../result/OPPROF_*/PipeUtilization.csv`，查看Shape信息，样例中Shape信息写入如下字段。
 
   <table>
     <tr>

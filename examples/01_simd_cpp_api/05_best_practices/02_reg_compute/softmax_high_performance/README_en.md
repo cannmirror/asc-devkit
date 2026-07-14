@@ -380,9 +380,9 @@ Execute the following steps in the sample's root directory to build and run the 
 
 ### Performance Analysis
 
-Use the `msprof` tool to obtain detailed performance data:
+Use the `msOpProf` tool to obtain detailed performance data:
 
 ```bash
-msprof ./demo
-cat ./PROF_*/mindstudio_profiler_output/op_summary_*.csv
+msopprof ./demo
+cat ./OPPROF_*/PipeUtilization*.csv
 ```

@@ -38,7 +38,7 @@ run_case() {
 
         (
             cd "${run_dir}"
-            msprof op "${build_dir}/hash_table_mte_queue" "${dim}" 2>&1 |
+            msopprof "${build_dir}/hash_table_mte_queue" "${dim}" 2>&1 |
                 tee "${log_file}"
         )
         if [[ "${scenario}" == "0" ]]; then

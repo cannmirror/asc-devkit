@@ -220,10 +220,10 @@ if (lane_id == 0) {
   使用 `msopprof` 工具获取单个组件上的性能数据：
 
   ```bash
-  msprof op ./demo   # 分析样例的性能
+  msopprof ./demo   # 分析样例的性能
   ```
 
-  命令完成后，会在默认目录下生成以“OPPROF_{timestamp}_XXX”命名的文件夹,性能数据文件夹结构示例如下：
+  命令完成后，会在默认目录下生成以"OPPROF_{timestamp}_XXX"命名的文件夹,性能数据文件夹结构示例如下：
 
   ```text
   ├──dump                       # 原始的性能数据，用户无需关注

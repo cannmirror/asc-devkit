@@ -117,13 +117,13 @@ Matrix dimensions must meet alignment requirements: M and N must be multiples of
 
 ## Collecting Performance Data
 
-Use the `msprof` tool to collect detailed performance data:
+Use the `msopprof` tool to collect detailed performance data:
 
 ```bash
-msprof op build/demo 1 128 64 128
+msopprof build/demo 1 128 64 128
 ```
 
-> 💡 The `msprof` tool requires CANN Commercial or Community Edition. For details, refer to the [msprof Tool Installation Guide](https://www.hiascend.com/document/detail/zh/canncommercial/900/devaids/optool/docs/zh/install_guide/msopprof_install_guide.md).
+> 💡 The `msopprof` tool requires CANN Commercial or Community Edition. For details, refer to the [msOpProf Tool Installation Guide](https://www.hiascend.com/document/detail/zh/canncommercial/900/devaids/optool/docs/zh/install_guide/msopprof_install_guide.md).
 
 After the command completes, a folder named `OPPROF_{timestamp}_XXX` is generated in the default directory. The performance data folder structure is as follows:
 
@@ -154,7 +154,7 @@ Key metrics to monitor:
 
 ## Performance Test Script
 
-`perf.sh` performs batch building, runs `msprof op`, extracts Fixpipe egress latency, and generates a CSV summary.
+`perf.sh` performs batch building, runs `msopprof`, extracts Fixpipe egress latency, and generates a CSV summary.
 
 ```bash
 # View help
@@ -197,7 +197,7 @@ The L0C Buffer egress data volume is M × N × sizeof(destination type). K is us
 
 To test specific shapes, run `./build/demo SCENARIO_NUM M K N` directly.
 
-After testing, results are saved to `perf_data_${timestamp}_scenario${SCENARIO}/perf_result_scenario${SCENARIO}.csv`. Raw `msprof` data is saved in the `test_${id}_${M}_${K}_${N}` subdirectory under the same directory.
+After testing, results are saved to `perf_data_${timestamp}_scenario${SCENARIO}/perf_result_scenario${SCENARIO}.csv`. Raw `msopprof` data is saved in the `test_${id}_${M}_${K}_${N}` subdirectory under the same directory.
 
 ## Performance Metrics
 
@@ -213,7 +213,7 @@ The computed columns in the CSV are as follows:
 
 ### Performance Metric Calculation Methods
 
-The `aic_fixpipe_time(us)` collected by `msprof` in `PipeUtilization.csv` is the egress latency in microseconds. `perf.sh` reads this time column and calculates the cycle count and measured bandwidth based on the platform clock frequency and egress data volume.
+The `aic_fixpipe_time(us)` collected by `msopprof` in `PipeUtilization.csv` is the egress latency in microseconds. `perf.sh` reads this time column and calculates the cycle count and measured bandwidth based on the platform clock frequency and egress data volume.
 
 #### Converting Time to Cycles
 

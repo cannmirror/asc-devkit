@@ -116,13 +116,13 @@ cd ..
 
 ## 性能数据获取
 
-使用`msprof`工具获取详细性能数据：
+使用`msopprof`工具获取详细性能数据：
 
 ```bash
-msprof op build/demo 1 128 64 128
+msopprof build/demo 1 128 64 128
 ```
 
-> 💡 使用`msprof`工具需安装CANN商用/社区版，详细信息可参考[msprof工具安装指南](https://www.hiascend.com/document/detail/zh/canncommercial/900/devaids/optool/docs/zh/install_guide/msopprof_install_guide.md)。
+> 💡 使用`msopprof`工具需安装CANN商用/社区版，详细信息可参考[msOpProf工具安装指南](https://www.hiascend.com/document/detail/zh/canncommercial/900/devaids/optool/docs/zh/install_guide/msopprof_install_guide.md)。
 
 命令完成后，会在默认目录下生成以`OPPROF_{timestamp}_XXX`命名的文件夹，性能数据文件夹结构示例如下：
 
@@ -153,7 +153,7 @@ cat ./OPPROF_*/PipeUtilization.csv
 
 ## 性能测试脚本
 
-`perf.sh`用于批量编译、执行`msprof op`、提取Fixpipe搬出耗时并生成CSV汇总结果。
+`perf.sh`用于批量编译、执行`msopprof`、提取Fixpipe搬出耗时并生成CSV汇总结果。
 
 ```bash
 # 查看帮助
@@ -196,7 +196,7 @@ dav-3510默认shape序列：
 
 如需针对性补点，可直接用`./build/demo SCENARIO_NUM M K N`跑单个shape。
 
-测试完成后，结果保存在`perf_data_${timestamp}_scenario${SCENARIO}/perf_result_scenario${SCENARIO}.csv`，原始`msprof`数据保存在同目录下的`test_${id}_${M}_${K}_${N}`子目录。
+测试完成后，结果保存在`perf_data_${timestamp}_scenario${SCENARIO}/perf_result_scenario${SCENARIO}.csv`，原始`msopprof`数据保存在同目录下的`test_${id}_${M}_${K}_${N}`子目录。
 
 ## 性能指标说明
 
@@ -212,7 +212,7 @@ CSV中的计算列如下：
 
 ### 性能指标计算方法
 
-`msprof`在`PipeUtilization.csv`中采集到的`aic_fixpipe_time(us)`为微秒（us）单位的搬出耗时。`perf.sh`会读取该时间列，并结合平台主频和搬出数据量计算Cycle数与实测带宽。
+`msopprof`在`PipeUtilization.csv`中采集到的`aic_fixpipe_time(us)`为微秒（us）单位的搬出耗时。`perf.sh`会读取该时间列，并结合平台主频和搬出数据量计算Cycle数与实测带宽。
 
 #### Time转换为Cycle
 

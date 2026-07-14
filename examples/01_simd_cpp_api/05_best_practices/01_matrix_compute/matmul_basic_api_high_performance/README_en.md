@@ -459,22 +459,26 @@ AscendC::DumpTensor(cLocal, baseM * baseN);
 
 ## Performance Debugging
 
-### msProf Tool Introduction
+### msOpProf Tool Introduction
 
-Use the `msprof` tool to obtain detailed performance data:
+Use the `msOpProf` tool to obtain detailed performance data:
 
 ```bash
-msprof ./demo   # Analyze example performance
+msopprof ./demo   # Analyze example performance
 ```
 
-A PROF_ prefixed folder is generated in the current directory. The `mindstudio_profiler_output` directory stores Host and Device performance data summaries. Performance data analysis is recommended to view files in this directory:
-```bash
-PROF_xxxx_XXXXXX
-├── device_{id}
-└── host
-└── mindstudio_profiler_log
-└── mindstudio_profiler_output    # Stores Host and Device performance data summaries
-    ├── msprof_*.json
-    ├── xx_*.csv
-    └── README.txt
-```
+    - Performance data description
+      After the command completes, a folder named "OPPROF_{timestamp}_XXX" will be generated in the default directory. The performance data folder structure is as follows:
+
+      ```bash
+      ├──dump                       # Raw performance data, no user attention needed
+      ├──ArithmeticUtilization.csv  # Cube/Vector instruction cycle ratio
+      ├──L2Cache.csv                # L2 Cache hit rate, affects MTE2, suggests reasonable data transfer logic to increase hit rate
+      ├──Memory.csv                 # UB, L1 and main memory read/write bandwidth rate
+      ├──MemoryL0.csv               # L0A, L0B, and L0C read/write bandwidth rate
+      ├──MemoryUB.csv               # Vector and Scalar to UB read/write bandwidth rate
+      ├──OpBasicInfo.csv            # Operator basic information
+      ├──PipeUtilization.csv        # Computation unit and transfer unit time and ratio
+      ├──ResourceConflictRatio.csv  # Bank group, bank conflict and resource conflict ratio on UB in all instructions
+      └──visualize_data.bin         # MindStudio Insight presentation file
+      ```

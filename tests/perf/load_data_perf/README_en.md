@@ -115,13 +115,13 @@ The runtime parameter order is `SCENARIO_NUM M K N`:
 
 ## Collecting Performance Data
 
-Use the `msprof` tool to collect detailed performance data:
+Use the `msOpProf` tool to collect detailed performance data:
 
 ```bash
-msprof op ./demo 1 128 128 128
+msopprof ./demo 1 128 128 128
 ```
 
-  > **Note:** To use the `msprof` tool, install the CANN commercial/community edition. For details, see the [msprof Tool Installation Guide](https://www.hiascend.com/document/detail/zh/canncommercial/900/devaids/optool/docs/zh/install_guide/msopprof_install_guide.md).
+  > **Note:** To use the `msOpProf` tool, install the CANN commercial/community edition. For details, see the [msopprof Tool Installation Guide](https://www.hiascend.com/document/detail/zh/canncommercial/900/devaids/optool/docs/zh/install_guide/msopprof_install_guide.md).
 
   After the command completes, a directory named in the format `OPPROF_{timestamp}_XXX` is generated in the default directory. The following is an example of the performance data directory structure:
 
@@ -153,7 +153,7 @@ Focus on the following metrics:
 
 ## Performance Test Script
 
-`perf.sh` is used to batch build, run `msprof op`, extract performance metrics, and generate CSV summary results.
+`perf.sh` is used to batch build, run `msopprof`, extract performance metrics, and generate CSV summary results.
 
 ```bash
 # Show help
@@ -182,7 +182,7 @@ The script tests five shapes by default:
 
 The transfer data volume for matrix A is `M * K`, the transfer data volume for matrix B is `K * N`, and the transfer data volume for Bias Table Buffer and Fixpipe Buffer is `N`. Adjust them as needed.
 
-After the test completes, results are saved to `perf_data_${timestamp}_scenario${SCENARIO}/perf_result_scenario${SCENARIO}.csv`, and raw `msprof` data is saved in the `test_${id}_${M}_${K}_${N}` subdirectory under the same directory.
+After the test completes, results are saved to `perf_data_${timestamp}_scenario${SCENARIO}/perf_result_scenario${SCENARIO}.csv`, and raw `msopprof` data is saved in the `test_${id}_${M}_${K}_${N}` subdirectory under the same directory.
 
 ## Performance Metric Description
 
@@ -202,7 +202,7 @@ The calculated columns in the CSV are as follows:
 
 ### Performance Metric Calculation Method
 
-The `aic_mte1_time(us)` and `aic_fixpipe_time(us)` collected by `msprof` in `PipeUtilization.csv` are durations in microseconds (us). `perf.sh` reads the corresponding time column and calculates the number of cycles and measured bandwidth based on the platform frequency and test data volume.
+The `aic_mte1_time(us)` and `aic_fixpipe_time(us)` collected by `msopprof` in `PipeUtilization.csv` are durations in microseconds (us). `perf.sh` reads the corresponding time column and calculates the number of cycles and measured bandwidth based on the platform frequency and test data volume.
 
 #### Converting Time(us) to Cycle
 
@@ -212,13 +212,13 @@ The frequency unit is MHz, which means cycles per microsecond. Therefore, no ext
 Cycle = Time(us) * Frequency(MHz)
 ```
 
-For example, when the Atlas A3/A2 Training/Inference platform frequency is 1800 MHz and `msprof` collects `aic_mte1_time(us) = 0.021111`:
+For example, when the Atlas A3/A2 Training/Inference platform frequency is 1800 MHz and `msopprof` collects `aic_mte1_time(us) = 0.021111`:
 
 ```text
 Cycle = 0.021111 * 1800 = 38.00 cycles
 ```
 
-When the Ascend 950PR/950DT platform frequency is 1650 MHz and `msprof` collects `aic_mte1_time(us) = 0.030000`:
+When the Ascend 950PR/950DT platform frequency is 1650 MHz and `msopprof` collects `aic_mte1_time(us) = 0.030000`:
 
 ```text
 Cycle = 0.030000 * 1650 = 49.50 cycles

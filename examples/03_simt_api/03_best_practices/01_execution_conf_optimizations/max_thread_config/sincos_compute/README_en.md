@@ -259,11 +259,11 @@ Run the following steps in the root directory of this example to build and execu
 
 ## Performance Analysis
 
-Use the `msprof` tool to collect detailed performance data:
+Use the `msOpProf` tool to collect detailed performance data:
 
 ```bash
-msprof op ./sincos_compute 1024   # Analyze baseline case performance
-msprof op ./sincos_compute 512    # Analyze optimized case performance
+msopprof ./sincos_compute 1024   # Analyze baseline case performance
+msopprof ./sincos_compute 512    # Analyze optimized case performance
 ```
 
 After the command completes, a folder named "OPPROF_{timestamp}_XXX" is generated in the default directory. The performance data folder structure example is as follows:

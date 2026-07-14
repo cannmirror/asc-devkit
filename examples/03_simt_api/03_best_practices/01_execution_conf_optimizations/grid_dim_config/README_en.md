@@ -248,7 +248,7 @@ This example distinguishes large and small data volumes by the ratio of data vol
 ## Tuning Recommendations
 
 1. **In large data scenarios, prioritize matching the thread block count to the physical core count**: Too few thread blocks cause insufficient parallel core count and heavier per-block workload; too many thread blocks introduce more thread block launch and scheduling overhead.
-2. **In small data scenarios, test thread block count empirically**: When the data volume is small and the per-core workload is very small, the fixed scheduling overhead from launching more thread blocks exceeds the benefit, and the optimal thread block count may not be the physical core count. Use the msprof tool to measure performance and select the thread block count configuration with lower Task Duration.
+2. **In small data scenarios, test thread block count empirically**: When the data volume is small and the per-core workload is very small, the fixed scheduling overhead from launching more thread blocks exceeds the benefit, and the optimal thread block count may not be the physical core count. Use the msopprof tool to measure performance and select the thread block count configuration with lower Task Duration.
 
 ## Build and Run
 
@@ -286,10 +286,10 @@ Run the following steps in the root directory of this example to build and execu
 
 ## Performance Analysis
 
-Use the `msprof` tool to collect detailed performance data:
+Use the `msOpProf` tool to collect detailed performance data:
 
 ```bash
-msprof op ./grid_config   # Analyze case performance
+msopprof ./grid_config   # Analyze case performance
 ```
 
 After the command completes, a folder named "OPPROF_{timestamp}_XXX" is generated in the default directory. The performance data folder structure example is as follows:

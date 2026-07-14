@@ -302,7 +302,7 @@ public:
 
 ### 性能分析
 
-使用msOpProf获取性能数据。对比脚本会先执行一次样例并检查`Verification PASSED`，确认结果正确后再通过`msprof op`命令采集目标kernel性能数据。
+使用msOpProf获取性能数据。对比脚本会先执行一次样例并检查`Verification PASSED`，确认结果正确后再通过`msopprof`命令采集目标kernel性能数据。
 
 Case 0测试方式如下：
 
@@ -310,7 +310,7 @@ Case 0测试方式如下：
 cmake -DSCENARIO_NUM=0 -DPROFILE_REPEAT_TIMES=1 -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..
 make -j
 ./hash_table_mte_queue 128
-msprof op ./hash_table_mte_queue 128
+msopprof ./hash_table_mte_queue 128
 ```
 
 Case 1测试方式如下：
@@ -319,7 +319,7 @@ Case 1测试方式如下：
 cmake -DSCENARIO_NUM=1 -DPROFILE_REPEAT_TIMES=1 -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..
 make -j
 ./hash_table_mte_queue 128
-msprof op ./hash_table_mte_queue 128
+msopprof ./hash_table_mte_queue 128
 ```
 
 当前目录下会生成`OPPROF_`前缀的文件夹，保存当前kernel的性能分析数据。

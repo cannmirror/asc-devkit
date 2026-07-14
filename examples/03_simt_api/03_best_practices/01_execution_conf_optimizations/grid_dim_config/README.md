@@ -248,7 +248,7 @@ for (uint32_t i = global_idx; i < index_total_length; i += stride) {
 ## 调优建议
 
 1. **大数据量场景，优先让线程块数量匹配物理核数**：线程块数量过小会导致并行核数不足、单线程块工作量变重；线程块数量过大则会引入更多线程块启动和调度开销。
-2. **小数据量场景需实测线程块数量**：当数据量较小、每核工作量很小时，启动更多线程块带来的调度固定开销会超过收益，最优线程块数量不一定是物理核数。应通过msprof工具实测性能，选择Task Duration较低的线程块数量配置。
+2. **小数据量场景需实测线程块数量**：当数据量较小、每核工作量很小时，启动更多线程块带来的调度固定开销会超过收益，最优线程块数量不一定是物理核数。应通过msOpProf工具实测性能，选择Task Duration较低的线程块数量配置。
 
 ## 编译运行
 
@@ -286,13 +286,13 @@ for (uint32_t i = global_idx; i < index_total_length; i += stride) {
 
 ## 性能分析
 
-使用`msprof`工具获取详细性能数据：
+使用`msOpProf`工具获取详细性能数据：
 
 ```bash
-msprof op ./grid_config   # 分析case的性能
+msopprof ./grid_config   # 分析case的性能
 ```
 
-命令完成后，会在默认目录下生成以“OPPROF_{timestamp}_XXX”命名的文件夹，性能数据文件夹结构示例如下：
+命令完成后，会在默认目录下生成以"OPPROF_{timestamp}_XXX"命名的文件夹，性能数据文件夹结构示例如下：
 
 ```text
 ├──dump                       # 原始的性能数据，用户无需关注

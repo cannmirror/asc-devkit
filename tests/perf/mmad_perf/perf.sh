@@ -11,7 +11,7 @@
 
 # Mmad（Cube 矩阵乘）性能测试脚本（仿真环境）
 # 支持通过命令行参数指定场景编号
-# 使用 msprof op simulator 采集，从 simulator/core0.cubecore0/ 提取 MMAD 指令的
+# 使用 msopprof simulator 采集，从 simulator/core0.cubecore0/ 提取 MMAD 指令的
 # dur（持续时间，us）与 cycles，写入 CSV
 # 性能（MAC/cycle）与算力利用率由 generate_roofline.py 基于硬件并行度从 CSV 推导
 
@@ -180,13 +180,13 @@ for shape in "${SHAPES[@]}"; do
     echo -e "${YELLOW}测试 ${test_id}: Shape [${M}, ${K}, ${N}]${NC}"
     echo -e "${YELLOW}----------------------------------------${NC}"
 
-    # 清理之前的 msprof 输出目录
+    # 清理之前的 msopprof 输出目录
     rm -rf OPPROF_* 2>/dev/null || true
 
-    # 使用 msprof op simulator 采集性能数据。msprof 可能返回非 0，不能被 set -e 提前中断。
-    echo -e "${GREEN}开始 msprof op simulator 性能采集...${NC}"
+    # 使用 msopprof simulator 采集性能数据。msopprof 可能返回非 0，不能被 set -e 提前中断。
+    echo -e "${GREEN}开始 msopprof simulator 性能采集...${NC}"
     set +e
-    msprof op simulator build/demo "${SCENARIO}" "${M}" "${K}" "${N}" > /dev/null 2>&1
+    msopprof simulator build/demo "${SCENARIO}" "${M}" "${K}" "${N}" > /dev/null 2>&1
     msprof_exit_code=$?
     set -e
     if [ "${msprof_exit_code}" -ne 0 ]; then
@@ -196,7 +196,7 @@ for shape in "${SHAPES[@]}"; do
         continue
     fi
 
-    # 查找 msprof 生成的性能数据目录
+    # 查找 msopprof 生成的性能数据目录
     msprof_dir=$(ls -dt OPPROF_* 2>/dev/null | head -n 1 || true)
 
     if [ -z "$msprof_dir" ] || [ ! -d "$msprof_dir" ]; then
@@ -246,7 +246,7 @@ for shape in "${SHAPES[@]}"; do
     echo -e "${GREEN}  MMAD_Dur: ${mmad_dur} us${NC}"
     echo -e "${GREEN}  Cycles: ${mmad_cycles}${NC}"
 
-    # 归档本轮 msprof 输出目录
+    # 归档本轮 msopprof 输出目录
     if [ "${mmad_dur}" != "N/A" ] || [ "${mmad_cycles}" != "N/A" ]; then
         mv "${msprof_dir}" "${PERF_DATA_DIR}/test_${test_id}_${shape_str}" 2>/dev/null || true
     fi

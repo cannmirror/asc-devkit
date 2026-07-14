@@ -199,10 +199,10 @@ This example selects 14 structs, grouped by `sizeof` into 4B, 8B, 16B, and 32B g
 
 ## Performance Data Collection
 
-  Use the `msprof` tool to collect performance data on a single component:
+  Use the `msOpProf` tool to collect performance data on a single component:
 
   ```bash
-  msprof op ./demo   # Analyze example performance
+  msopprof ./demo   # Analyze example performance
   ```
 
   After the command completes, a folder named "OPPROF_{timestamp}_XXX" is generated in the default directory. The performance data folder structure example is as follows:

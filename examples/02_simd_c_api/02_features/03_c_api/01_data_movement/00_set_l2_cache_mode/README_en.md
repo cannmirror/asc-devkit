@@ -52,8 +52,8 @@ The performance data in this section is collected on Ascend 950 series products.
 
 Different performance collection commands are used to obtain different performance metrics:
 
-- `msprof ./demo` — Collects AI Core instruction-level latency and ratios (MTE2/MTE3/Vector), corresponding to **Table 1**.
-- `msprof --ai-core=on --aic-metrics=L2Cache ./demo` — Collects L2 Cache read/write hit and miss counts, corresponding to **Table 2**.
+- `msopprof ./demo` — Collects AI Core instruction-level latency and ratios (MTE2/MTE3/Vector), corresponding to **Table 1**.
+- `msopprof --ai-core=on --aic-metrics=L2Cache ./demo` — Collects L2 Cache read/write hit and miss counts, corresponding to **Table 2**.
 
 **Table 1** AI Core Performance Metrics Description
 
@@ -300,29 +300,31 @@ In the sample root directory, perform the following steps to build and run the s
 
 - Performance profiling
 
-  Use the `msprof` tool to obtain detailed performance data:
+  Use the `msopprof` tool to obtain detailed performance data:
 
   ```bash
-  msprof ./demo                                              # Collect MTE2/MTE3/Vector performance data. See Table 1 for field descriptions.
-  msprof --ai-core=on --aic-metrics=L2Cache ./demo           # Collect L2 Cache performance data. See Table 2 for field descriptions.
+  msopprof ./demo                                              # Collect MTE2/MTE3/Vector performance data. See Table 1 for field descriptions.
+  msopprof --ai-core=on --aic-metrics=L2Cache ./demo           # Collect L2 Cache performance data. See Table 2 for field descriptions.
   ```
 
-  After collection, a `PROF_`-prefixed directory is generated in the current directory. The performance summary file is located in the `mindstudio_profiler_output` directory.
+  After collection, a `OPPROF_{timestamp}_XXX`-prefixed directory is generated in the current directory.
 
-  ```txt
-  PROF_xxxx_XXXXXX
-  ├── device_{id}
-  ├── host
-  ├── mindstudio_profiler_log
-  └── mindstudio_profiler_output
-      ├── msprof_*.json
-      ├── op_summary_*.csv
-      └── README.txt
+  ```bash
+  ├──dump
+  ├──ArithmeticUtilization.csv
+  ├──L2Cache.csv
+  ├──Memory.csv
+  ├──MemoryL0.csv
+  ├──MemoryUB.csv
+  ├──OpBasicInfo.csv
+  ├──PipeUtilization.csv
+  ├──ResourceConflictRatio.csv
+  └──visualize_data.bin
   ```
 
   To view the specific performance analysis results:
 
   ```bash
   # View Task Duration and other data
-  cat ./PROF_*/mindstudio_profiler_output/op_summary_*.csv
+  cat ./PROF_*/PipeUtilization.csv
   ```

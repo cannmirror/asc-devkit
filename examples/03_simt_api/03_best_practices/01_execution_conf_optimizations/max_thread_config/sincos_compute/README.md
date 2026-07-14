@@ -257,11 +257,11 @@ __global__ __launch_bounds__(512) void sincos_thread_512(float* input,
 
 ## 性能分析
 
-使用 `msprof` 工具获取详细性能数据：
+使用 `msOpProf` 工具获取详细性能数据：
 
 ```bash
-msprof op ./sincos_compute 1024   # 分析基线case的性能
-msprof op ./sincos_compute 512    # 分析优化case的性能
+msopprof ./sincos_compute 1024   # 分析基线case的性能
+msopprof ./sincos_compute 512    # 分析优化case的性能
 ```
 
 命令完成后，会在默认目录下生成以"OPPROF_{timestamp}_XXX"命名的文件夹，性能数据文件夹结构示例如下：

@@ -79,7 +79,7 @@ export LD_LIBRARY_PATH=${ASCEND_HOME_PATH}/tools/simulator/Ascend910B3/lib:$LD_L
 export LD_LIBRARY_PATH=${ASCEND_HOME_PATH}/tools/simulator/Ascend950PR_9589/lib:$LD_LIBRARY_PATH
 ```
 
-`perf.sh`会按场景自动选择对应型号并配置该路径，手动运行`msprof op simulator`时需自行export。
+`perf.sh`会按场景自动选择对应型号并配置该路径，手动运行`msopprof simulator`时需自行export。
 
 ### 编译样例
 
@@ -126,13 +126,13 @@ cd ..
 
 ## 性能数据获取
 
-使用`msprof op simulator`工具在仿真环境获取详细性能数据：
+使用`msopprof simulator`工具在仿真环境获取详细性能数据：
 
 ```bash
-msprof op simulator build/demo 1 128 128 128
+msopprof simulator build/demo 1 128 128 128
 ```
 
-> 💡 使用`msprof`工具需安装CANN商用/社区版，详细信息可参考[msprof工具安装指南](https://www.hiascend.com/document/detail/zh/canncommercial/900/devaids/optool/docs/zh/install_guide/msopprof_install_guide.md)。
+> 💡 使用`msopprof`工具需安装CANN商用/社区版，详细信息可参考[msOpProf工具安装指南](https://www.hiascend.com/document/detail/zh/canncommercial/900/devaids/optool/docs/zh/install_guide/msopprof_install_guide.md)。
 
 命令完成后，会在默认目录下生成以`OPPROF_{timestamp}_XXX`命名的文件夹，仿真性能数据文件夹结构示例如下：
 
@@ -162,7 +162,7 @@ cat ./OPPROF_*/simulator/core0.cubecore0/core0.cubecore0_instr_exe.csv
 
 ## 性能测试脚本
 
-`perf.sh`用于批量仿真编译、执行`msprof op simulator`、提取MMAD指令的持续时间与周期数并生成CSV汇总结果。
+`perf.sh`用于批量仿真编译、执行`msopprof simulator`、提取MMAD指令的持续时间与周期数并生成CSV汇总结果。
 
 ```bash
 # 查看帮助
@@ -195,7 +195,7 @@ cat ./OPPROF_*/simulator/core0.cubecore0/core0.cubecore0_instr_exe.csv
 
 如需针对性补点，可直接用`./build/demo SCENARIO_NUM M K N`跑单个shape。
 
-测试完成后，结果保存在`perf_data_${timestamp}_scenario${SCENARIO}/perf_result_scenario${SCENARIO}.csv`，原始`msprof`数据保存在同目录下的`test_${id}_${M}_${K}_${N}`子目录。
+测试完成后，结果保存在`perf_data_${timestamp}_scenario${SCENARIO}/perf_result_scenario${SCENARIO}.csv`，原始`msopprof`数据保存在同目录下的`test_${id}_${M}_${K}_${N}`子目录。
 
 ## 性能指标说明
 

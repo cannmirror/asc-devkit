@@ -79,7 +79,7 @@ export LD_LIBRARY_PATH=${ASCEND_HOME_PATH}/tools/simulator/Ascend910B3/lib:$LD_L
 export LD_LIBRARY_PATH=${ASCEND_HOME_PATH}/tools/simulator/Ascend950PR_9589/lib:$LD_LIBRARY_PATH
 ```
 
-`perf.sh` automatically selects the corresponding model and configures this path based on the scenario. When running `msprof op simulator` manually, export this path yourself.
+`perf.sh` automatically selects the corresponding model and configures this path based on the scenario. When running `msopprof simulator` manually, export this path yourself.
 
 ### Build the Example
 
@@ -126,13 +126,13 @@ Matrix dimensions must meet alignment requirements: M and N must be multiples of
 
 ## Collecting Performance Data
 
-Use the `msprof op simulator` tool to collect detailed performance data in the simulation environment:
+Use the `msopprof simulator` tool to collect detailed performance data in the simulation environment:
 
 ```bash
-msprof op simulator build/demo 1 128 128 128
+msopprof simulator build/demo 1 128 128 128
 ```
 
-> 💡 The `msprof` tool requires CANN Commercial or Community Edition. For details, refer to the [msprof Tool Installation Guide](https://www.hiascend.com/document/detail/zh/canncommercial/900/devaids/optool/docs/zh/install_guide/msopprof_install_guide.md).
+> 💡 The `msopprof` tool requires CANN Commercial or Community Edition. For details, refer to the [msOpProf Tool Installation Guide](https://www.hiascend.com/document/detail/zh/canncommercial/900/devaids/optool/docs/zh/install_guide/msopprof_install_guide.md).
 
 After the command completes, a folder named `OPPROF_{timestamp}_XXX` is generated in the default directory. The simulation performance data folder structure is as follows:
 
@@ -162,7 +162,7 @@ Key metrics to monitor:
 
 ## Performance Test Script
 
-`perf.sh` performs batch simulation builds, runs `msprof op simulator`, extracts the duration and cycle count of MMAD instructions, and generates a CSV summary.
+`perf.sh` performs batch simulation builds, runs `msopprof simulator`, extracts the duration and cycle count of MMAD instructions, and generates a CSV summary.
 
 ```bash
 # View help
@@ -195,7 +195,7 @@ Built-in default shape sequences:
 
 To test specific shapes, run `./build/demo SCENARIO_NUM M K N` directly.
 
-After testing, results are saved to `perf_data_${timestamp}_scenario${SCENARIO}/perf_result_scenario${SCENARIO}.csv`. Raw `msprof` data is saved in the `test_${id}_${M}_${K}_${N}` subdirectory under the same directory.
+After testing, results are saved to `perf_data_${timestamp}_scenario${SCENARIO}/perf_result_scenario${SCENARIO}.csv`. Raw `msopprof` data is saved in the `test_${id}_${M}_${K}_${N}` subdirectory under the same directory.
 
 ## Performance Metrics
 

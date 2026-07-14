@@ -382,9 +382,9 @@ Case 5同时应用了三个维度上互不冲突的优化手段，形成"1 + 1 +
 
 ### 性能分析
 
-使用 `msprof` 工具获取详细性能数据：
+使用 `msOpProf` 工具获取详细性能数据：
 
 ```bash
-msprof ./demo
-cat ./PROF_*/mindstudio_profiler_output/op_summary_*.csv
+msopprof ./demo
+cat ./OPPROF_*/PipeUtilization.csv
 ```

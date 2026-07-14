@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例以Add计算为载体，展示Ascend C程序在CAmodel仿真模式下的编译、运行、结果校验与性能数据采集流程。用户可通过`msprof op simulator`获取仿真性能数据，用于分析性能瓶颈，提升性能分析效率。
+本样例以Add计算为载体，展示Ascend C程序在CAmodel仿真模式下的编译、运行、结果校验与性能数据采集流程。用户可通过`msopprof simulator`获取仿真性能数据，用于分析性能瓶颈，提升性能分析效率。
 
 ## 支持的产品
 
@@ -50,7 +50,7 @@
 
 在本样例根目录下执行如下步骤，编译并执行程序。
 
-- 配置环境变量  
+- 配置环境变量
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，配置环境变量。
   ```bash
   source ${install_path}/cann/set_env.sh
@@ -66,7 +66,7 @@
   mkdir -p build && cd build
   cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..; make -j
   python3 ../scripts/gen_data.py
-  msprof op simulator --soc-version=<soc_version> ./demo
+  msopprof simulator --soc-version=<soc_version> ./demo
   python3 ../scripts/verify_result.py ./output/output.bin ./output/golden.bin
   ```
 
@@ -87,10 +87,10 @@
 
 ## 仿真调优
 
-基于`./demo`，可通过`msprof op simulator`进行仿真性能分析，生成可视化的指令流水图等信息，指令如下：
+基于`./demo`，可通过`msopprof simulator`进行仿真性能分析，生成可视化的指令流水图等信息，指令如下：
 
 ```bash
-msprof op simulator --soc-version=<soc_version> ./demo
+msopprof simulator --soc-version=<soc_version> ./demo
 ```
 
 > AI处理器的型号`<soc_version>`请通过如下方式获取：
@@ -114,4 +114,4 @@ OPPROF_{timestamp}_XXX/
 
 - **MindStudio Insight**：打开`visualize_data.bin`进行可视化呈现。
 
-  更多详细内容可以查看msProf工具使用方式，[MindStudio工具调优（msProf）快速入门](https://www.hiascend.com/document/detail/zh/canncommercial/900/devaids/optool/docs/zh/quick_start/msopprof_quick_start.md)。
+  更多详细内容可以查看msOpProf工具使用方式，[MindStudio工具调优（msOpProf）快速入门](https://www.hiascend.com/document/detail/zh/canncommercial/900/devaids/optool/docs/zh/quick_start/msopprof_quick_start.md)。

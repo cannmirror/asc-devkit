@@ -25,7 +25,7 @@ case_build() {
 
 case_run() {
     mkdir -p "$BUILD_DIR"
-    (cd "$CASE_DIR" && soc_version=$SOC_VERSION bash -lc 'msprof op simulator --soc-version=Ascend910B1 ./demo')
+    (cd "$CASE_DIR" && soc_version=$SOC_VERSION bash -lc 'msopprof simulator --soc-version=Ascend910B1 ./demo')
 }
 
 case_verify() {

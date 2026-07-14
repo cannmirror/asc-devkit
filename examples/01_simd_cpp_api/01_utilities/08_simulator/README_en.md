@@ -2,7 +2,7 @@
 
 ## Overview
 
-This example uses MatmulLeakyRelu fused computation as the carrier to demonstrate the build, run, result verification, and performance data collection workflow of Ascend C programs in CAmodel simulation mode. Users can obtain simulation performance data through `msprof op simulator` to analyze performance bottlenecks and improve performance analysis efficiency.
+This example uses MatmulLeakyRelu fused computation as the carrier to demonstrate the build, run, result verification, and performance data collection workflow of Ascend C programs in CAmodel simulation mode. Users can obtain simulation performance data through `msopprof simulator` to analyze performance bottlenecks and improve performance analysis efficiency.
 
 ## Supported Products and CANN Software Versions
 
@@ -57,7 +57,7 @@ Run the following steps in the root directory of this example to build and run t
 - Configure environment variables
   Configure environment variables based on the [installation method](../../../../docs/quick_start.md#prepare&install) of the CANN development kit on the current environment.
 
-  > To use the msProf tool, install CANN commercial/community edition. For details, refer to [msProf Tool Installation Guide](https://www.hiascend.com/document/detail/zh/canncommercial/900/devaids/optool/docs/zh/install_guide/msopprof_install_guide.md).
+  > To use the msOpProf tool, install CANN commercial/community edition. For details, refer to [msOpProf Tool Installation Guide](https://www.hiascend.com/document/detail/zh/canncommercial/900/devaids/optool/docs/zh/install_guide/msopprof_install_guide.md).
 
   ```bash
   source ${install_path}/cann/set_env.sh
@@ -72,7 +72,7 @@ Run the following steps in the root directory of this example to build and run t
   mkdir -p build && cd build
   cmake -DCMAKE_ASC_RUN_MODE=sim -DCMAKE_ASC_ARCHITECTURES=dav-2201 ..; make -j
   python3 ../scripts/gen_data.py
-  msprof op simulator --soc-version=Ascend910B1 ./demo
+  msopprof simulator --soc-version=Ascend910B1 ./demo
   python3 ../scripts/verify_result.py ./output/output.bin ./output/golden.bin
   ```
 
@@ -91,10 +91,10 @@ Run the following steps in the root directory of this example to build and run t
 
 ## Simulation Tuning
 
-Based on `./demo`, use `msprof op simulator` for simulation performance analysis to generate visualized instruction pipeline diagrams and other information. The command is:
+Based on `./demo`, use `msopprof simulator` for simulation performance analysis to generate visualized instruction pipeline diagrams and other information. The command is:
 
 ```bash
-msprof op simulator --soc-version=<soc_version> ./demo
+msopprof simulator --soc-version=<soc_version> ./demo
 ```
 
 > Obtain the AI processor model `<soc_version>` as follows:
@@ -124,4 +124,4 @@ After execution, view the instruction pipeline diagram through the following met
 
 - **MindStudio Insight**: Open `visualize_data.bin` or `trace.json` for visual presentation.
 
-  For more details, refer to the msProf tool usage: [MindStudio Tool Tuning (msProf) Quick Start](https://www.hiascend.com/document/detail/zh/canncommercial/900/devaids/optool/docs/zh/quick_start/msopprof_quick_start.md).
+  For more details, refer to the msOpProf tool usage: [MindStudio Tool Tuning (msOpProf) Quick Start](https://www.hiascend.com/document/detail/zh/canncommercial/900/devaids/optool/docs/zh/quick_start/msopprof_quick_start.md).

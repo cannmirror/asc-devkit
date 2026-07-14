@@ -102,7 +102,7 @@ Based on the memory structure, bank conflicts are mainly divided into the follow
 
 This document focuses on verification and analysis of bank conflict scenarios for three types of APIs: continuous aligned load/store, scatter and gather, and non-continuous aligned load/store. All scenarios use `float` as input data type (index is `uint32_t` in scatter and gather scenarios), executed 1000 times to amplify performance differences.
 
-> **Performance Notes**: The "Benchmark Performance" in the table below is the total cycles of VF executed 1000 times continuously (using `GetSystemCycle` for timing), lower values indicate better performance. "LDU Conflict Ratio" and "STU Conflict Ratio" come from the `ResourceConflictRatio` metric collected by `msprof op --aic-metrics=Default`, representing the load unit conflict ratio and store unit conflict ratio of the vector unit respectively (unit: %).
+> **Performance Notes**: The "Benchmark Performance" in the table below is the total cycles of VF executed 1000 times continuously (using `GetSystemCycle` for timing), lower values indicate better performance. "LDU Conflict Ratio" and "STU Conflict Ratio" come from the `ResourceConflictRatio` metric collected by `msopprof --aic-metrics=Default`, representing the load unit conflict ratio and store unit conflict ratio of the vector unit respectively (unit: %).
 
 ### Continuous Aligned Load/Store Bank Conflict Scenarios (Case 1-8)
 
@@ -564,11 +564,11 @@ python3 ../scripts/verify_result.py output/output_z.bin output/golden.bin
 
 ### Conflict Performance Collection
 
-Use `msprof` to collect hardware performance counters to quantify bank conflict severity:
+Use `msopprof` to collect hardware performance counters to quantify bank conflict severity:
 
 ```bash
 # After building a specific case, execute in the build directory
-msprof op --aic-metrics=Default ./demo
+msopprof --aic-metrics=Default ./demo
 ```
 
 The monitoring results are saved in the `OPPROF_<timestamp>/` directory. Key metrics are as follows:

@@ -220,7 +220,7 @@ Perform the following steps in the root directory of this sample to compile and 
   Use the `msopprof` tool to collect performance data on a single component:
 
   ```bash
-  msprof op ./demo   # Analyze example performance
+  msopprof ./demo   # Analyze example performance
   ```
 
   After the command completes, a folder named "OPPROF_{timestamp}_XXX" is generated in the default directory. The performance data folder structure example is as follows:

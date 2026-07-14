@@ -239,10 +239,10 @@ asc_stcg(&output[idx], y);
 
 ## 性能分析
 
-使用 `msprof` 工具获取详细性能数据：
+使用 `msOpProf` 工具获取详细性能数据：
 
 ```bash
-msprof op ./data_cache_hint   # 分析case的性能
+msopprof ./data_cache_hint   # 分析case的性能
 ```
 
 命令完成后，会在默认目录下生成以"OPPROF_{timestamp}_XXX"命名的文件夹,性能数据文件夹结构示例如下：
