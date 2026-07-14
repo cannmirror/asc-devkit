@@ -2,11 +2,27 @@
 
 ## 产品支持情况
 
-| 产品     | 是否支持 |
-| :----------- |:----:|
-|<cann-filter npu_type = "950"> Ascend 950PR/Ascend 950DT | √ </cann-filter>|
-| Atlas A3 训练系列产品/Atlas A3 推理系列产品 | √    |
-| Atlas A2 训练系列产品/Atlas A2 推理系列产品 | √    |
+<!-- npu="950" id1 -->
+- Ascend 950PR/Ascend 950DT：支持
+<!-- end id1 -->
+<!-- npu="A3" id2 -->
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品：支持
+<!-- end id2 -->
+<!-- npu="910b" id3 -->
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品：支持
+<!-- end id3 -->
+<!-- npu="310b" id7 -->
+- Atlas 200I/500 A2 推理产品：不支持
+<!-- end id7 -->
+<!-- npu="310p" id8 -->
+- Atlas 推理系列产品AI Core：不支持
+<!-- end id8 -->
+<!-- npu="310p" id9 -->
+- Atlas 推理系列产品Vector Core：不支持
+<!-- end id9 -->
+<!-- npu="910" id10 -->
+- Atlas 训练系列产品：不支持
+<!-- end id10 -->
 
 ## 功能说明
 
@@ -32,7 +48,7 @@ $$
     __aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ bfloat16_t* a_matrix, __cb__ bfloat16_t* b_matrix, uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t feat_offset, uint8_t smask_offset, uint8_t unit_flag, bool k_direction_align, bool is_weight_offset, bool c_matrix_source, bool c_matrix_init_val);
     ```
 
-    <cann-filter npu_type = "950">
+    <!-- npu="950" id4 -->
 
     ```cpp
     // 如下原型仅支持Ascend 950PR/Ascend 950DT
@@ -46,8 +62,9 @@ $$
     __aicore__ inline void asc_mmad(__cc__ int32_t* c_matrix, __ca__ int8_t* a_matrix, __cb__ int8_t* b_matrix, uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
     __aicore__ inline void asc_mmad(__cc__ float* c_matrix, __ca__ hifloat8_t* a_matrix, __cb__ hifloat8_t* b_matrix, uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
     ```
+<!-- end id4 -->
 
-    </cann-filter>
+    
 
 - 同步计算
     ```cpp
@@ -63,7 +80,7 @@ $$
     __aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ bfloat16_t* a_matrix, __cb__ bfloat16_t* b_matrix, uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t feat_offset, uint8_t smask_offset, uint8_t unit_flag, bool k_direction_align, bool is_weight_offset, bool c_matrix_source, bool c_matrix_init_val);
     ```
 
-    <cann-filter npu_type = "950">
+    <!-- npu="950" id5 -->
 
     ```cpp
     // 如下原型仅支持Ascend 950PR/Ascend 950DT
@@ -77,8 +94,9 @@ $$
     __aicore__ inline void asc_mmad_sync(__cc__ int32_t* c_matrix, __ca__ int8_t* a_matrix, __cb__ int8_t* b_matrix, uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
     __aicore__ inline void asc_mmad_sync(__cc__ float* c_matrix, __ca__ hifloat8_t* a_matrix, __cb__ hifloat8_t* b_matrix, uint16_t left_height, uint16_t n_dim, uint16_t right_width, uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
     ```
+<!-- end id5 -->
     
-    </cann-filter>
+    
 
 ## 参数说明
 
@@ -97,8 +115,7 @@ $$
 | is_weight_offset  | 输入    | 启用weight matrix offset。|
 | c_matrix_source       | 输入    | 	配置C矩阵初始值是否来源于C2（存放Bias的硬件缓存区）。取值说明如下：  <br>&bull; true：来源于C2。 <br>&bull; false：来源于CO1(L0C)。 |
 | c_matrix_init_val      | 输入    | 	配置C矩阵初始值是否为0。取值说明如下：  <br>&bull; true：C矩阵初始值为0。 <br>&bull; false：C矩阵初始值通过c_matrix_source参数进行配置。     |
-|<cann-filter npu_type = "950"> disable_gemv | 输入 | 是否关闭GEMV模式，false表示开启GEMV模式，true表示关闭GEMV模式。<br>GEMV(General Matrix-Vector Multiplication)表示实现矩阵和向量的乘积。当left_height=1时，开启GEMV后，从L0A Buffer读取数据时，将以ND格式进行读取，而不会将其视为ZZ格式。</cann-filter>|
-
+|<!-- npu="950" id6 --> disable_gemv | 输入 | 是否关闭GEMV模式，false表示开启GEMV模式，true表示关闭GEMV模式。<br>GEMV(General Matrix-Vector Multiplication)表示实现矩阵和向量的乘积。当left_height=1时，开启GEMV后，从L0A Buffer读取数据时，将以ND格式进行读取，而不会将其视为ZZ格式。<!-- end id6 -->|
 
 ## 返回值说明
 
