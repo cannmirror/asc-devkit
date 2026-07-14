@@ -51,7 +51,7 @@ def Gatherb(dst, src, offset, repeatTime, repeatParams):
             dst[dstBlockStartIndex : dstBlockEndIndex] = src[srcBlockStartIndex : srcBlockEndIndex]
 ```
 
-完整示例请参考：[Gatherb真值计算](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_basic_api/01_memory_vector_compute/gather)。
+完整示例请参考：[Gatherb真值计算](https://gitcode.com/cann/asc-devkit/tree/9.1.0/examples/01_simd_cpp_api/03_basic_api/01_memory_vector_compute/gather)。
 
 ## 函数原型<a name="section15660625202219"></a>
 
@@ -117,7 +117,7 @@ Atlas 200I/500 A2 推理产品，支持的数据类型为：int8_t、uint8_t、i
 
 ## 调用示例<a name="section11276201527"></a>
 
-完整使用样例请参见[Gather类样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_basic_api/01_memory_vector_compute/gather)场景四。
+完整使用样例请参见[Gather类样例](https://gitcode.com/cann/asc-devkit/tree/9.1.0/examples/01_simd_cpp_api/03_basic_api/01_memory_vector_compute/gather)场景四。
 
 ```cpp
 uint32_t bufferLen = 128;

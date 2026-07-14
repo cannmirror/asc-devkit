@@ -41,7 +41,7 @@ __aicore__ inline int32_t GetTensorCountInQue()
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
-该接口不支持[Tensor原地操作](https://gitcode.com/cann/asc-devkit/blob/master/docs/guide/编程指南/附录/常用操作/如何使用Tensor原地操作提升算子性能.md)，即TQue的depth设置为0的场景。
+该接口不支持[Tensor原地操作](https://gitcode.com/cann/asc-devkit/blob/9.1.0/docs/guide/编程指南/附录/常用操作/如何使用Tensor原地操作提升算子性能.md)，即TQue的depth设置为0的场景。
 
 ## 返回值说明<a name="section640mcpsimp"></a>
 

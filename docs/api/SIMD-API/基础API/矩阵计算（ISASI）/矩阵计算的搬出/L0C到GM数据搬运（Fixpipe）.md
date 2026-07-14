@@ -34,13 +34,13 @@
 下图展示了随路量化、随路ReLU、随路格式转换、随路通道拆分以及随路通道合并的有效组合、中间数据类型和数据路径。下图中的F32-\>F16与F32-\>BF16为非量化模式，仅为Cast，其余为随路scalar/tensor量化模式。
 
 <!-- npu="A3,910b" id11 -->
-**图1** L0C2GM流程图（[NPU架构版本2201](https://gitcode.com/cann/asc-devkit/blob/master/docs/guide/编程指南/语言扩展层/SIMD-BuiltIn关键字.md)）<a id="zh-cn_topic_0000002542828493_fig542810249417"></a>  
+**图1** L0C2GM流程图（[NPU架构版本2201](https://gitcode.com/cann/asc-devkit/blob/9.1.0/docs/guide/编程指南/语言扩展层/SIMD-BuiltIn关键字.md)）<a id="zh-cn_topic_0000002542828493_fig542810249417"></a>  
 
 ![](../../../../figures/L0C2GM_Function_Combination.png)
 <!-- end id11 -->
 
 <!-- npu="950" id13 -->
-**图2** L0C2GM流程图（[NPU架构版本3510](https://gitcode.com/cann/asc-devkit/blob/master/docs/guide/编程指南/语言扩展层/SIMD-BuiltIn关键字.md)）<a id="zh-cn_topic_0000002542828493_fig542810249613"></a>  
+**图2** L0C2GM流程图（[NPU架构版本3510](https://gitcode.com/cann/asc-devkit/blob/9.1.0/docs/guide/编程指南/语言扩展层/SIMD-BuiltIn关键字.md)）<a id="zh-cn_topic_0000002542828493_fig542810249613"></a>  
 
 ![](../../../../figures/L0C2GM_Function_Combination_950.png)
 <!-- end id13 -->
@@ -267,7 +267,7 @@
 ## 调用示例<a id="zh-cn_topic_0000002542828493_section088124295117"></a>
 
 <!-- npu="950,A3,910b" id30 -->
-Fixpipe完整样例请参考[fixpipe\_l0c2gm样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_basic_api/03_matrix_compute/fixpipe_l0c2gm)。
+Fixpipe完整样例请参考[fixpipe\_l0c2gm样例](https://gitcode.com/cann/asc-devkit/tree/9.1.0/examples/01_simd_cpp_api/03_basic_api/03_matrix_compute/fixpipe_l0c2gm)。
 
 - 示例：通路L0C Buffer-\>GM。输入A矩阵和B矩阵的数据类型为half，输出C矩阵为float，配置开启NZ2ND的格式转换。
 

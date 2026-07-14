@@ -158,4 +158,4 @@ __aicore__ inline void SplitBias(AscendC::LocalTensor<outputType> bias1Local,
 }
 ```
 
-完整示例请参考[data_copy_gm2l1样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_basic_api/00_data_movement/data_copy_gm2l1)中场景4。
+完整示例请参考[data_copy_gm2l1样例](https://gitcode.com/cann/asc-devkit/tree/9.1.0/examples/01_simd_cpp_api/03_basic_api/00_data_movement/data_copy_gm2l1)中场景4。

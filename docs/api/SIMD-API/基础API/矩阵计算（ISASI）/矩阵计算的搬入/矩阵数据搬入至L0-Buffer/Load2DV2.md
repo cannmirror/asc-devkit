@@ -153,7 +153,7 @@ $$startAddr = srcAddr + (kStartPosition \times \lvert srcStride \rvert + mStartP
 
 ## 调用示例
 
-示例代码片段如下，仅展示样例中的部分代码，完整使用样例请参见[Load2DV2样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_basic_api/03_matrix_compute/load_data_2dv2_l12l0)。
+示例代码片段如下，仅展示样例中的部分代码，完整使用样例请参见[Load2DV2样例](https://gitcode.com/cann/asc-devkit/tree/9.1.0/examples/01_simd_cpp_api/03_basic_api/03_matrix_compute/load_data_2dv2_l12l0)。
 
 ```cpp
 // Load2DV2: Nz -> Nz

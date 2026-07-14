@@ -91,7 +91,7 @@
 
 ## 调用示例
 
-具体可参考[ReduceRepeat系列归约指令样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_basic_api/01_memory_vector_compute/reduce_repeat)。
+具体可参考[ReduceRepeat系列归约指令样例](https://gitcode.com/cann/asc-devkit/tree/9.1.0/examples/01_simd_cpp_api/03_basic_api/01_memory_vector_compute/reduce_repeat)。
 
 1. 调用`ReduceRepeat<MAX>`后，所有repeat内的最大值及索引。
 

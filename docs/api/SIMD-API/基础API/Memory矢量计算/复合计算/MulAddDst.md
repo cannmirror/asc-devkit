@@ -148,7 +148,7 @@ PAR列表示矢量计算单元一个迭代能够处理的元素个数。
 - 地址对齐约束参考[地址对齐约束](../../../通用说明和约束.md#section796754519912)。
 - 操作数地址重叠约束请参考[地址重叠约束](../../../通用说明和约束.md#section668772811100)。
 - 源操作数的数据类型为half、目的操作数的数据类型为float的情况下，不支持地址重叠。
-- MulAddDst指令实际使用会受到[bank冲突](https://gitcode.com/cann/asc-devkit/tree/master/docs/guide/算子实践参考/SIMD算子性能优化/内存访问/避免UB的bank冲突/概述.md)影响。  
+- MulAddDst指令实际使用会受到[bank冲突](https://gitcode.com/cann/asc-devkit/tree/9.1.0/docs/guide/算子实践参考/SIMD算子性能优化/内存访问/避免UB的bank冲突/概述.md)影响。  
   地址不重叠场景下，无法在一拍读取dst、src0、src1三块不同地址下的数据，因此只能达到一半的理论并行度，理论并行度将在原有基础上减半；在地址重叠场景下，则保持原有理论并行度。
 - 使用tensor高维切分计算接口时，src和scalar的数据类型为half、dst的数据类型为float的情况下，一个迭代处理内最多处理64个输入数据。
 <!-- npu="950" id6 -->

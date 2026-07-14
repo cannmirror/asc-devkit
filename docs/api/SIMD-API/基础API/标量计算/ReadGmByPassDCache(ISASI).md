@@ -77,4 +77,4 @@ __gm__ T* dstAddr = const_cast<__gm__ T*>(dstGlobal.GetPhyAddr());
 AscendC::WriteGmByPassDCache<T>(dstAddr, value + ADD_VALUE);
 ```
 
-完整样例请参考[GmByPassDCache类样例](https://gitcode.com/cann/asc-devkit/tree/master/examples/01_simd_cpp_api/03_basic_api/09_utils/gm_by_pass_dcache)。
+完整样例请参考[GmByPassDCache类样例](https://gitcode.com/cann/asc-devkit/tree/9.1.0/examples/01_simd_cpp_api/03_basic_api/09_utils/gm_by_pass_dcache)。
