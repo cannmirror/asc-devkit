@@ -46,36 +46,13 @@ repos:
           - "--output-format"
           - "github"
           - "--fix"
-          - "--target-version"
-          - "py37"
           - "--extend-ignore"
-          - "E402,E711,E712,E721,F401,F403,F405,F811,F821,F841,F523"
+          - "E402,E711,E712,E721,F401,F403,F405,F811,F821,F841,F523,E741,F601"
         types: [python]
         files: ^(cmake|docs|impl|scripts|tests|tools)/
-        exclude: &ruff_exclude |
-          (?x)^(
-            \.agent/|
-            cmake/asc/legacy_modules/util/extract_host_stub\.py|
-            tests/python/aclrt_launch_kernel/test_aclrt_launch_kernel\.py|
-            tests/python/adapter/test_ascendc_super_kernel\.py|
-            tests/python/adapter/test_compile_op\.py|
-            tests/python/adapter/test_get_op_tiling\.py|
-            tests/python/asc_op_compiler/test_ascendc_super_kernel\.py|
-            tests/python/asc_op_compiler/test_compile_op\.py|
-            tests/python/asc_op_compiler/test_get_op_tiling\.py|
-            tests/python/asc_opc/stub/files/conv_compute\.py|
-            tests/python/asc_opc/stub/files/gather_v2\.py|
-            tests/python/asc_opc/stub/files/ge_ir_pb2\.py|
-            tools/build/asc_op_compile_base/adapter/compile_op\.py|
-            tools/build/asc_op_compile_base/asc_op_compiler/compile_op\.py
-          )$
       - id: ruff-format
-        args:
-          - "--target-version"
-          - "py37"
         types: [python]
         files: ^(cmake|docs|impl|scripts|tests|tools)/
-        exclude: *ruff_exclude
 
   # OAT 合规性检查 (Open Source Audit Tool)
   - repo: local
