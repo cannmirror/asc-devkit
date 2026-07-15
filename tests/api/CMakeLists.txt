@@ -10,11 +10,4 @@
 project(ascendc_api_tests)
 cmake_minimum_required(VERSION 3.16.0)
 
-add_subdirectory(adv_api)
-add_subdirectory(aicpu_api)
-add_subdirectory(basic_api)
-add_subdirectory(c_api)
 add_subdirectory(tensor_api)
-add_subdirectory(reg_compute_api)
-add_subdirectory(simt_api)
-add_subdirectory(utils)

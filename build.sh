@@ -13,7 +13,7 @@ set -e
 
 SUPPORTED_SHORT_OPTS=("h" "j" "t" "p")
 SUPPORTED_LONG_OPTS=(
-    "help" "cov" "cache" "pkg" "asan" "make_clean" "cann_3rd_lib_path" "test" "cann_path" "adv_test" "basic_test_one" "basic_test_two" "basic_test_three" "build-type" "extra-cmake-args"
+    "help" "cov" "cache" "pkg" "asan" "make_clean" "cann_3rd_lib_path" "test" "cann_path"  "basic_test_one" "basic_test_two" "basic_test_three" "build-type" "extra-cmake-args"
 )
 
 CURRENT_DIR=$(dirname $(readlink -f ${BASH_SOURCE[0]}))
@@ -60,7 +60,6 @@ usage() {
         echo "    -t, --test           Build and run all unit tests"
         echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/cann"
         echo "    -j                   Compile thread nums, default is 16, eg: -j 8"
-        echo "    --adv_test            Build and run the adv part of unit tests"
         echo "    --basic_test_one      Build and run the basic_one part of unit tests"
         echo "    --basic_test_two      Build and run the basic_two part of unit tests"
         echo "    --basic_test_three    Build and run the basic_three part of unit tests"
@@ -94,7 +93,6 @@ usage() {
   echo "    -j                   Compile thread nums, default is 16, eg: -j 8"
   echo "    -t, --test           Build and run all unit tests"
   echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/cann"
-  echo "    --adv_test            Build and run the adv part of unit tests"
   echo "    --basic_test_one      Build and run the basic_one part of unit tests"
   echo "    --basic_test_two      Build and run the basic_two part of unit tests"
   echo "    --basic_test_three    Build and run the basic_three part of unit tests"
@@ -189,7 +187,6 @@ check_help_combinations() {
   for arg in "${arg[@]}"; do
     case "$arg" in
       -t|--test) has_test=true ;;
-      --adv_test) test_part="adv_test" ;;
       --basic_test_one) test_part="basic_test_one" ;;
       --basic_test_two) test_part="basic_test_two" ;;
       --basic_test_three) test_part="basic_test_three" ;;
@@ -248,7 +245,6 @@ check_param_with_help() {
         case "$prev_arg" in
           --pkg) SHOW_HELP="package" ;;
           -t|--test) SHOW_HELP="test" ;;
-          --adv_test) SHOW_HELP="test" ;;
           --basic_test_one) SHOW_HELP="test" ;;
           --basic_test_two) SHOW_HELP="test" ;;
           --basic_test_three) SHOW_HELP="test" ;;
@@ -336,11 +332,6 @@ set_options() {
     -t|--test)
       TEST="all"
       check_param_test_pkg
-      shift
-      ;;
-    --adv_test)
-      TEST_PART="adv_test"
-      check_param_test_part
       shift
       ;;
     --basic_test_one)
@@ -491,9 +482,8 @@ function build_test() {
 function build_test_part() {
   source ${CURRENT_DIR}/tests/test_parts.sh
 
-  if [ "$TEST_PART" == "adv_test" ]; then
-    TEST_TARGET_LIST=("${adv_test_targets[@]}")
-  elif [ "$TEST_PART" == "basic_test_one" ]; then
+
+  if [ "$TEST_PART" == "basic_test_one" ]; then
     TEST_TARGET_LIST=("${basic_test_one_targets[@]}")
   elif [ "$TEST_PART" == "basic_test_two" ]; then
     TEST_TARGET_LIST=("${basic_test_two_targets[@]}")

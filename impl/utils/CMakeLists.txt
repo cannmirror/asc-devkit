@@ -56,8 +56,3 @@ add_custom_target(template_argument ALL
 
 add_custom_target(tiling_log_target ALL
     DEPENDS ${ASC_CPU_LOG_HAED})
-
-add_dependencies(kernel_tiling_headers template_argument tiling_log_target)
-target_include_directories(kernel_tiling_headers INTERFACE
-    $<BUILD_INTERFACE:${TEMPLATE_ARG}>
-)

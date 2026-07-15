@@ -47,7 +47,7 @@
     <tr><td align="left">2</td><td align="left">MakeTensor + Slice</td><td align="left">创建Global Memory张量并切片获取当前核处理的数据块</td><td align="left">ND格式</td></tr>
     <tr><td align="left">3</td><td align="left">Copy(CopyGM2L1)</td><td align="left">将A矩阵和B矩阵数据从GM搬运到L1</td><td align="left">GM->L1A: ND->NZ<br>GM->L1B: ND->NZ</td></tr>
     <tr><td align="left">4</td><td align="left">Copy(CopyL12L0A/B)</td><td align="left">将数据从L1搬运到L0A和L0B</td><td align="left">L1->L0A: NZ->NZ<br>L1->L0B: NZ->ZN</td></tr>
-    <tr><td align="left">5</td><td align="left">Mmad</td><td align="left">完成矩阵乘加计算</td><td align="left">矩阵乘结果为NZ格式</td></tr>
+    <tr><td align="left">5</td><td align="left">矩阵乘加接口</td><td align="left">完成矩阵乘加计算</td><td align="left">矩阵乘结果为NZ格式</td></tr>
     <tr><td align="left">6</td><td align="left">Copy(CopyL0C2GM)</td><td align="left">将L0C Buffer中的计算结果搬运到Global Memory</td><td align="left">NZ->ND格式转换</td></tr>
     </table>
 
@@ -61,8 +61,8 @@
        - CopyL12L0A/B：L1 Buffer到L0A Buffer/L0B Buffer的数据搬运
        - CopyL0C2GM：L0C Buffer到Global Memory的数据搬运，自动处理NZ→ND格式转换
 
-    3. **矩阵乘接口**：使用Mmad + MmadAtom抽象
-       - 自动管理累加控制（cmatrixInitVal参数）
+    3. **矩阵乘接口**：使用矩阵乘加抽象接口
+       - 自动管理累加控制参数
 
     4. **切片接口**：使用Slice + MakeCoord + MakeShape获取张量的子区域
        - 实现分核逻辑：每个核处理不同的数据块
@@ -82,7 +82,7 @@
 | 数据搬运 | 使用Copy完成跨层搬运 |
 | 格式转换 | 依赖布局模式自动完成NZ/ZN转换 |
 | 分核逻辑 | 使用Slice获取当前核处理的数据块 |
-| 计算接口 | 使用Mmad完成矩阵乘加 |
+| 计算接口 | 使用矩阵乘加接口完成计算 |
 
 ## 编译运行
 

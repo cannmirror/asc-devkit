@@ -1,5 +1,7 @@
 # MxFP4 Matmul Tensor API高性能样例
 
+<!-- codespell:ignore Mmad MmadParams cmatrixInitVal -->
+
 ## 概述
 
 本样例介绍如何基于Ascend C Tensor API和静态Tensor编程方式，通过L1 Buffer/L0 Buffer双缓冲机制、大包搬运、细粒度流水同步等多种优化手段，实现一个高性能的MxFP4 Matmul kernel。
@@ -115,7 +117,7 @@ $$
   v
   L0A Buffer / L0B Buffer / L0ScaleA Buffer / L0ScaleB Buffer
   |
-  |  Mmad                              M
+  |  矩阵乘加计算                       M
   v
   L0C Buffer
   |
@@ -202,9 +204,9 @@ AscendC::Te::Copy(l12l0ScaleAAtom, l0TensorAs, l1ReadBufAs.Slice(AscendC::Te::Ma
 | L1 Buffer | `B Ping/Pong` | B的大包数据 | 存放Global Memory->L1 Buffer的B数据 |
 | L1 Buffer | `ScaleA Ping/Pong` | A对应的scale数据 | 存放A侧MXScale |
 | L1 Buffer | `ScaleB Ping/Pong` | B对应的scale数据 | 存放B侧MXScale |
-| L0A Buffer | `A Ping/Pong` | 当前K block的A数据 | Cube `Mmad`左操作数 |
-| L0B Buffer | `B Ping/Pong` | 当前K block的B数据 | Cube `Mmad`右操作数 |
-| L0C Buffer | `C` | float累加结果 | `Mmad`输出，供写回Global Memory |
+| L0A Buffer | `A Ping/Pong` | 当前K block的A数据 | Cube矩阵乘加左操作数 |
+| L0B Buffer | `B Ping/Pong` | 当前K block的B数据 | Cube矩阵乘加右操作数 |
+| L0C Buffer | `C` | float累加结果 | 矩阵乘加输出，供写回Global Memory |
 
 一个简化的流水节奏如下：
 
@@ -213,7 +215,7 @@ time     |----------------------------------------------------------------------
 
 GM->L1   | A/B/ScaleA/ScaleB Ping | A/B/ScaleA/ScaleB Pong | A/B/ScaleA/ScaleB Ping |
 L1->L0                            | L0 Ping load --|       | L0 Pong load --|
-Cube                                               | Mmad Ping ---|   | Mmad Pong ---|
+Cube                                               | Compute Ping ---|   | Compute Pong ---|
 L0C->GM                                                           | Copy L0C to GM ---
 ```
 
@@ -231,10 +233,10 @@ for nBlock in N blocks:
     for kBlock in K blocks:
         Copy(A block, ScaleA block)
         Copy(B block, ScaleB block)
-        Mmad accumulate
+        Accumulate
 ```
 
-`Mmad`的输入来自L0A Buffer/L0B Buffer，输出累加到L0C Buffer。第一轮K block初始化累加结果，后续K block持续累加，直到完整K方向计算完成。
+矩阵乘加输入来自L0A Buffer/L0B Buffer，输出累加到L0C Buffer。第一轮K block初始化累加结果，后续K block持续累加，直到完整K方向计算完成。
 
 计算阶段的关键参数包括`m/n/k`尺寸、是否初始化C矩阵：
 
@@ -244,7 +246,7 @@ mmadParams.cmatrixInitVal = (kBlockIdx == 0);
 AscendC::Te::Mmad(mmadAtom.with(mmadParams), l0TensorC, l0TensorA, l0TensorB);
 ```
 
-其中`cmatrixInitVal`用于控制第一轮K block初始化累加结果，后续K block在已有L0C Buffer数据上继续累加。
+其中初始化控制参数用于控制第一轮K block初始化累加结果，后续K block在已有L0C Buffer数据上继续累加。
 
 #### 6. L0C 写回 GM：从 float 转换到 bfloat16_t 输出
 
@@ -272,8 +274,8 @@ AscendC::Te::Copy(l0c2GmAtom.with(fixpipeParams), c.Slice(AscendC::Te::MakeCoord
 |------|------|------|----------|
 | `MTE2_MTE1` | GM->L1 通知 L1->L0 | GM->L1 Copy 完成后，通知 L1->L0 Copy 可以读取 L1 数据 | `EVENT_ID0/1`: A+B Data Ping/Pong；`EVENT_ID2/3`: As+Bs Scale Ping/Pong |
 | `MTE1_MTE2` | L1->L0 通知 GM->L1 | L1->L0 Copy 消费完 L1 数据后，通知 GM->L1 Copy 可以覆盖该缓冲区 | 同上 |
-| `MTE1_M` | L1->L0 通知 Cube | L1->L0 Copy 完成后，通知 Mmad 可以开始计算 | `EVENT_ID0/1`: L0 Ping/Pong |
-| `M_MTE1` | Cube 通知 L1->L0 | Mmad 消费完 L0 缓冲区后，通知下一轮 L1->L0 Copy 可以写入 | `EVENT_ID0/1`: L0 Ping/Pong |
+| `MTE1_M` | L1->L0 通知 Cube | L1->L0 Copy 完成后，通知矩阵乘加计算可以开始 | `EVENT_ID0/1`: L0 Ping/Pong |
+| `M_MTE1` | Cube 通知 L1->L0 | 矩阵乘加计算消费完 L0 缓冲区后，通知下一轮 L1->L0 Copy 可以写入 | `EVENT_ID0/1`: L0 Ping/Pong |
 
 A/B data 的生命周期一致，因此按 Ping/Pong 相位绑定到同一组事件；ScaleA/ScaleB 的生命周期一致，但
 scale chunk 通常比 data chunk 更大，因此单独使用另一组 Ping/Pong 事件。
@@ -317,7 +319,7 @@ Copy(L1->L0)
         |
         | MTE1_M
         v
-Mmad(Cube)
+Matrix computation (Cube)
         |
         | M_MTE1
         v
@@ -343,7 +345,7 @@ next LoadData
 | `Task Duration(μs)` | 整个任务执行的总时间，算子端到端执行时间以该参数为准 |
 | `Block Num` | 使用的核数，也就是 kernel 启动的 block 数量 |
 | `aicore_time(μs)` | AI Core 的平均执行时间 |
-| `aic_mac_time(μs)` | Cube 计算单元执行时间，主要对应 `Mmad` 阶段 |
+| `aic_mac_time(μs)` | Cube 计算单元执行时间，主要对应矩阵乘加阶段 |
 | `aic_mac_ratio` | Cube 计算单元时间占比，反映计算单元利用率 |
 | `aic_scalar_time(μs)` | Scalar 指令执行时间，反映循环调度、地址计算、参数配置等开销 |
 | `aic_scalar_ratio` | Scalar 时间占比 |

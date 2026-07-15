@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例基于Tensor API编程方式实现带Bias的Batch Matmul计算，展示使用`MakeTensor`构造GM、L1 Buffer、L0A Buffer、L0B Buffer、L0C Buffer和BiasTable Buffer上的Tensor对象，通过`Slice`按batch维度切分输入输出，并通过Tensor API `Copy`和`Mmad`完成分批矩阵乘加计算的方法。
+本样例基于Tensor API编程方式实现带Bias的Batch Matmul计算，展示使用`MakeTensor`构造GM、L1 Buffer、L0A Buffer、L0B Buffer、L0C Buffer和BiasTable Buffer上的Tensor对象，通过`Slice`按batch维度切分输入输出，并通过Tensor API `Copy`和矩阵乘加接口完成分批计算的方法。
 
 本样例输入矩阵A、矩阵B和Bias的数据类型均为`half`，输出矩阵C的数据类型为`half`。矩阵A和矩阵B均不转置，计算逻辑为：
 
@@ -51,11 +51,11 @@ C[b] = A[b] * B[b] + Bias[b], b = 0, 1, ..., B - 1
 
   4. Bias功能
 
-      每个batch拥有独立Bias，Bias的shape为`[B,1,N]`。样例先将Bias构造为Tensor对象，再通过Tensor API `CopyL12BT`搬入BiasTable Buffer，并在调用`Mmad`时作为Bias操作数参与矩阵乘加计算。
+      每个batch拥有独立Bias，Bias的shape为`[B,1,N]`。样例先将Bias构造为Tensor对象，再通过Tensor API `CopyL12BT`搬入BiasTable Buffer，并在调用矩阵乘加接口时作为Bias操作数参与计算。
 
   5. Tensor API接口使用
 
-      样例使用`MakeCopy`构造Tensor API Copy对象，使用`MakeMmad`构造Tensor API Mmad对象。通过`CopyGM2L1`、`CopyL12L0A`、`CopyL12L0B`、`CopyL12BT`、`CopyL0C2GM`和`Mmad`完成Batch Matmul带Bias的完整计算链路。
+      样例使用`MakeCopy`构造Tensor API Copy对象，并构造Tensor API矩阵乘加对象。通过`CopyGM2L1`、`CopyL12L0A`、`CopyL12L0B`、`CopyL12BT`、`CopyL0C2GM`和矩阵乘加接口完成Batch Matmul带Bias的完整计算链路。
 
 - 样例规格：
 

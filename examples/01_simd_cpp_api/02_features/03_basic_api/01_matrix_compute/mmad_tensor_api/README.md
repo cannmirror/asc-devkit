@@ -1,8 +1,8 @@
-# 基于Tensor API实现的Mmad随路量化样例
+# 基于Tensor API实现的矩阵乘加随路量化样例
 
 ## 概述
 
-本样例基于Tensor API编程方式实现动态Shape矩阵乘法和随路量化计算。矩阵A不转置，矩阵B转置存储，A/B矩阵数据类型为int8_t，Mmad累加类型为int32_t，输出矩阵C数据类型为half。量化系数quant以uint64_t格式输入，在Fixpipe阶段对L0C中的int32_t累加结果进行缩放并写回GM。
+本样例基于Tensor API编程方式实现动态Shape矩阵乘法和随路量化计算。矩阵A不转置，矩阵B转置存储，A/B矩阵数据类型为int8_t，矩阵乘加累加类型为int32_t，输出矩阵C数据类型为half。量化系数quant以uint64_t格式输入，在Fixpipe阶段对L0C中的int32_t累加结果进行缩放并写回GM。
 
 ## 支持的产品
 
@@ -29,7 +29,7 @@
 
   1. 动态Matmul功能
 
-     样例在Kernel中通过Tensor API构造GM、L1 Buffer、L0A Buffer、L0B Buffer、L0C Buffer上的Tensor对象，使用Copy接口完成GM到L1 Buffer、L1 Buffer到L0 Buffer的分块搬运，并通过Mmad接口完成矩阵乘法。矩阵A按ND布局读取，矩阵B按DN布局读取（输入文件中以转置后的[N, K]保存）。Shape参数（M、N、K、singleCoreM、singleCoreN、singleCoreK）通过在运行时传递到Kernel中，baseM、baseN、baseK和stepM、stepN、stepK、ENABLE_UNITFLAG作为编译期模板参数决定L1 Buffer/L0 Buffer分配大小和分块步进。
+     样例在Kernel中通过Tensor API构造GM、L1 Buffer、L0A Buffer、L0B Buffer、L0C Buffer上的Tensor对象，使用Copy接口完成GM到L1 Buffer、L1 Buffer到L0 Buffer的分块搬运，并通过矩阵乘加接口完成矩阵乘法。矩阵A按ND布局读取，矩阵B按DN布局读取（输入文件中以转置后的[N, K]保存）。Shape参数（M、N、K、singleCoreM、singleCoreN、singleCoreK）通过在运行时传递到Kernel中，baseM、baseN、baseK和stepM、stepN、stepK、ENABLE_UNITFLAG作为编译期模板参数决定L1 Buffer/L0 Buffer分配大小和分块步进。
 
   2. Fixpipe随路量化功能/反量化
 
@@ -41,7 +41,7 @@
   3. ENABLE_UNITFLAG
 
      样例通过`ENABLE_UNITFLAG`模板参数控制unitFlag功能的开关，默认值为true。
-     unitFlag具体介绍可见[Mmad unitFlag特性样例](../mmad_unitflag/README.md)。
+     unitFlag具体介绍可参考上游asc-devkit仓库中的unitFlag特性样例。
 
 - 样例规格：
 

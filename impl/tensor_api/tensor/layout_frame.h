@@ -51,7 +51,7 @@ struct LayoutTrait {
 template <typename T = uint16_t, typename C0 = Std::Int<C0_ELEMENT<T>>>
 struct LayoutTraitDefault : LayoutTrait<T, C0> {};
 
-struct LayoutTraitScale : LayoutTraitDefault<fp8_e8m0_t, Std::Int<2 / sizeof(fp8_e8m0_t)>> {};
+struct LayoutTraitScale : LayoutTraitDefault<fp8_e8m0_t, Std::Int<MX_SCALE_K0 / sizeof(fp8_e8m0_t)>> {};
 
 struct LayoutTraitFP4 : LayoutTraitDefault<fp4x2_e2m1_t, Std::Int<C0_ELEMENT<fp4x2_e2m1_t>>> {};
 

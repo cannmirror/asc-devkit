@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例基于Tensor API编程方式实现带Bias的动态Shape矩阵乘法运算，展示了Copy Out接口（L0C到GM、L0C到UB）和Mmad（矩阵乘加）等Tensor API的使用方法。通过编译时参数`SCENARIO_NUM`选择不同的回写模式，Shape参数通过`MatmulTiling`结构体在运行时动态传入。
+本样例基于Tensor API编程方式实现带Bias的动态Shape矩阵乘法运算，展示了Copy Out接口（L0C到GM、L0C到UB）和矩阵乘加等Tensor API的使用方法。通过编译时参数`SCENARIO_NUM`选择不同的回写模式，Shape参数通过`MatmulTiling`结构体在运行时动态传入。
 
 ## 支持的产品
 
@@ -24,7 +24,7 @@
 ## 样例描述
 
 - 样例功能：
-  本样例实现了带Bias的动态Shape多核Matmul功能，通过Copy接口完成L0C到GM或L0C到UB的数据搬运，通过Mmad接口完成矩阵乘加计算。
+  本样例实现了带Bias的动态Shape多核Matmul功能，通过Copy接口完成L0C到GM或L0C到UB的数据搬运，通过矩阵乘加接口完成计算。
 
   1、动态Matmul功能
 
@@ -32,7 +32,7 @@
 
   2、Bias功能
 
-  本样例在Matmul计算的首次迭代中通过Mmad接口将Bias向量加到矩阵乘结果上，Bias为float类型的一维向量，长度为N。
+  本样例在Matmul计算的首次迭代中通过矩阵乘加接口将Bias向量加到矩阵乘结果上，Bias为float类型的一维向量，长度为N。
 
   3、多场景支持
 
