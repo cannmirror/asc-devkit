@@ -29,9 +29,10 @@ __aicore__ inline void asc_copy_l0c2l1_impl(
 {
     if ASC_IS_AIC {
         copy_matrix_cc_to_cbuf(
-            dst, src, 0, n_size, m_size, dst_stride, src_stride, clip_relu_pre, unit_flag_mode,
+            dst, src, 0, n_size, m_size, dst_stride, src_stride, 0, clip_relu_pre, unit_flag_mode,
             static_cast<QuantMode_t>(quant_pre), relu_pre, channel_split, nz2nd_en,
-            static_cast<QuantMode_post>(quant_post), relu_post, clip_relu_post, eltwise_op, eltwise_antq_en, c0_pad_en);
+            static_cast<QuantMode_post>(quant_post), relu_post, clip_relu_post, false, eltwise_op, eltwise_antq_en,
+            false, c0_pad_en, false, false, false);
     }
 }
 
@@ -44,9 +45,10 @@ __aicore__ inline void asc_copy_l0c2l1_impl(
 {
     if ASC_IS_AIC {
         copy_matrix_cc_to_cbuf(
-            dst, src, 0, n_size, m_size, dst_stride, src_stride, clip_relu_pre, unit_flag_mode,
+            dst, src, 0, n_size, m_size, dst_stride, src_stride, 0, clip_relu_pre, unit_flag_mode,
             static_cast<QuantMode_t>(quant_pre), relu_pre, channel_split, nz2nd_en,
-            static_cast<QuantMode_post>(quant_post), relu_post, clip_relu_post, eltwise_op, eltwise_antq_en, c0_pad_en);
+            static_cast<QuantMode_post>(quant_post), relu_post, clip_relu_post, false, eltwise_op, eltwise_antq_en,
+            false, c0_pad_en, false, false, false);
     }
 }
 
@@ -59,9 +61,10 @@ __aicore__ inline void asc_copy_l0c2l1_impl(
 {
     if ASC_IS_AIC {
         copy_matrix_cc_to_cbuf(
-            dst, src, 0, n_size, m_size, dst_stride, src_stride, clip_relu_pre, unit_flag_mode,
+            dst, src, 0, n_size, m_size, dst_stride, src_stride, 0, clip_relu_pre, unit_flag_mode,
             static_cast<QuantMode_t>(quant_pre), relu_pre, channel_split, nz2nd_en,
-            static_cast<QuantMode_post>(quant_post), relu_post, clip_relu_post, eltwise_op, eltwise_antq_en, c0_pad_en);
+            static_cast<QuantMode_post>(quant_post), relu_post, clip_relu_post, false, eltwise_op, eltwise_antq_en,
+            false, c0_pad_en, false, false, false);
     }
 }
 
@@ -74,9 +77,10 @@ __aicore__ inline void asc_copy_l0c2l1_impl(
 {
     if ASC_IS_AIC {
         copy_matrix_cc_to_cbuf(
-            dst, src, 0, n_size, m_size, dst_stride, src_stride, clip_relu_pre, unit_flag_mode,
+            dst, src, 0, n_size, m_size, dst_stride, src_stride, 0, clip_relu_pre, unit_flag_mode,
             static_cast<QuantMode_t>(quant_pre), relu_pre, channel_split, nz2nd_en,
-            static_cast<QuantMode_post>(quant_post), relu_post, clip_relu_post, eltwise_op, eltwise_antq_en, c0_pad_en);
+            static_cast<QuantMode_post>(quant_post), relu_post, clip_relu_post, false, eltwise_op, eltwise_antq_en,
+            false, c0_pad_en, false, false, false);
     }
 }
 
@@ -89,9 +93,10 @@ __aicore__ inline void asc_copy_l0c2l1_impl(
 {
     if ASC_IS_AIC {
         copy_matrix_cc_to_cbuf(
-            dst, src, 0, n_size, m_size, dst_stride, src_stride, clip_relu_pre, unit_flag_mode,
+            dst, src, 0, n_size, m_size, dst_stride, src_stride, 0, clip_relu_pre, unit_flag_mode,
             static_cast<QuantMode_t>(quant_pre), relu_pre, channel_split, nz2nd_en,
-            static_cast<QuantMode_post>(quant_post), relu_post, clip_relu_post, eltwise_op, eltwise_antq_en, c0_pad_en);
+            static_cast<QuantMode_post>(quant_post), relu_post, clip_relu_post, false, eltwise_op, eltwise_antq_en,
+            false, c0_pad_en, false, false, false);
     }
 }
 
@@ -104,9 +109,10 @@ __aicore__ inline void asc_copy_l0c2l1_impl(
 {
     if ASC_IS_AIC {
         copy_matrix_cc_to_cbuf(
-            dst, src, 0, n_size, m_size, dst_stride, src_stride, clip_relu_pre, unit_flag_mode,
+            dst, src, 0, n_size, m_size, dst_stride, src_stride, 0, clip_relu_pre, unit_flag_mode,
             static_cast<QuantMode_t>(quant_pre), relu_pre, channel_split, nz2nd_en,
-            static_cast<QuantMode_post>(quant_post), relu_post, clip_relu_post, eltwise_op, eltwise_antq_en, c0_pad_en);
+            static_cast<QuantMode_post>(quant_post), relu_post, clip_relu_post, false, eltwise_op, eltwise_antq_en,
+            false, c0_pad_en, false, false, false);
     }
 }
 
@@ -119,9 +125,10 @@ __aicore__ inline void asc_copy_l0c2l1_impl(
 {
     if ASC_IS_AIC {
         copy_matrix_cc_to_cbuf(
-            dst, src, 0, n_size, m_size, dst_stride, src_stride, clip_relu_pre, unit_flag_mode,
+            dst, src, 0, n_size, m_size, dst_stride, src_stride, 0, clip_relu_pre, unit_flag_mode,
             static_cast<QuantMode_t>(quant_pre), relu_pre, channel_split, nz2nd_en,
-            static_cast<QuantMode_post>(quant_post), relu_post, clip_relu_post, eltwise_op, eltwise_antq_en, c0_pad_en);
+            static_cast<QuantMode_post>(quant_post), relu_post, clip_relu_post, false, eltwise_op, eltwise_antq_en,
+            false, c0_pad_en, false, false, false);
     }
 }
 
@@ -134,9 +141,10 @@ __aicore__ inline void asc_copy_l0c2l1_impl(
 {
     if ASC_IS_AIC {
         copy_matrix_cc_to_cbuf(
-            dst, src, 0, n_size, m_size, dst_stride, src_stride, clip_relu_pre, unit_flag_mode,
+            dst, src, 0, n_size, m_size, dst_stride, src_stride, 0, clip_relu_pre, unit_flag_mode,
             static_cast<QuantMode_t>(quant_pre), relu_pre, channel_split, nz2nd_en,
-            static_cast<QuantMode_post>(quant_post), relu_post, clip_relu_post, eltwise_op, eltwise_antq_en, c0_pad_en);
+            static_cast<QuantMode_post>(quant_post), relu_post, clip_relu_post, false, eltwise_op, eltwise_antq_en,
+            false, c0_pad_en, false, false, false);
     }
 }
 
