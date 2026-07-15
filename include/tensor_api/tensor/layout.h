@@ -89,6 +89,13 @@ __aicore__ inline constexpr decltype(auto) MakeFrameLayout(const Args&... args);
 
 template <typename LayoutPattern, size_t C0Element, typename... Args>
 __aicore__ inline constexpr decltype(auto) MakeFrameLayout(const Args&... args);
+
+template <size_t... SqueezeDims, typename T, typename Enable>
+__aicore__ inline constexpr auto Squeeze(const T& x);
+
+template <typename Pattern, typename T, typename Enable>
+__aicore__ inline constexpr auto Squeeze(const T& x, const Pattern& pattern);
+
 } // namespace Te
 } // namespace AscendC
 
