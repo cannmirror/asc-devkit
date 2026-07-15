@@ -64,7 +64,13 @@ if(NOT "${DPRODUCT_SIDE}" STREQUAL "device")
     DESTINATION ${INSTALL_LIBRARY_DIR}/asc/impl/adv_api/detail
     ${INSTALL_OPTIONAL} COMPONENT asc-devkit FILES_MATCHING
     PATTERN "*.h"
-    PATTERN "CMakeLists.txt" EXCLUDE)
+    PATTERN "CMakeLists.txt" EXCLUDE
+    PATTERN "hccl_inner_dl.h" EXCLUDE
+    PATTERN "hccl_rank_graph_dl.h" EXCLUDE
+    PATTERN "hccl_res_dl.h" EXCLUDE
+    PATTERN "hcomm_dlsym.h" EXCLUDE
+    PATTERN "hcomm_host_profiling_dl.h" EXCLUDE
+    REGEX "common/adapter_error_manager_pub\\.h$" EXCLUDE)
 
   # copy tiling to asc impl
   install(
@@ -78,6 +84,14 @@ if(NOT "${DPRODUCT_SIDE}" STREQUAL "device")
   install(
     DIRECTORY ${ASCENDC_INCLUDE_DIR}/adv_api/
     DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include/adv_api/
+    ${INSTALL_OPTIONAL} COMPONENT asc-devkit
+    REGEX "hccl/internal" EXCLUDE)
+
+  install(
+    FILES
+      ${ASCENDC_INCLUDE_DIR}/adv_api/hccl/internal/hccl_msg.h
+      ${ASCENDC_INCLUDE_DIR}/adv_api/hccl/internal/hccl_tiling_msg.h
+    DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include/adv_api/hccl/internal
     ${INSTALL_OPTIONAL} COMPONENT asc-devkit)
 
   # generate softlink

@@ -45,7 +45,6 @@
         <path value="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/fwk_modules/util/makeself"/>
         <path value="$(TARGET_ENV)/pkg_inc" install_softlink="pkg_inc"/>
         <path value="$(TARGET_ENV)/pkg_inc/asc"/>
-        <path value="$(TARGET_ENV)/pkg_inc/asc/hccl"/>
         <path value="$(TARGET_ENV)/ascendc" install_softlink="compiler/ascendc"/>
         <path value="$(TARGET_ENV)/ascendc/include"/>
         <path value="$(TARGET_ENV)/ascendc/include/basic_api"/>
@@ -103,10 +102,6 @@
     <file_info copy_type="delivery" src_path="lib/host/asc/impl/adv_api" dst_path="$(TARGET_ENV)/asc/impl/adv_api" install_path="$(TARGET_ENV)/asc/impl/adv_api" install_type="all">
         <file value="detail" install_softlink="$(TARGET_ENV)/ascendc/include/highlevel_api/impl" install_mod="550" entity="true"/>
         <file value="tiling" install_mod="550" entity="true"/>
-    </file_info>
-
-    <file_info copy_type="delivery" src_path="lib/host/asc/include/adv_api" dst_path="$(TARGET_ENV)/asc/include/adv_api/hccl" install_path="$(TARGET_ENV)/asc/include/adv_api/hccl" install_type="all">
-        <file value="internal" install_softlink="$(TARGET_ENV)/pkg_inc/asc/hccl/internal" install_mod="550" entity="true"/>
     </file_info>
 
     <file_info copy_type="delivery" src_path="lib/host/asc/include" dst_path="$(TARGET_ENV)/asc/include" install_path="$(TARGET_ENV)/asc/include" install_type="all">
