@@ -67,11 +67,6 @@ target_link_directories(ascendc_ops PRIVATE
 target_link_libraries(ascendc_ops PRIVATE
     -Wl,--no-as-needed
     Python3::Python
-    ascendc_runtime
-    acl_rt
-    graph
-    graph_base
-    register
     gert
     ${TORCH_LIBRARIES}
     -Wl,--as-needed
@@ -83,6 +78,5 @@ target_link_options(ascendc_ops PRIVATE
 
 target_compile_options(ascendc_ops PRIVATE
     ${TORCH_CXX_FLAGS}
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
     $<$<COMPILE_LANGUAGE:ASC>:--gcc-toolchain=${GCC_TOOLCHAIN_ROOT}>
 )

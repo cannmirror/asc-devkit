@@ -54,7 +54,8 @@ This example uses the two-stage interfaces `aclnnAddCustomGetWorkspaceSize` and 
   Run the following steps in the root directory of this example.
 
   ```bash
-  mkdir -p build; cd build
+  mkdir -p build && cd build
+  python3 ../scripts/gen_data.py
   cmake .. && make -j
   ./execute_add_op
   ```

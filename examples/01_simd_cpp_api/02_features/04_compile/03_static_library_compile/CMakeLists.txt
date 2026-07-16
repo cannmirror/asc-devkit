@@ -32,10 +32,6 @@ set_target_properties(demo PROPERTIES
     LINKER_LANGUAGE ASC
 )
 
-target_compile_options(add_kernel PRIVATE
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
-)
-
 target_include_directories(demo PRIVATE
     $ENV{ASCEND_HOME_PATH}/include
 )

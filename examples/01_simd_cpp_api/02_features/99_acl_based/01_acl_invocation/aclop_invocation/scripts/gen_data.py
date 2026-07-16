@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+# coding=utf-8
+
 # ----------------------------------------------------------------------------------------------------------
 # Copyright (c) 2026 Huawei Technologies Co., Ltd.
 # This program is free software, you can redistribute it and/or modify it under the terms and conditions of
@@ -8,23 +11,23 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
+import os
 
-cmake_minimum_required(VERSION 3.16)
+import numpy as np
 
-set(CMAKE_ASC_ARCHITECTURES "dav-2201" CACHE STRING "NPU architecture: dav-2201, dav-3510")
 
-find_package(ASC REQUIRED)
+def gen_data():
+    shape = (8, 2048)
+    input0 = np.full(shape, 1.1, dtype=np.float16)
+    input1 = np.full(shape, 2.2, dtype=np.float16)
+    golden = (input0 + input1).astype(np.float16)
 
-project(matmul_aot_example LANGUAGES ASC CXX)
+    os.makedirs("input", exist_ok=True)
+    os.makedirs("output", exist_ok=True)
+    input0.tofile("input/input0.bin")
+    input1.tofile("input/input1.bin")
+    golden.tofile("output/golden.bin")
 
-add_executable(matmul_aot_example
-    matmul_aot_example.asc
-)
 
-target_link_libraries(matmul_aot_example PRIVATE
-    tiling_api
-    register
-    platform
-    m
-    dl
-)
+if __name__ == "__main__":
+    gen_data()

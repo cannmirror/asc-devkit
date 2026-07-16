@@ -44,7 +44,8 @@ AddCustom算子介绍等内容可参考[算子描述](../custom_op/README.md)。
   在本样例根目录下执行如下步骤，运行该样例。
 
   ```bash
-  mkdir -p build; cd build
+  mkdir -p build && cd build
+  python3 ../app/scripts/gen_data.py
   cmake .. && make -j
   ./execute_add_op
   ```

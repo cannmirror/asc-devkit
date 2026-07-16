@@ -27,6 +27,7 @@ ExternalProject_Add(customize_op
 ExternalProject_Add(execute_add_app
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/app
     BINARY_DIR ${CMAKE_BINARY_DIR}/app-build
+    BUILD_ALWAYS TRUE
     CMAKE_ARGS
         -Dpackage_name=${CUSTOMIZE_OPS_NAME}
         -DCMAKE_PREFIX_PATH=${CUSTOMIZE_INSTALL_DIR}

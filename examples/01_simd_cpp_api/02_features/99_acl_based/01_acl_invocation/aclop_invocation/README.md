@@ -55,7 +55,8 @@
   在本样例根目录下执行如下步骤，运行该样例。
 
   ```bash
-  mkdir -p build; cd build
+  mkdir -p build && cd build
+  python3 ../scripts/gen_data.py
   # 使用atc模型转换工具生成单算子离线模型
   atc --singleop=../add_custom.json --output=. --soc_version=${soc_version}
   cmake .. && make -j

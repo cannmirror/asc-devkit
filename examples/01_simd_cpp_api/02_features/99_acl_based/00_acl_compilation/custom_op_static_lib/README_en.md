@@ -44,7 +44,8 @@ For the AddCustom operator description and related information, refer to [Operat
   Run the following steps in the root directory of this example.
 
   ```bash
-  mkdir -p build; cd build
+  mkdir -p build && cd build
+  python3 ../app/scripts/gen_data.py
   cmake .. && make -j
   ./execute_add_op
   ```

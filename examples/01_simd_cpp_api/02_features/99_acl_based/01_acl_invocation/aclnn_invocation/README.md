@@ -54,7 +54,8 @@
   在本样例根目录下执行如下步骤，运行该样例。
 
   ```bash
-  mkdir -p build; cd build
+  mkdir -p build && cd build
+  python3 ../scripts/gen_data.py
   cmake .. && make -j
   ./execute_add_op
   ```

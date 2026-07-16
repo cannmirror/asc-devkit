@@ -55,7 +55,8 @@ This example uses the `aclopExecuteV2` interface to execute the single-operator 
   Run the following steps in the root directory of this example.
 
   ```bash
-  mkdir -p build; cd build
+  mkdir -p build && cd build
+  python3 ../scripts/gen_data.py
   # Use the ATC model conversion tool to generate the single-operator offline model
   atc --singleop=../add_custom.json --output=. --soc_version=${soc_version}
   cmake .. && make -j

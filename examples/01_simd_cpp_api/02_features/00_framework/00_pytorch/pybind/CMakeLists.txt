@@ -84,6 +84,5 @@ target_link_options(ascendc_ops PRIVATE
 
 target_compile_options(ascendc_ops PRIVATE
     ${TORCH_CXX_FLAGS}
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=${CMAKE_ASC_ARCHITECTURES}>
     $<$<COMPILE_LANGUAGE:ASC>:--gcc-toolchain=${GCC_TOOLCHAIN_ROOT}>
 )
