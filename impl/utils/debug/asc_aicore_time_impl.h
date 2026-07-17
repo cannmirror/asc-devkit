@@ -141,8 +141,8 @@ __aicore__ inline void prof_mark_event(void)
 #define TRACE_STOP_FUNC(N, ...) TRACE_STOP_##N(__VA_ARGS__)
 #define TRACE_STOP_IMPL(...) TRACE_STOP_INTERNAL(GET_ARG_COUNT(__VA_ARGS__), __VA_ARGS__)
 #if __NPU_ARCH__ == 3510
-#define TRACE_START_2(pipe, idx) asc_mark_stamp<pipe>(static_cast<uint16_t>(idx) | 0x400)
-#define TRACE_STOP_2(pipe, idx) asc_mark_stamp<pipe>(static_cast<uint16_t>(idx) | 0xc00)
+#define TRACE_START_2(pipe, idx) __asc_aicore::asc_mark_stamp<pipe>(static_cast<uint16_t>(idx) | 0x400)
+#define TRACE_STOP_2(pipe, idx) __asc_aicore::asc_mark_stamp<pipe>(static_cast<uint16_t>(idx) | 0xc00)
 #else
 #define TRACE_START_2(pipe, idx) TRACE_START_1(idx)
 #define TRACE_STOP_2(pipe, idx) TRACE_STOP_1(idx)
@@ -153,8 +153,8 @@ __aicore__ inline void TRACE_START_1(TraceId apid) {}
 __aicore__ inline void TRACE_STOP_1(TraceId apid) {}
 
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
-#define TRACE_START_1(apid) asc_mark_stamp<PIPE_S>(static_cast<uint16_t>(apid) | 0x400)
-#define TRACE_STOP_1(apid) asc_mark_stamp<PIPE_S>(static_cast<uint16_t>(apid) | 0xc00)
+#define TRACE_START_1(apid) __asc_aicore::asc_mark_stamp<PIPE_S>(static_cast<uint16_t>(apid) | 0x400)
+#define TRACE_STOP_1(apid) __asc_aicore::asc_mark_stamp<PIPE_S>(static_cast<uint16_t>(apid) | 0xc00)
 
 #elif defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
 #define TRACE_START_1(apid)                                                \
