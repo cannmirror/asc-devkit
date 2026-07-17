@@ -24,9 +24,7 @@
 
 ## 功能说明
 
-本接口的功能为生成一条空操作指令，占用当前线程15个时钟周期，但不执行任何实际计算与访存操作。该接口主要用于避免多个线程读写同地址情况下可能发生的卡死问题。
-
-当不同核连续读取相同GM地址时，会造成总线被长期占用，此时会影响其它访问该地址的请求，进而引发卡死现象。在此场景下，建议在读指令后调用此接口来释放总线。
+本接口的功能为生成一条空操作指令，占用当前线程15个时钟周期，不执行任何实际计算与访存操作。
 
 ## 函数原型
 
@@ -59,17 +57,10 @@ inline void asc_nop()
 -   SIMT编程场景：
 
     ```
-    __global__ __launch_bounds__(1024) void kernel_nop(int32_t* flag)
+    __global__ __launch_bounds__(1024) void kernel_nop(...)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
         ...
-        int32_t warp_num = blockDim.x / warpSize;
-        // 连续读取同地址场景：循环等待其他线程将flag置为1
-        while (*reinterpret_cast<volatile int32_t*>(flag) == 0) {
-            for (int i = 0; i < 800 * warp_num / 15; i++) {
-                asc_nop(); // 读同地址后插入空操作指令，释放总线避免卡死，建议指令数量为（800 * warp_num / 15）条
-            }
-        }
+        asc_nop(); // 15个cycle不执行任何操作
         ...
     }
     ```
@@ -77,17 +68,10 @@ inline void asc_nop()
 -   SIMD与SIMT混合编程场景：
 
     ```
-    __simt_vf__ __launch_bounds__(1024) inline void kernel_nop(__gm__ int32_t* flag)
+    __simt_vf__ __launch_bounds__(1024) inline void kernel_nop(...)
     {
-        int idx = threadIdx.x + blockIdx.x * blockDim.x;
         ...
-        int32_t warp_num = blockDim.x / warpSize;
-        // 连续读取同地址场景：循环等待其他线程将flag置为1
-        while (*reinterpret_cast<volatile __gm__ int32_t*>(flag) == 0) {
-            for (int i = 0; i < 800 * warp_num / 15; i++) {
-                asc_nop(); // 读同地址后插入空操作指令，释放总线避免卡死，建议指令数量为（800 * warp_num / 15）条
-            }
-        }
+        asc_nop(); // 15个cycle不执行任何操作
         ...
     }
     ```
