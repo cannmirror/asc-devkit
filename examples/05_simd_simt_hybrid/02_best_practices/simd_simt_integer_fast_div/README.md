@@ -168,8 +168,8 @@ $$
 `calc_magic_shift()` 函数中计算快速除法的 `magic` 和 `shift`：
 
 ```cpp
-int64_t pos = BIT_64_LEN - CountLeadingZero(divisor);
-int64_t cnt1 = GetBitCount1(divisor);
+int64_t pos = BIT_64_LEN - count_leading_zero(divisor);
+int64_t cnt1 = get_bit_count1(divisor);
 uint32_t shift = (cnt1 == 1) ? (pos - 1) : pos;
 uint32_t magic = (1l << BIT_32_LEN) * ((1l << shift) - divisor) / divisor + 1;
 ```

@@ -9,7 +9,7 @@ This example is a SIMT programming introductory example. It uses the `<<<>>>` ke
 - Ascend 950PR/Ascend 950DT
 
 ## Supported CANN Software Versions
-- \> CANN 9.0.0
+- \>= CANN 9.1.0
 
 ## Directory Structure
 

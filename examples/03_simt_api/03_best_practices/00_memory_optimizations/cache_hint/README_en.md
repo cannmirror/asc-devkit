@@ -10,7 +10,7 @@ This example uses table-lookup sin computation to demonstrate data cache optimiz
 
 ## Supported CANN Software Version
 
-- \> CANN 9.0.0
+- \>= CANN 9.1.0
 
 ## Directory Structure
 

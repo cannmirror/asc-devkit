@@ -11,7 +11,7 @@ This example demonstrates how to use the Ascend C SIMT [`asc_atomic_add()`](../.
 
 ## Supported CANN Software Version
 
-- \> CANN 9.0.0
+- \>= CANN 9.1.0
 
 ## Directory Structure
 

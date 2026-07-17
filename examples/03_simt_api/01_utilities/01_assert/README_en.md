@@ -9,7 +9,7 @@ This example demonstrates how to use the `assert()` interface in SIMT programmin
 - Ascend 950PR/Ascend 950DT
 
 ## Supported CANN Software Version
-- \> CANN 9.0.0
+- \>= CANN 9.1.0
 
 ## Directory Structure
 

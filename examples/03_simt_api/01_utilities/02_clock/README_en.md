@@ -10,7 +10,7 @@ This example demonstrates how to use the `clock()` interface in SIMT programming
 
 ## Supported CANN Software Version
 
-- \> CANN 9.0.0
+- \>= CANN 9.1.0
 
 ## Directory Structure
 

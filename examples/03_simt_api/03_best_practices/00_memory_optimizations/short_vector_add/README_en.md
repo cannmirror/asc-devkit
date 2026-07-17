@@ -15,7 +15,7 @@ This example uses vector addition to demonstrate performance tuning methods for 
 
 ## Supported CANN Software Version
 
-- \> CANN 9.0.0
+- \>= CANN 9.1.0
 
 ## Directory Structure
 

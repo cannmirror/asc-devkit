@@ -11,7 +11,7 @@ The 2 scenarios correspond to reduction sum for small shape input and large shap
 - Ascend 950PR/Ascend 950DT
 
 ## Supported CANN Software Version
-- \> CANN 9.0.0
+- \>= CANN 9.1.0
 
 ## Directory Structure
 

@@ -9,7 +9,7 @@ This example uses the Roll operator to demonstrate how to register custom operat
 
 ## Supported CANN Software Version
 
-- \> CANN 9.0.0
+- \>= CANN 9.1.0
 
 ## Directory Structure
 
