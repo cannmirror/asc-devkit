@@ -23,6 +23,8 @@
 #ifndef IMPL_MATMUL_STAGE_COPY_CUBE_IN_BIAS_LOAD_BIAS_TO_C2_H
 #define IMPL_MATMUL_STAGE_COPY_CUBE_IN_BIAS_LOAD_BIAS_TO_C2_H
 
+#include "../../../utils/matmul_module.h"
+
 namespace AscendC {
 namespace Impl {
 namespace Detail {
@@ -78,7 +80,16 @@ public:
             if constexpr (GetBitSize<L0cT>() == GetBitSize<BiasT>()) {
                 lenBurst = CeilAlign(lenBurst, DOUBLE_NUM);
             }
+#if __NPU_ARCH__ == 5102
+            DataCopyParams biasParam{1, lenBurst, 0, 0};
+            if constexpr (IsTypeOneOfV<BiasT, half, bfloat16_t, float>) {
+                uint8_t fixShiftValue = (58 - MATMUL_CONST_PARAM_VAR.fixShiftValue);
+                biasParam.fixShiftVal = fixShiftValue;
+            }
+            DataCopy(biasC2, bias, biasParam);
+#else
             DataCopy(biasC2, bias, {1, lenBurst, 0, 0});
+#endif
             return;
         }
         uint16_t lenBurst = (dataLen * oneDataLen * 2 + 63) / 64;

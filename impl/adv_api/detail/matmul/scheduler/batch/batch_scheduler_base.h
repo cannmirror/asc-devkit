@@ -116,7 +116,7 @@ public:
 #if __NPU_ARCH__ == 5102
         if constexpr (
             IsSameTypeV<TransAT, half> && IsSameTypeV<TransBT, half> && IsTypeOneOfV<DstT, half, bfloat16_t>) {
-            constexpr float FIX_VAL_RECIPROCAL = 1.0f / (1 << 16);
+            constexpr float FIX_VAL_RECIPROCAL = 1.0f;
             const uint64_t quantScalar =
                 static_cast<const uint64_t>(*reinterpret_cast<const int32_t*>(&FIX_VAL_RECIPROCAL));
             MATMUL_MODULE(MatmulQuantProcessor)->SetQuantScalar(quantScalar);

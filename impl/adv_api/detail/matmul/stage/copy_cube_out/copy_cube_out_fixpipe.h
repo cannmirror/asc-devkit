@@ -244,6 +244,12 @@ private:
                 fixpipe.SetMcgShfMode(FIXPIPE_MODE);
             }
         }
+#if __NPU_ARCH__ == 5102
+        if constexpr (IsSameTypeV<typename A_TYPE::T, half> && IsSameTypeV<typename B_TYPE::T, half>) {
+            uint8_t fixShiftValue = 58 - MATMUL_CONST_PARAM_VAR.fixShiftValue;
+            fixpipe.SetFixShiftValue(fixShiftValue);
+        }
+#endif
     }
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)

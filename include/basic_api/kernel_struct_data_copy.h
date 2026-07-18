@@ -50,6 +50,10 @@ enum class DataFormat : uint8_t {
 };
 #endif // ASCC_ENUM_DATAFORMAT
 
+#if __NPU_ARCH__ == 5102
+#define CANN_ASC_ENABLE_FIX_SHIFT
+#endif
+
 struct DataCopyParams {
     __aicore__ DataCopyParams() {}
 
@@ -72,6 +76,9 @@ struct DataCopyParams {
         // dstStride will be deprecated, use dstGap instead
         uint16_t dstStride;
     };
+#ifdef CANN_ASC_ENABLE_FIX_SHIFT
+    uint8_t fixShiftVal = 0;
+#endif
 };
 
 enum class DataCopyMVType : uint8_t {

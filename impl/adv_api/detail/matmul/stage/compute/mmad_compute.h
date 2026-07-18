@@ -47,6 +47,13 @@ public:
         mmadParams.m = mmadM;
         mmadParams.k = mmadK;
         mmadParams.n = mmadN;
+
+#if __NPU_ARCH__ == 5102
+        if constexpr (IsSameTypeV<A_T, half>) {
+            mmadParams.fixShiftVal = MATMUL_CONST_PARAM_VAR.fixShiftValue;
+        }
+#endif
+
         if constexpr (MatmulFeatureTrait<MM_CFG>::IsUnitFlagEnabled()) {
             mmadParams.unitFlag = unitFlag;
         }

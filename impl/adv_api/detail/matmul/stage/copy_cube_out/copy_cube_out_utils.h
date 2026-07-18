@@ -90,6 +90,10 @@ public:
         }
     }
 
+#if __NPU_ARCH__ == 5102
+    __aicore__ inline void SetFixShiftValue(uint8_t value) { params_.fixShiftVal = value; }
+#endif
+
     __aicore__ inline void SetQuantMode(QuantMode_t quantMode) { params_.quantPre = quantMode; }
 
     __aicore__ inline void SetQuantScalar(uint64_t scalar) { params_.deqScalar = scalar; }
