@@ -271,12 +271,18 @@ enum class TimeStampId : uint32_t {
     TIME_STAMP_MAX = 0xffff,
 };
 
-template <auto funcPtr, typename... Args>
-__aicore__ inline void AscVFCallImpl(Args&&... args)
+template <auto funcPtr, typename DebugTag = Internal::SimdVfDebugTag, typename... Args>
+__aicore__ static inline void AscVFCallImpl(Args&&... args)
 {
-    AscVFDebugInitUb();
+    if constexpr (Internal::SimdVfDebugTraits<DebugTag>::enabled) {
+        AscVFDebugInitUb();
+    }
+
     funcPtr(args...);
-    AscVFDebugTransferUb();
+
+    if constexpr (Internal::SimdVfDebugTraits<DebugTag>::enabled) {
+        AscVFDebugTransferUb();
+    }
 }
 } // namespace AscendC
 #endif // ASCENDC_MODULE_UTILS_H

@@ -318,6 +318,26 @@ __aicore__ inline void enable_asc_diagnostics() {}
 using namespace __asc_aicore;
 #endif
 
+#if !defined(__NPU_COMPILER_INTERNAL_PURE_SIMT__) && !defined(__CHECK_FEATURE_AT_PRECOMPILE)
+namespace __asc_aicore {
+template <class... Args>
+__aicore__ inline void printf(__gm__ const char* fmt, Args&&... args)
+{
+#if (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+    printf_impl(fmt, args...);
+#endif
+}
+
+template <class... Args>
+__aicore__ inline void PRINTF(__gm__ const char* fmt, Args&&... args)
+{
+#if (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+    printf_impl(fmt, args...);
+#endif
+}
+} // namespace __asc_aicore
+#endif
+
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_AICORE_PRINTF_IMPL__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_AICORE_PRINTF_IMPL__

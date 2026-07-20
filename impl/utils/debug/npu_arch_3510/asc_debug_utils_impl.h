@@ -62,23 +62,45 @@ __simd_callee__ inline void enable_asc_diagnostics()
 #endif
 }
 
+__simd_callee__ constexpr inline uint32_t get_vf_debug_reserved_ub_size()
+{
+    constexpr uint32_t ascendcReservedUbSize = 2 * 1024;
+    constexpr uint32_t vfStackReservedUbSize = 6 * 1024;
+
+#if defined(__ASC_DISABLE_VF_STACK_RESERVED__)
+    return ascendcReservedUbSize;
+#else
+    return ascendcReservedUbSize + vfStackReservedUbSize;
+#endif
+}
+
+__simd_callee__ inline uint64_t get_vf_debug_reserved_ub_addr()
+{
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
+    return static_cast<uint64_t>(get_shmem_sz()) - get_vf_debug_reserved_ub_size();
+#else
+    return 0;
+#endif
+}
+
 __simd_callee__ __ubuf__ inline BlockVFBufInfo* get_printf_ubuf_addr(uint64_t addr, uint16_t blockIdx = 0)
 {
-#if defined(ASCENDC_SIMD_VF_DEBUG)
-    constexpr uint32_t safeStaticLen = 32;
-    static __ubuf__ uint64_t info[safeStaticLen];
+    uint64_t blockInfoAddr = addr;
+    if (blockInfoAddr == 0) {
+        blockInfoAddr = get_vf_debug_reserved_ub_addr();
+    }
+    auto* bufInfo = reinterpret_cast<__ubuf__ BlockVFBufInfo*>(blockInfoAddr);
     if (addr != 0) {
-        info[0] = addr;
-        // clear data workspace when initializing
-        auto* bufInfo = reinterpret_cast<__ubuf__ BlockVFBufInfo*>(addr);
         bufInfo->writeLen = 0;
         bufInfo->pidx = 0;
         bufInfo->blockIdx = blockIdx;
     }
-    return reinterpret_cast<__ubuf__ BlockVFBufInfo*>(info[0]);
-#else
-    return reinterpret_cast<__ubuf__ BlockVFBufInfo*>(0);
-#endif
+    return bufInfo;
+}
+
+__simd_callee__ __ubuf__ inline BlockVFBufInfo* init_printf_ubuf_addr(uint16_t blockIdx = 0)
+{
+    return get_printf_ubuf_addr(get_vf_debug_reserved_ub_addr(), blockIdx);
 }
 
 __simd_callee__ inline void asc_copy_ub2gm_align(__gm__ void* dst, __ubuf__ void* src, uint32_t size)
@@ -187,6 +209,11 @@ __aicore__ constexpr inline DumpTensorDataType get_dump_datatype_impl()
 __aicore__ __ubuf__ inline BlockVFBufInfo* get_printf_ubuf_addr_aicore(uint64_t addr, uint16_t blockIdx = 0)
 {
     return __asc_simd_vf::get_printf_ubuf_addr(addr, blockIdx);
+}
+
+__aicore__ __ubuf__ inline BlockVFBufInfo* init_printf_ubuf_addr_aicore(uint16_t blockIdx = 0)
+{
+    return __asc_simd_vf::init_printf_ubuf_addr(blockIdx);
 }
 
 __aicore__ __gm__ inline BlockRingBufInfo* get_block_ring_buf_info()
