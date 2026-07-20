@@ -109,7 +109,7 @@ __aicore__ inline T ReadGmByPassDCache(__gm__ T* addr)
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
-标量单元连续读取相同GM地址时，会造成Bus被长期占用，此时会影响其它核向GM该地址上写入，进而引发卡死现象。在此场景下，建议在标量读指令后插入若干空操作指令（Nop）来释放Bus，指令数量建议为800条，通常按照“需同步的核数 × 200”。
+无
 
 ## 调用示例<a name="section6191129670"></a>
 
@@ -118,12 +118,4 @@ __aicore__ inline T ReadGmByPassDCache(__gm__ T* addr)
 ```
 __gm__ int32_t *addr = const_cast<__gm__ int32_t *>(srcGlobal.GetPhyAddr());
 int32_t value = AscendC::ReadGmByPassDCache<int32_t>(addr);
-
-// 通过Scalar读写相同GM时，需要让读操作，空出总线，避免长时占用
-int target = -1;
-while (target != 0) {
-     target = ReadGmByPassDCache(addr);
-     Nop<800>();
-}
 ```
-
