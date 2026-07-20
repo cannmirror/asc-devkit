@@ -243,8 +243,8 @@ private:
 #define MAKE_LAYOUT_FUNC(NAME)                                                                                         \
     template <typename T>                                                                                              \
     constexpr auto Make##NAME = [](auto row, auto col) {                                                               \
-        constexpr size_t C0 = IsB4Type<T> ? 64 : 32 / sizeof(T);                                                               \
-        return MakeFrameLayout<NAME##LayoutPtn, LayoutTrait<T, Int<C0>>>(row, col);                                  \
+        constexpr size_t C0 = IsB4Type<T> ? 64 : 32 / sizeof(T);                                                       \
+        return MakeFrameLayout<NAME##LayoutPtn, Int<C0>>(row, col);                                                   \
     };
 
 MAKE_LAYOUT_FUNC(NDExt)
@@ -258,7 +258,7 @@ MAKE_LAYOUT_FUNC(ZN)
 #define MAKE_LAYOUT_FUNC(NAME)                                                                                         \
     template <typename T>                                                                                              \
     constexpr auto Make##NAME =                                                                                        \
-        [](auto row, auto col) { return MakeFrameLayout<NAME##LayoutPtn, LayoutTrait<T, _2>>(row, col); };
+        [](auto row, auto col) { return MakeFrameLayout<NAME##LayoutPtn, _2>(row, col); };
 
 MAKE_LAYOUT_FUNC(ZZ)
 MAKE_LAYOUT_FUNC(NN)
@@ -277,7 +277,7 @@ MAKE_LAYOUT_FUNC(ScaleBDN)
     template <typename T>                                                                                             \
     constexpr auto MakeBatch##NAME = [](auto batch, auto row, auto col) {                                            \
         constexpr size_t C0 = IsB4Type<T> ? 64 : 32 / sizeof(T);                                                      \
-        return MakeFrameLayout<NAME##LayoutPtn, LayoutTrait<T, Int<C0>>>(batch, row, col);                            \
+        return MakeFrameLayout<NAME##LayoutPtn, Int<C0>>(batch, row, col);                                            \
     };
 
 MAKE_BATCH_LAYOUT_FUNC(NDExt)

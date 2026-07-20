@@ -44,7 +44,6 @@ using LayoutFormatSet = TupleMap<
 
 template <typename T, typename C0>
 struct LayoutTrait {
-    using type = T;
     static constexpr auto C0_ELEMENT = C0{};
 };
 
@@ -61,19 +60,19 @@ using FormatTraitSet = TupleMap<
     Std::tuple<DNLayoutPtn, LayoutTrait<Std::ignore_t, _1>>,
     Std::tuple<NDExtLayoutPtn, LayoutTrait<Std::ignore_t, _1>>,
     Std::tuple<DNExtLayoutPtn, LayoutTrait<Std::ignore_t, _1>>,
-    Std::tuple<NNLayoutPtn, LayoutTrait<fp8_e8m0_t, _2>>,
+    Std::tuple<NNLayoutPtn, LayoutTrait<Std::ignore_t, _2>>,
     Std::tuple<ZZLayoutPtn, LayoutTraitDefault<>>,
     Std::tuple<ZNLayoutPtn, LayoutTraitDefault<>>,
-    Std::tuple<ScaleANDLayoutPtn, LayoutTrait<fp8_e8m0_t, _2>>,
-    Std::tuple<ScaleADNLayoutPtn, LayoutTrait<fp8_e8m0_t, _2>>,
-    Std::tuple<ScaleBNDLayoutPtn, LayoutTrait<fp8_e8m0_t, _2>>,
-    Std::tuple<ScaleBDNLayoutPtn, LayoutTrait<fp8_e8m0_t, _2>>>;
+    Std::tuple<ScaleANDLayoutPtn, LayoutTrait<Std::ignore_t, _2>>,
+    Std::tuple<ScaleADNLayoutPtn, LayoutTrait<Std::ignore_t, _2>>,
+    Std::tuple<ScaleBNDLayoutPtn, LayoutTrait<Std::ignore_t, _2>>,
+    Std::tuple<ScaleBDNLayoutPtn, LayoutTrait<Std::ignore_t, _2>>>;
     
 template <typename T, typename = void>
 struct IsFrameLayoutTrait : Std::false_type {};
 
 template <typename T>
-struct IsFrameLayoutTrait<T, void_t<typename T::type, decltype(T::C0_ELEMENT)>> : Std::true_type {};
+struct IsFrameLayoutTrait<T, void_t<decltype(T::C0_ELEMENT)>> : Std::true_type {};
 
 template <typename T>
 constexpr bool IsFrameLayoutTraitV = IsFrameLayoutTrait<T>::value;
