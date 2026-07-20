@@ -150,8 +150,17 @@ presmoke_case_main() {
     fi
 
     if [[ -n "${SKIP_REASON:-}" ]]; then
-        echo "SKIP: $SKIP_REASON"
-        return 0
+        if [[ -z "${SKIP_MODES:-}" ]]; then
+            echo "SKIP: $SKIP_REASON"
+            return 0
+        fi
+        local current_mode="${MODE:-$(presmoke_mode)}"
+        for skip_mode in "${SKIP_MODES[@]}"; do
+            if [[ "$current_mode" == "$skip_mode" ]]; then
+                echo "SKIP: $SKIP_REASON (mode=$current_mode)"
+                return 0
+            fi
+        done
     fi
 
     case "$action" in

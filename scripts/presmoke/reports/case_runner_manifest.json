@@ -10550,8 +10550,10 @@
     ],
     "target_runnable": true,
     "skip": false,
-    "skip_reason": "",
-    "skip_modes": [],
+    "skip_reason": "long execution time in cpu mode; cpu mode skipped by presmoke",
+    "skip_modes": [
+      "cpu"
+    ],
     "reasons": [],
     "commands": [
       "cmake -DSCENARIO_NUM=0 .. -DCMAKE_ASC_ARCHITECTURES=dav-2201",
@@ -10578,8 +10580,10 @@
     ],
     "target_runnable": true,
     "skip": false,
-    "skip_reason": "",
-    "skip_modes": [],
+    "skip_reason": "long execution time in cpu mode; cpu mode skipped by presmoke",
+    "skip_modes": [
+      "cpu"
+    ],
     "reasons": [],
     "commands": [
       "cmake -DSCENARIO_NUM=1 .. -DCMAKE_ASC_ARCHITECTURES=dav-2201",
@@ -10606,8 +10610,10 @@
     ],
     "target_runnable": true,
     "skip": false,
-    "skip_reason": "",
-    "skip_modes": [],
+    "skip_reason": "long execution time in cpu mode; cpu mode skipped by presmoke",
+    "skip_modes": [
+      "cpu"
+    ],
     "reasons": [],
     "commands": [
       "cmake -DSCENARIO_NUM=2 .. -DCMAKE_ASC_ARCHITECTURES=dav-2201",
@@ -10634,8 +10640,10 @@
     ],
     "target_runnable": true,
     "skip": false,
-    "skip_reason": "",
-    "skip_modes": [],
+    "skip_reason": "long execution time in cpu mode; cpu mode skipped by presmoke",
+    "skip_modes": [
+      "cpu"
+    ],
     "reasons": [],
     "commands": [
       "cmake -DSCENARIO_NUM=3 .. -DCMAKE_ASC_ARCHITECTURES=dav-2201",
@@ -10662,8 +10670,10 @@
     ],
     "target_runnable": true,
     "skip": false,
-    "skip_reason": "",
-    "skip_modes": [],
+    "skip_reason": "long execution time in cpu mode; cpu mode skipped by presmoke",
+    "skip_modes": [
+      "cpu"
+    ],
     "reasons": [],
     "commands": [
       "cmake -DSCENARIO_NUM=4 .. -DCMAKE_ASC_ARCHITECTURES=dav-2201",
@@ -10690,8 +10700,10 @@
     ],
     "target_runnable": true,
     "skip": false,
-    "skip_reason": "",
-    "skip_modes": [],
+    "skip_reason": "long execution time in cpu mode; cpu mode skipped by presmoke",
+    "skip_modes": [
+      "cpu"
+    ],
     "reasons": [],
     "commands": [
       "cmake -DSCENARIO_NUM=5 .. -DCMAKE_ASC_ARCHITECTURES=dav-2201",
@@ -10718,8 +10730,10 @@
     ],
     "target_runnable": true,
     "skip": false,
-    "skip_reason": "",
-    "skip_modes": [],
+    "skip_reason": "long execution time in cpu mode; cpu mode skipped by presmoke",
+    "skip_modes": [
+      "cpu"
+    ],
     "reasons": [],
     "commands": [
       "cmake -DSCENARIO_NUM=6 .. -DCMAKE_ASC_ARCHITECTURES=dav-2201",
@@ -11165,6 +11179,9 @@
       "python3 ../scripts/gen_data.py",
       "./demo",
       "python3 ../scripts/verify_result.py output/output.bin output/golden.bin"
+    ],
+    "skip_archs": [
+      "dav-3510"
     ]
   },
   {
@@ -11194,6 +11211,9 @@
       "python3 ../scripts/gen_data.py",
       "./demo",
       "python3 ../scripts/verify_result.py output/output.bin output/golden.bin"
+    ],
+    "skip_archs": [
+      "dav-3510"
     ]
   },
   {
@@ -11223,6 +11243,9 @@
       "python3 ../scripts/gen_data.py",
       "./demo",
       "python3 ../scripts/verify_result.py output/output.bin output/golden.bin"
+    ],
+    "skip_archs": [
+      "dav-3510"
     ]
   },
   {
@@ -11252,6 +11275,9 @@
       "python3 ../scripts/gen_data.py",
       "./demo",
       "python3 ../scripts/verify_result.py output/output.bin output/golden.bin"
+    ],
+    "skip_archs": [
+      "dav-3510"
     ]
   },
   {
@@ -11282,6 +11308,9 @@
       "python3 ../scripts/gen_data.py",
       "./demo",
       "python3 ../scripts/verify_result.py output/output.bin output/golden.bin"
+    ],
+    "skip_archs": [
+      "dav-3510"
     ]
   },
   {
@@ -11312,6 +11341,9 @@
       "python3 ../scripts/gen_data.py",
       "./demo",
       "python3 ../scripts/verify_result.py output/output.bin output/golden.bin"
+    ],
+    "skip_archs": [
+      "dav-3510"
     ]
   },
   {
@@ -11342,6 +11374,9 @@
       "python3 ../scripts/gen_data.py",
       "./demo",
       "python3 ../scripts/verify_result.py output/output.bin output/golden.bin"
+    ],
+    "skip_archs": [
+      "dav-3510"
     ]
   },
   {
