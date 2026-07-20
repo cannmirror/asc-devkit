@@ -10,35 +10,35 @@
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning \
-    "impl/tensor_api/atom/vector/copy_ub2l1.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+    "impl/tensor_api/atom/vector/copy_ub2ub.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
 
 /*!
- * \file copy_ub2l1.h
+ * \file copy_ub2ub.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ATOM_VECTOR_COPY_UB2L1_H
-#define IMPL_TENSOR_API_ATOM_VECTOR_COPY_UB2L1_H
+#ifndef IMPL_TENSOR_API_ATOM_VECTOR_COPY_UB2UB_H
+#define IMPL_TENSOR_API_ATOM_VECTOR_COPY_UB2UB_H
 
 #include "impl/tensor_api/utils/utils_impl.h"
-#include "impl/tensor_api/arch/vector/ub_to_l1/copy.h"
+#include "impl/tensor_api/arch/vector/ub_to_ub/copy.h"
 #include "impl/tensor_api/atom/copy_traits_impl.h"
 
 namespace AscendC {
 namespace Te {
 
 template <typename Traits>
-struct CopyTraits<CopyUB2L1, Traits> : public CopyTraits<CopyUB2L1, Traits, CopyUB2L1, Traits> {};
+struct CopyTraits<CopyUB2UB, Traits> : public CopyTraits<CopyUB2UB, Traits, CopyUB2UB, CopyUB2UBTraitDefault> {};
 
 template <>
-struct CopyTraits<CopyUB2L1> : public CopyTraits<CopyUB2L1, CopyUB2L1TraitDefault> {};
+struct CopyTraits<CopyUB2UB> : public CopyTraits<CopyUB2UB, CopyUB2UBTraitDefault> {};
 
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ATOM_VECTOR_COPY_UB2L1_H
+#endif // IMPL_TENSOR_API_ATOM_VECTOR_COPY_UB2UB_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS

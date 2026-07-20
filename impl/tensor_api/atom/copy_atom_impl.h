@@ -31,6 +31,7 @@
 
 #include "impl/tensor_api/atom/vector/copy_gm2ub.h"
 #include "impl/tensor_api/atom/vector/copy_ub2gm.h"
+#include "impl/tensor_api/atom/vector/copy_ub2ub.h"
 #include "impl/tensor_api/atom/vector/copy_ub2l1.h"
 
 #include "impl/tensor_api/atom/cube/copy_l12bt.h"

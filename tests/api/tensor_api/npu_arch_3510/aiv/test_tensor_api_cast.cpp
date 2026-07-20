@@ -1,15 +1,15 @@
 /**
-* Copyright (c) 2026 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2026 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 #include <gtest/gtest.h>
-#include "tensor_api/stub/cce_stub.h"
+#include "c_api/stub/cce_stub.h"
 #include "tensor_api/tensor.h"
 
 class Tensor_Api_Vector_Cast_3510 : public testing::Test {
@@ -22,9 +22,9 @@ protected:
     void TearDown() override {}
 };
 
-template<typename DstDataType, typename SrcDataType, typename Func, typename TraitType = AscendC::Std::ignore_t>
-__aicore__ inline void TestTransformBinary(__gm__ DstDataType* z, __gm__ SrcDataType* x,
-    __ubuf__ DstDataType zUB[2048], __ubuf__ SrcDataType xUB[2048])
+template <typename DstDataType, typename SrcDataType, typename Func, typename TraitType = AscendC::Std::ignore_t>
+__aicore__ inline void TestTransformBinary(
+    __gm__ DstDataType* z, __gm__ SrcDataType* x, __ubuf__ DstDataType zUB[2048], __ubuf__ SrcDataType xUB[2048])
 {
     constexpr uint32_t TILE_LENGTH = 2048;
     constexpr uint32_t BLK_NUM = 1;
@@ -46,7 +46,9 @@ __aicore__ inline void TestTransformBinary(__gm__ DstDataType* z, __gm__ SrcData
     auto xLocal = MakeTensor(MakeMemPtr(xUB), MakeFrameLayout<NDLayoutPtn>(_1{}, AscendC::Std::Int<TILE_LENGTH>{}));
     auto zLocal = MakeTensor(MakeMemPtr(zUB), MakeFrameLayout<NDLayoutPtn>(_1{}, AscendC::Std::Int<TILE_LENGTH>{}));
 
-    asc_copy_gm2ub_align(xLocal.Data().Get(), xGm.Data().Get(), BLK_NUM, TILE_LENGTH * sizeof(SrcDataType), 0, 0, true, cacheMode, srcStride, dstStride);
+    asc_copy_gm2ub_align(
+        xLocal.Data().Get(), xGm.Data().Get(), BLK_NUM, TILE_LENGTH * sizeof(SrcDataType), 0, 0, true, cacheMode,
+        srcStride, dstStride);
 
     asc_sync_notify(PIPE_MTE2, PIPE_V, EVENT_ID0);
     asc_sync_wait(PIPE_MTE2, PIPE_V, EVENT_ID0);
@@ -56,7 +58,9 @@ __aicore__ inline void TestTransformBinary(__gm__ DstDataType* z, __gm__ SrcData
     asc_sync_notify(PIPE_V, PIPE_MTE3, EVENT_ID0);
     asc_sync_wait(PIPE_V, PIPE_MTE3, EVENT_ID0);
 
-    asc_copy_ub2gm_align(zGm.Data().Get(), zLocal.Data().Get(), BLK_NUM, TILE_LENGTH * sizeof(DstDataType), cacheMode, srcStride, dstStride);
+    asc_copy_ub2gm_align(
+        zGm.Data().Get(), zLocal.Data().Get(), BLK_NUM, TILE_LENGTH * sizeof(DstDataType), cacheMode, srcStride,
+        dstStride);
 }
 
 template <typename RoundMode, typename SatMode, typename IndexPos>
@@ -66,20 +70,20 @@ struct CastTrait {
     using indexPos = IndexPos;
 };
 
-#define VECTOR_CAST_3510(Function, DstDataType, SrcDataType) \
-TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_##Function##_##DstDataType##_##SrcDataType) \
-{   \
-    constexpr uint32_t TILE_LENGTH = 2048;  \
-    \
-    __gm__ SrcDataType x[TILE_LENGTH] = {0};  \
-    __gm__ DstDataType z[TILE_LENGTH] = {0};  \
-    \
-    __ubuf__ SrcDataType xUB[TILE_LENGTH] = {0};  \
-    __ubuf__ DstDataType zUB[TILE_LENGTH] = {0};  \
-    \
-    TestTransformBinary<DstDataType, SrcDataType, AscendC::Te::Inst::Function>(z, x, zUB, xUB);   \
-    EXPECT_EQ(z[0], zUB[0]); \
-}
+#define VECTOR_CAST_3510(Function, DstDataType, SrcDataType)                                        \
+    TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_##Function##_##DstDataType##_##SrcDataType)          \
+    {                                                                                               \
+        constexpr uint32_t TILE_LENGTH = 2048;                                                      \
+                                                                                                    \
+        __gm__ SrcDataType x[TILE_LENGTH] = {0};                                                    \
+        __gm__ DstDataType z[TILE_LENGTH] = {0};                                                    \
+                                                                                                    \
+        __ubuf__ SrcDataType xUB[TILE_LENGTH] = {0};                                                \
+        __ubuf__ DstDataType zUB[TILE_LENGTH] = {0};                                                \
+                                                                                                    \
+        TestTransformBinary<DstDataType, SrcDataType, AscendC::Te::Inst::Function>(z, x, zUB, xUB); \
+        EXPECT_EQ(z[0], zUB[0]);                                                                    \
+    }
 
 // ===================================================================
 // 1. 同类型舍入操作：Rint / Round / Trunc
@@ -106,9 +110,8 @@ VECTOR_CAST_3510(Trunc, bfloat16_t, bfloat16_t)
 
 // 2a. float → half, RD + NoSat + Even（偶数位，不饱和）
 using CastTraitFloat2HalfRDNoSatEven = CastTrait<
-    AscendC::Te::CastRoundMode::RD,
-    AscendC::Te::CastSatMode::NoSat,
-    AscendC::Std::ignore_t>;  // Even 默认
+    AscendC::Te::CastRoundMode::RD, AscendC::Te::CastSatMode::NoSat,
+    AscendC::Std::ignore_t>; // Even 默认
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Half_RD_NoSat_Even)
 {
@@ -127,10 +130,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Half_RD_NoSat_Even)
 }
 
 // 2b. float → half, RN + Sat + Odd（奇数位，饱和）
-using CastTraitFloat2HalfRNSatOdd = CastTrait<
-    AscendC::Te::CastRoundMode::RN,
-    AscendC::Te::CastSatMode::Sat,
-    AscendC::Te::CastIndexPos::Odd>;
+using CastTraitFloat2HalfRNSatOdd =
+    CastTrait<AscendC::Te::CastRoundMode::RN, AscendC::Te::CastSatMode::Sat, AscendC::Te::CastIndexPos::Odd>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Half_RN_Sat_Odd)
 {
@@ -148,10 +149,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Half_RN_Sat_Odd)
 }
 
 // 2c. float → half, RU + Sat + Even
-using CastTraitFloat2HalfRUSatEven = CastTrait<
-    AscendC::Te::CastRoundMode::RU,
-    AscendC::Te::CastSatMode::Sat,
-    AscendC::Std::ignore_t>;
+using CastTraitFloat2HalfRUSatEven =
+    CastTrait<AscendC::Te::CastRoundMode::RU, AscendC::Te::CastSatMode::Sat, AscendC::Std::ignore_t>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Half_RU_Sat_Even)
 {
@@ -169,10 +168,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Half_RU_Sat_Even)
 }
 
 // 2d. float → half, RZ + NoSat + Odd
-using CastTraitFloat2HalfRZNoSatOdd = CastTrait<
-    AscendC::Te::CastRoundMode::RZ,
-    AscendC::Te::CastSatMode::NoSat,
-    AscendC::Te::CastIndexPos::Odd>;
+using CastTraitFloat2HalfRZNoSatOdd =
+    CastTrait<AscendC::Te::CastRoundMode::RZ, AscendC::Te::CastSatMode::NoSat, AscendC::Te::CastIndexPos::Odd>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Half_RZ_NoSat_Odd)
 {
@@ -194,10 +191,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Half_RZ_NoSat_Odd)
 // ===================================================================
 
 // 3a. half → int8_t, RD + Sat + Even（向零舍入，饱和）
-using CastTraitHalf2Int8RDSatEven = CastTrait<
-    AscendC::Te::CastRoundMode::RD,
-    AscendC::Te::CastSatMode::Sat,
-    AscendC::Std::ignore_t>;
+using CastTraitHalf2Int8RDSatEven =
+    CastTrait<AscendC::Te::CastRoundMode::RD, AscendC::Te::CastSatMode::Sat, AscendC::Std::ignore_t>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Half2Int8_RD_Sat_Even)
 {
@@ -215,10 +210,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Half2Int8_RD_Sat_Even)
 }
 
 // 3b. half → int8_t, RN + NoSat + Odd
-using CastTraitHalf2Int8RNNoSatOdd = CastTrait<
-    AscendC::Te::CastRoundMode::RN,
-    AscendC::Te::CastSatMode::NoSat,
-    AscendC::Te::CastIndexPos::Odd>;
+using CastTraitHalf2Int8RNNoSatOdd =
+    CastTrait<AscendC::Te::CastRoundMode::RN, AscendC::Te::CastSatMode::NoSat, AscendC::Te::CastIndexPos::Odd>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Half2Int8_RN_NoSat_Odd)
 {
@@ -236,10 +229,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Half2Int8_RN_NoSat_Odd)
 }
 
 // 3c. half → int8_t, RU + Sat + Odd
-using CastTraitHalf2Int8RUSatOdd = CastTrait<
-    AscendC::Te::CastRoundMode::RU,
-    AscendC::Te::CastSatMode::Sat,
-    AscendC::Te::CastIndexPos::Odd>;
+using CastTraitHalf2Int8RUSatOdd =
+    CastTrait<AscendC::Te::CastRoundMode::RU, AscendC::Te::CastSatMode::Sat, AscendC::Te::CastIndexPos::Odd>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Half2Int8_RU_Sat_Odd)
 {
@@ -260,10 +251,7 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Half2Int8_RU_Sat_Odd)
 // 4. half → float：简单拓宽，默认 + Even/Odd
 // ===================================================================
 
-using CastTraitHalf2FloatDefault = CastTrait<
-    AscendC::Std::ignore_t,
-    AscendC::Std::ignore_t,
-    AscendC::Std::ignore_t>;
+using CastTraitHalf2FloatDefault = CastTrait<AscendC::Std::ignore_t, AscendC::Std::ignore_t, AscendC::Std::ignore_t>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_Cast_Half2Float_Default)
 {
@@ -281,10 +269,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_Cast_Half2Float_Default)
     EXPECT_EQ(z[0], zUB[0]);
 }
 
-using CastTraitHalf2FloatOdd = CastTrait<
-    AscendC::Std::ignore_t,
-    AscendC::Std::ignore_t,
-    AscendC::Te::CastIndexPos::Odd>;
+using CastTraitHalf2FloatOdd =
+    CastTrait<AscendC::Std::ignore_t, AscendC::Std::ignore_t, AscendC::Te::CastIndexPos::Odd>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_Cast_Half2Float_Odd)
 {
@@ -305,10 +291,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_Cast_Half2Float_Odd)
 // 5. float → int32_t：测试不同 RoundMode × SatMode
 // ===================================================================
 
-using CastTraitFloat2Int32RNNoSatEven = CastTrait<
-    AscendC::Te::CastRoundMode::RN,
-    AscendC::Te::CastSatMode::NoSat,
-    AscendC::Std::ignore_t>;
+using CastTraitFloat2Int32RNNoSatEven =
+    CastTrait<AscendC::Te::CastRoundMode::RN, AscendC::Te::CastSatMode::NoSat, AscendC::Std::ignore_t>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Int32_RN_NoSat_Even)
 {
@@ -325,10 +309,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Int32_RN_NoSat_Even)
     EXPECT_EQ(z[0], zUB[0]);
 }
 
-using CastTraitFloat2Int32RDSatEven = CastTrait<
-    AscendC::Te::CastRoundMode::RD,
-    AscendC::Te::CastSatMode::Sat,
-    AscendC::Std::ignore_t>;
+using CastTraitFloat2Int32RDSatEven =
+    CastTrait<AscendC::Te::CastRoundMode::RD, AscendC::Te::CastSatMode::Sat, AscendC::Std::ignore_t>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Int32_RD_Sat_Even)
 {
@@ -345,10 +327,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Int32_RD_Sat_Even)
     EXPECT_EQ(z[0], zUB[0]);
 }
 
-using CastTraitFloat2Int32RUSatEven = CastTrait<
-    AscendC::Te::CastRoundMode::RU,
-    AscendC::Te::CastSatMode::Sat,
-    AscendC::Std::ignore_t>;
+using CastTraitFloat2Int32RUSatEven =
+    CastTrait<AscendC::Te::CastRoundMode::RU, AscendC::Te::CastSatMode::Sat, AscendC::Std::ignore_t>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Int32_RU_Sat_Even)
 {
@@ -369,10 +349,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Int32_RU_Sat_Even)
 // 6. int32_t → int16_t：测试 Sat（收缩 + 饱和）
 // ===================================================================
 
-using CastTraitInt322Int16SatEven = CastTrait<
-    AscendC::Std::ignore_t,
-    AscendC::Te::CastSatMode::Sat,
-    AscendC::Std::ignore_t>;
+using CastTraitInt322Int16SatEven =
+    CastTrait<AscendC::Std::ignore_t, AscendC::Te::CastSatMode::Sat, AscendC::Std::ignore_t>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Int322Int16_Sat_Even)
 {
@@ -389,10 +367,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Int322Int16_Sat_Even)
     EXPECT_EQ(z[0], zUB[0]);
 }
 
-using CastTraitInt322Int16NoSatOdd = CastTrait<
-    AscendC::Std::ignore_t,
-    AscendC::Te::CastSatMode::NoSat,
-    AscendC::Te::CastIndexPos::Odd>;
+using CastTraitInt322Int16NoSatOdd =
+    CastTrait<AscendC::Std::ignore_t, AscendC::Te::CastSatMode::NoSat, AscendC::Te::CastIndexPos::Odd>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Int322Int16_NoSat_Odd)
 {
@@ -413,10 +389,7 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Int322Int16_NoSat_Odd)
 // 7. int16_t → half：测试不同 RoundMode
 // ===================================================================
 
-using CastTraitInt162HalfRN = CastTrait<
-    AscendC::Te::CastRoundMode::RN,
-    AscendC::Std::ignore_t,
-    AscendC::Std::ignore_t>;
+using CastTraitInt162HalfRN = CastTrait<AscendC::Te::CastRoundMode::RN, AscendC::Std::ignore_t, AscendC::Std::ignore_t>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Int162Half_RN)
 {
@@ -433,10 +406,7 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Int162Half_RN)
     EXPECT_EQ(z[0], zUB[0]);
 }
 
-using CastTraitInt162HalfRZ = CastTrait<
-    AscendC::Te::CastRoundMode::RZ,
-    AscendC::Std::ignore_t,
-    AscendC::Std::ignore_t>;
+using CastTraitInt162HalfRZ = CastTrait<AscendC::Te::CastRoundMode::RZ, AscendC::Std::ignore_t, AscendC::Std::ignore_t>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Int162Half_RZ)
 {
@@ -457,10 +427,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Int162Half_RZ)
 // 8. uint16_t → uint8_t
 // ===================================================================
 
-using CastTraitU162UInt8SatOdd = CastTrait<
-    AscendC::Std::ignore_t,
-    AscendC::Te::CastSatMode::Sat,
-    AscendC::Te::CastIndexPos::Odd>;
+using CastTraitU162UInt8SatOdd =
+    CastTrait<AscendC::Std::ignore_t, AscendC::Te::CastSatMode::Sat, AscendC::Te::CastIndexPos::Odd>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_U162UInt8_Sat_Odd)
 {
@@ -481,10 +449,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_U162UInt8_Sat_Odd)
 // 9. uint32_t → uint16_t：测试收缩 + Sat
 // ===================================================================
 
-using CastTraitU322UInt16SatEven = CastTrait<
-    AscendC::Std::ignore_t,
-    AscendC::Te::CastSatMode::Sat,
-    AscendC::Std::ignore_t>;
+using CastTraitU322UInt16SatEven =
+    CastTrait<AscendC::Std::ignore_t, AscendC::Te::CastSatMode::Sat, AscendC::Std::ignore_t>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_U322UInt16_Sat_Even)
 {
@@ -505,10 +471,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_U322UInt16_Sat_Even)
 // 10. half → int32_t (1:2 扩宽)
 // ===================================================================
 
-using CastTraitHalf2Int32RDNoSat = CastTrait<
-    AscendC::Te::CastRoundMode::RD,
-    AscendC::Te::CastSatMode::NoSat,
-    AscendC::Std::ignore_t>;
+using CastTraitHalf2Int32RDNoSat =
+    CastTrait<AscendC::Te::CastRoundMode::RD, AscendC::Te::CastSatMode::NoSat, AscendC::Std::ignore_t>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Half2Int32_RD_NoSat)
 {
@@ -529,10 +493,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Half2Int32_RD_NoSat)
 // 11. float → int16_t (2:1 收缩)
 // ===================================================================
 
-using CastTraitFloat2Int16RNSat = CastTrait<
-    AscendC::Te::CastRoundMode::RN,
-    AscendC::Te::CastSatMode::Sat,
-    AscendC::Std::ignore_t>;
+using CastTraitFloat2Int16RNSat =
+    CastTrait<AscendC::Te::CastRoundMode::RN, AscendC::Te::CastSatMode::Sat, AscendC::Std::ignore_t>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Int16_RN_Sat)
 {
@@ -553,10 +515,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Int16_RN_Sat)
 // 12. int8_t → int32_t (1:4 扩宽)
 // ===================================================================
 
-using CastTraitInt82Int32RDNoSatPartP0 = CastTrait<
-    AscendC::Std::ignore_t,
-    AscendC::Te::CastSatMode::NoSat,
-    AscendC::Te::CastIndexPos::PartP0>;
+using CastTraitInt82Int32RDNoSatPartP0 =
+    CastTrait<AscendC::Std::ignore_t, AscendC::Te::CastSatMode::NoSat, AscendC::Te::CastIndexPos::PartP0>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Int82Int32_RD_NoSat_PartP0)
 {
@@ -577,10 +537,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Int82Int32_RD_NoSat_PartP0)
 // 13. int32_t → uint8_t (4:1 收缩)
 // ===================================================================
 
-using CastTraitInt322UInt8SatPartP0 = CastTrait<
-    AscendC::Std::ignore_t,
-    AscendC::Te::CastSatMode::Sat,
-    AscendC::Te::CastIndexPos::PartP0>;
+using CastTraitInt322UInt8SatPartP0 =
+    CastTrait<AscendC::Std::ignore_t, AscendC::Te::CastSatMode::Sat, AscendC::Te::CastIndexPos::PartP0>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Int322UInt8_Sat_PartP0)
 {
@@ -601,10 +559,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Int322UInt8_Sat_PartP0)
 // 14. bfloat16_t → float (1:2 扩宽)
 // ===================================================================
 
-using CastTraitBf162FloatEven = CastTrait<
-    AscendC::Std::ignore_t,
-    AscendC::Std::ignore_t,
-    AscendC::Te::CastIndexPos::Even>;
+using CastTraitBf162FloatEven =
+    CastTrait<AscendC::Std::ignore_t, AscendC::Std::ignore_t, AscendC::Te::CastIndexPos::Even>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Bf162Float_Even)
 {
@@ -625,10 +581,8 @@ TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Bf162Float_Even)
 // 15. float → bfloat16_t (2:1 收缩)
 // ===================================================================
 
-using CastTraitFloat2Bf16RNNoSatEven = CastTrait<
-    AscendC::Te::CastRoundMode::RN,
-    AscendC::Te::CastSatMode::NoSat,
-    AscendC::Te::CastIndexPos::Even>;
+using CastTraitFloat2Bf16RNNoSatEven =
+    CastTrait<AscendC::Te::CastRoundMode::RN, AscendC::Te::CastSatMode::NoSat, AscendC::Te::CastIndexPos::Even>;
 
 TEST_F(Tensor_Api_Vector_Cast_3510, VECTOR_CastTrait_Float2Bf16_RN_NoSat_Even)
 {
