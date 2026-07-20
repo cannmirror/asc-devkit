@@ -39,6 +39,8 @@
 
 样例实现一个固定容量HashTable，支持与C++17`std::unordered_map::insert_or_assign`类似的插入或更新语义：key已存在时更新value，key不存在时插入key/value。Hash冲突通过线性探测处理。
 
+需要注意的是，本样例当前面向单批次唯一key插入场景做实现与性能对比，不支持对同一批输入中的重复key做去重或顺序语义保证。若同一批次中出现重复key，最终结果不在本样例约束范围内。
+
 HashTable由两段GM存储组成：`table[bucket_count]`保存bucket元数据，其中每个bucket只保存key和状态；`table_values[bucket_count, dim]`保存value数据，其中第`bucket_idx`行保存`table[bucket_idx]`对应key的value向量。key和value不在同一结构体内连续存放，而是通过相同的`bucket_idx`关联；每条value向量长度为`dim`，`dim`为运行时参数。
 
 bucket的key字段同时承载占用信息：
@@ -74,6 +76,8 @@ $$
 <tr><td align="center">SCENARIO_NUM=1</td><td colspan="3" align="center"><code>insert_or_assign_mte_task_queue_kernel</code></td></tr>
 </table>
 
+> **说明：** `keys`输入默认要求同一批次内互不重复。样例支持不同key落入同一初始hash bucket的冲突场景，但不支持同一批次重复key的去重。
+
 样例参数如下：
 
 | 参数 | 值 |
@@ -85,7 +89,6 @@ $$
 | `BLOCK_DIM` | 64 |
 | `THREAD_COUNT` | 512 |
 | `WARP_SIZE` | 32 |
-| `PROFILE_REPEAT_TIMES` | 默认30，`run.sh`采集性能时设置为1 |
 
 ## 样例实现
 
@@ -95,7 +98,7 @@ $$
 
 **实现方式**：参考`insert_or_assign_warp_store_vf()`函数实现。
 
-该实现中，每个Warp处理一条key。lane 0执行hash、线性探测和CAS锁定bucket，Warp内线程通过`asc_shfl`获取目标bucket index，并按`WARP_SIZE`分片写入value向量。value搬运由SIMT线程直接访问GM完成。
+该实现中，每个Warp处理一条key。lane 0执行hash、线性探测和CAS锁定bucket，Warp内线程通过`asc_shfl`获取目标bucket index，并按`WARP_SIZE`分片写入value向量。对于探测到的临时`LOCKED_KEY`槽位，Case 0的lane 0会在当前槽位上持续重试，而不是直接跳过到下一个槽位，以避免同一个key在并发插入时跳过瞬时锁定槽位并产生重复可见项。value搬运由SIMT线程直接访问GM完成。
 
 写入顺序为：CAS锁定目标bucket，Warp内线程写value，执行`asc_threadfence()`，最后由lane 0发布真实key。
 
@@ -109,9 +112,9 @@ __simt_vf__ inline void insert_or_assign_warp_store_vf(__gm__ Bucket* table,
     const uint32_t lane_id = static_cast<uint32_t>(threadIdx.x) % WARP_SIZE;
     ...
     if (lane_id == 0) {
-        int64_t old_key = asc_atomic_cas(key_addr, EMPTY_KEY, LOCKED_KEY);
-        if (old_key == LOCKED_KEY) {
-            old_key = wait_until_unlocked(key_addr);
+        if (try_lock_bucket_for_key_case0(key_addr, key)) {
+            success = 1;
+            break;
         }
         ...
     }
@@ -121,7 +124,7 @@ __simt_vf__ inline void insert_or_assign_warp_store_vf(__gm__ Bucket* table,
     }
     asc_threadfence();
     if (lane_id == 0) {
-        (void)asc_atomic_exch(&table[bucket_idx].key, key);
+        *reinterpret_cast<__gm__ volatile int64_t*>(&table[bucket_idx].key) = key;
     }
 }
 ```
@@ -130,11 +133,11 @@ __simt_vf__ inline void insert_or_assign_warp_store_vf(__gm__ Bucket* table,
 
 | Case | 实现方式 | dim | 核数 | Task Duration(μs) |
 |:---|:---|---:|:---:|---:|
-| 0 | SIMT Warp直接写value | 16 | 64 | 218.724 |
-| 0 | SIMT Warp直接写value | 32 | 64 | 209.406 |
-| 0 | SIMT Warp直接写value | 64 | 64 | 259.107 |
-| 0 | SIMT Warp直接写value | 128 | 64 | 364.805 |
-| 0 | SIMT Warp直接写value | 256 | 64 | 555.497 |
+| 0 | SIMT Warp直接写value | 16 | 64 | 217.916 |
+| 0 | SIMT Warp直接写value | 32 | 64 | 218.686 |
+| 0 | SIMT Warp直接写value | 64 | 64 | 271.254 |
+| 0 | SIMT Warp直接写value | 128 | 64 | 376.517 |
+| 0 | SIMT Warp直接写value | 256 | 64 | 585.892 |
 
 **性能数据分析**：
 
@@ -205,16 +208,16 @@ public:
 
 | Case | 实现方式 | dim | 核数 | Task Duration(μs) |
 |:---|:---|---:|:---:|---:|
-| 1 | MTE task queue搬运value | 16 | 64 | 129.149 |
-| 1 | MTE task queue搬运value | 32 | 64 | 112.526 |
-| 1 | MTE task queue搬运value | 64 | 64 | 111.761 |
-| 1 | MTE task queue搬运value | 128 | 64 | 130.760 |
-| 1 | MTE task queue搬运value | 256 | 64 | 201.567 |
+| 1 | MTE task queue搬运value | 16 | 64 | 127.638 |
+| 1 | MTE task queue搬运value | 32 | 64 | 110.601 |
+| 1 | MTE task queue搬运value | 64 | 64 | 113.900 |
+| 1 | MTE task queue搬运value | 128 | 64 | 131.696 |
+| 1 | MTE task queue搬运value | 256 | 64 | 204.030 |
 
 **性能数据分析**：
 
 - Case 1把长度为`dim`的value向量搬运从SIMT线程中拆出，在单kernel内由SIMT producer和MTE consumer并行推进。
-- 相比Case 0，Case 1在五组dim上均取得加速；`dim=128`时加速比最高，约2.79x。
+- 相比Case 0，Case 1在五组dim上均取得加速；`dim=256`时加速比最高，约2.87x。
 
 ## 性能对比总结
 
@@ -224,11 +227,11 @@ public:
 
 | dim | Case 0 SIMT Warp直接写value(μs) | Case 1 MTE task queue(μs) | Case 1加速比 |
 |---:|---:|---:|---:|
-| 16 | 218.724 | 129.149 | 1.69x |
-| 32 | 209.406 | 112.526 | 1.86x |
-| 64 | 259.107 | 111.761 | 2.32x |
-| 128 | 364.805 | 130.760 | 2.79x |
-| 256 | 555.497 | 201.567 | 2.76x |
+| 16 | 217.916 | 127.638 | 1.71x |
+| 32 | 218.686 | 110.601 | 1.98x |
+| 64 | 271.254 | 113.900 | 2.38x |
+| 128 | 376.517 | 131.696 | 2.86x |
+| 256 | 585.892 | 204.030 | 2.87x |
 
 ### 优化要点总结
 
@@ -290,7 +293,6 @@ public:
   |:---|:---|:---|
   | `CMAKE_ASC_ARCHITECTURES` | `dav-3510` | NPU架构，对应 Ascend 950PR/Ascend 950DT |
   | `SCENARIO_NUM` | `0`、`1` | Case编号：0=SIMT Warp直接写value，1=MTE task queue搬运value |
-  | `PROFILE_REPEAT_TIMES` | 正整数 | 单次进程中重复执行`insert_or_assign`的次数。对比脚本设置为1，使msOpProf采集一次完整insert路径。 |
 
 - 执行结果
 
@@ -307,7 +309,7 @@ public:
 Case 0测试方式如下：
 
 ```bash
-cmake -DSCENARIO_NUM=0 -DPROFILE_REPEAT_TIMES=1 -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..
+cmake -DSCENARIO_NUM=0 -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..
 make -j
 ./hash_table_mte_queue 128
 msopprof ./hash_table_mte_queue 128
@@ -316,7 +318,7 @@ msopprof ./hash_table_mte_queue 128
 Case 1测试方式如下：
 
 ```bash
-cmake -DSCENARIO_NUM=1 -DPROFILE_REPEAT_TIMES=1 -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..
+cmake -DSCENARIO_NUM=1 -DCMAKE_ASC_ARCHITECTURES=dav-3510 ..
 make -j
 ./hash_table_mte_queue 128
 msopprof ./hash_table_mte_queue 128

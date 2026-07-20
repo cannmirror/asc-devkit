@@ -22,7 +22,7 @@ run_case() {
     local build_dir="${BUILD_ROOT}/scenario_${scenario}"
 
     rm -rf "${build_dir}"
-    cmake -S "${SAMPLE_DIR}" -B "${build_dir}" -DSCENARIO_NUM="${scenario}" -DPROFILE_REPEAT_TIMES=1
+    cmake -S "${SAMPLE_DIR}" -B "${build_dir}" -DSCENARIO_NUM="${scenario}"
     cmake --build "${build_dir}" -j
 
     for dim in "${DIMS[@]}"; do
