@@ -10,7 +10,7 @@
 
 -   **[GetValue](GetValue-1.md)**  
 
--   **[operator\(\)](operator()-2.md)**  
+-   **[operator\(\)](operator_call.md)**  
 
 -   **[SetValue](SetValue-3.md)**  
 

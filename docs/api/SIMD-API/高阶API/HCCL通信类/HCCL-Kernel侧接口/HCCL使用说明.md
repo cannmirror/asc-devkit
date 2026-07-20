@@ -133,7 +133,7 @@ HCCL为**集合通信任务客户端**，主要对外提供了集合通信原语
     // }
 
     // 调用核间同步接口，防止部分核执行较快退出，触发Hccl析构，影响执行较慢的核
-    // 开发者可根据实际的业务场景，选择调用[SyncAll](../../../基础API/同步控制/核间同步/SyncAll.md)、[CrossCoreSetFlag(ISASI)](../../../基础API/同步控制/核间同步/CrossCoreSetFlag(ISASI).md)、[CrossCoreWaitFlag(ISASI)](../../../基础API/同步控制/核间同步/CrossCoreWaitFlag(ISASI).md)接口，保证全部核的任务完成后再退出执行
+    // 开发者可根据实际的业务场景，选择调用[SyncAll](../../../基础API/同步控制/核间同步/SyncAll.md)、[CrossCoreSetFlag(ISASI)](../../../基础API/同步控制/核间同步/CrossCoreSetFlag_ISASI.md)、[CrossCoreWaitFlag(ISASI)](../../../基础API/同步控制/核间同步/CrossCoreWaitFlag_ISASI.md)接口，保证全部核的任务完成后再退出执行
     ```
 
 6.  用户调用[Finalize](Finalize.md)接口，通知服务端后续无通信任务，执行结束后退出；客户端检测并等待最后一个通信任务执行结束。

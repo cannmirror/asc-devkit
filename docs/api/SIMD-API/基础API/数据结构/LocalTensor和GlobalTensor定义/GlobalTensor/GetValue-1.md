@@ -64,7 +64,7 @@ __aicore__ inline __inout_pipe__(S) PrimType GetValue(const uint64_t offset) con
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
-如果GetValue的Global Memory地址内容存在被外部改写的可能，需要先调用[DataCacheCleanAndInvalid](../../../缓存控制/DataCacheCleanAndInvalid.md)，确保Data Cache与Global Memory的Cache一致性，之后再调用此接口。
+-   如果GetValue的Global Memory地址内容存在被外部改写的可能，需要先调用[DataCacheCleanAndInvalid](../../../缓存控制/DataCacheCleanAndInvalid.md)，确保Data Cache与Global Memory的Cache一致性，之后再调用此接口。
 
 ## 调用示例<a name="section1956710347119"></a>
 
