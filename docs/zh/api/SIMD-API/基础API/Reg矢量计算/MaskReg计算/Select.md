@@ -58,8 +58,8 @@ __simd_callee__ inline void Select(MaskReg& dst, MaskReg& src0, MaskReg& src1, M
 ## 调用示例<a name="section932512912207"></a>
 
 ```cpp
-template
-simd_vf inline void SelectVF(ubuf T* dstAddr, ubuf T* srcAddr, uint32_t count, uint32_t oneRepeatSize, uint16_t repeatTimes)
+template <typename T>
+__simd_vf__ inline void SelectVF(ubuf T* dstAddr, ubuf T* srcAddr, uint32_t count, uint32_t oneRepeatSize, uint16_t repeatTimes)
 {
     AscendC::Reg::RegTensor srcReg;
     AscendC::Reg::MaskReg maskFull = AscendC::Reg::CreateMask<T, AscendC::Reg::MaskPattern::ALL>();
