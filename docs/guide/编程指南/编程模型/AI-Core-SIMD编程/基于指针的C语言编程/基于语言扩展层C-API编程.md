@@ -302,7 +302,7 @@ __vector__ __global__ __aicore__ void add_custom(__gm__ float* x, __gm__ float* 
 #include <cstdint>
 #include "c_api/asc_simd.h"
 
-onstexpr uint32_t TILE_LENGTH = 2048;
+constexpr uint32_t TILE_LENGTH = 2048;
 constexpr uint32_t NUM_BLOCKS = 8;
 constexpr uint32_t BLK_NUM = 1;
 constexpr uint32_t MASK = 32;
