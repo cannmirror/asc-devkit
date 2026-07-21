@@ -10,7 +10,7 @@
 
 #if !defined(ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS)
 #warning \
-    "impl/tensor_api/arch/vector/gm_to_ub/copy_impl/data_copy.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
+    "impl/tensor_api/arch/vector/ub_to_ub/copy_impl/data_copy.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "#include "tensor_api/tensor.h"" and use public functions or variables defined in interface headers files."
 #define ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
 #define UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC
 #endif
@@ -19,18 +19,18 @@
  * \file data_copy.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_VECTOR_GM_TO_UB_COPY_IMPL_DATA_COPY_H
-#define IMPL_TENSOR_API_ARCH_VECTOR_GM_TO_UB_COPY_IMPL_DATA_COPY_H
+#ifndef IMPL_TENSOR_API_ARCH_VECTOR_UB_TO_UB_COPY_IMPL_DATA_COPY_H
+#define IMPL_TENSOR_API_ARCH_VECTOR_UB_TO_UB_COPY_IMPL_DATA_COPY_H
 
 #include "impl/tensor_api/utils/utils_impl.h"
-#include "impl/tensor_api/arch/vector/gm_to_ub/copy_impl/instruction.h"
+#include "impl/tensor_api/arch/vector/ub_to_ub/copy_impl/instruction.h"
 
 namespace AscendC {
 namespace Te {
 
-struct CopyGM2UBTrait {};
+struct CopyUB2UBTrait {};
 
-class CopyGmToUbufAlignV2Common {
+class CopyUbufToUbufAlignV2Common {
 protected:
     template <typename T, typename U>
     __aicore__ inline static void EmitCopy(
@@ -48,18 +48,19 @@ protected:
             dstStride = dstStride >> 1;
         }
 
-        constexpr uint8_t leftPaddingCnt = 0;
-        constexpr uint8_t rightPaddingCnt = 0;
-        uint8_t cacheMode = src.Engine().GetCacheMode();
-        CopyGmToUbufAlignV2Instr::DataCopy(
-            dst, src, blockCount, blockLen, leftPaddingCnt, rightPaddingCnt, srcStride, dstStride, cacheMode);
+        // Convert from bytes to 32B units for asc_copy_ub2ub
+        uint16_t blockLenIn32B = static_cast<uint16_t>(blockLen >> 5);
+        uint16_t srcStrideIn32B = static_cast<uint16_t>(srcStride >> 5);
+        uint16_t dstStrideIn32B = static_cast<uint16_t>(dstStride >> 5);
+
+        CopyUbufToUbufInstr::DataCopy(dst, src, blockCount, blockLenIn32B, srcStrideIn32B, dstStrideIn32B);
     }
 };
 
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_VECTOR_GM_TO_UB_COPY_IMPL_DATA_COPY_H
+#endif // IMPL_TENSOR_API_ARCH_VECTOR_UB_TO_UB_COPY_IMPL_DATA_COPY_H
 
 #if defined(UNDEF_ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
 #undef ASCENDC_TENSOR_API_INCLUDE_COMPILER_INTERNAL_HEADERS
