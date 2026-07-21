@@ -239,11 +239,11 @@ private:
 #define TEST_GM2L1_COORD(type, name, gmALayout, l1ALayout, makeCoord) \
     TEST_GM2L1_COORD_INNER(type, name, gmALayout, l1ALayout, makeCoord, __COUNTER__)
 
-#define MAKE_LAYOUT_FUNC(NAME)                                                      \
-    template <typename T>                                                           \
-    constexpr auto Make##NAME = [](auto row, auto col) {                            \
-        constexpr size_t C0 = IsB4Type<T> ? 64 : 32 / sizeof(T);                    \
-        return MakeFrameLayout<NAME##LayoutPtn, LayoutTrait<T, Int<C0>>>(row, col); \
+#define MAKE_LAYOUT_FUNC(NAME)                                      \
+    template <typename T>                                           \
+    constexpr auto Make##NAME = [](auto row, auto col) {            \
+        constexpr size_t C0 = IsB4Type<T> ? 64 : 32 / sizeof(T);    \
+        return MakeFrameLayout<NAME##LayoutPtn, Int<C0>>(row, col); \
     };
 
 MAKE_LAYOUT_FUNC(NDExt)
@@ -254,10 +254,9 @@ MAKE_LAYOUT_FUNC(NZ)
 MAKE_LAYOUT_FUNC(ZN)
 #undef MAKE_LAYOUT_FUNC
 
-#define MAKE_LAYOUT_FUNC(NAME)  \
-    template <typename T>       \
-    constexpr auto Make##NAME = \
-        [](auto row, auto col) { return MakeFrameLayout<NAME##LayoutPtn, LayoutTrait<T, _2>>(row, col); };
+#define MAKE_LAYOUT_FUNC(NAME) \
+    template <typename T>      \
+    constexpr auto Make##NAME = [](auto row, auto col) { return MakeFrameLayout<NAME##LayoutPtn, _2>(row, col); };
 
 MAKE_LAYOUT_FUNC(ZZ)
 MAKE_LAYOUT_FUNC(NN)
@@ -272,11 +271,11 @@ MAKE_LAYOUT_FUNC(ScaleBDN)
 // (see commit d2d3dc8): Shape = (B, frameShape), Stride = (M * K, frameStride). Only BMK-contiguous
 // layouts are supported, so M/K must be alignment-friendly (M%16==0, K%c0==0) to make the per-batch
 // stride M*K equal to one aligned NZ/ZN matrix's footprint in L1.
-#define MAKE_BATCH_LAYOUT_FUNC(NAME)                                                       \
-    template <typename T>                                                                  \
-    constexpr auto MakeBatch##NAME = [](auto batch, auto row, auto col) {                  \
-        constexpr size_t C0 = IsB4Type<T> ? 64 : 32 / sizeof(T);                           \
-        return MakeFrameLayout<NAME##LayoutPtn, LayoutTrait<T, Int<C0>>>(batch, row, col); \
+#define MAKE_BATCH_LAYOUT_FUNC(NAME)                                       \
+    template <typename T>                                                  \
+    constexpr auto MakeBatch##NAME = [](auto batch, auto row, auto col) {  \
+        constexpr size_t C0 = IsB4Type<T> ? 64 : 32 / sizeof(T);           \
+        return MakeFrameLayout<NAME##LayoutPtn, Int<C0>>(batch, row, col); \
     };
 
 MAKE_BATCH_LAYOUT_FUNC(NDExt)

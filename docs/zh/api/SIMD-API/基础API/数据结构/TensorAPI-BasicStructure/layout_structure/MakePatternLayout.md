@@ -32,6 +32,8 @@ MakePatternLayout用于根据Shape、Stride、LayoutPattern和TraitType构造带
 
 与[MakeLayout](./MakeLayout.md)相比，MakePatternLayout除了保存Shape和Stride外，还会在Layout类型中附加布局模式LayoutPattern和Trait信息。
 
+TraitType用于描述C0粒度等布局特征。若使用`LayoutTrait<T, C0>`或`LayoutTraitDefault<T>`写法，T仅作为兼容占位或C0推导依据，不作为Tensor的数据类型信息保存。
+
 ## 函数原型
 
 ```cpp
@@ -46,7 +48,7 @@ __aicore__ inline constexpr auto MakePatternLayout(const ShapeType& shape, const
 | 参数名称 | 类型 | 描述 |
 | :------- | :--- | :--- |
 | LayoutPattern | 输入 | 布局模式类型，用于标记Layout的格式信息。 |
-| TraitType | 输入 | 布局trait类型，用于标记元素类型、C0粒度等附加属性。 |
+| TraitType | 输入 | 布局trait类型，用于标记C0粒度等布局特征。 |
 | ShapeType | 输入 | shape的类型，要求为元组(tuple)类型。 |
 | StrideType | 输入 | stride的类型，要求为元组(tuple)类型。 |
 
