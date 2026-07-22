@@ -29,6 +29,7 @@
 #endif
 
 namespace __asc_aicore {
+#if (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T>
 __aicore__ inline void set_scalar_param(__gm__ uint8_t* paramAddr, uint32_t paramIdx, T scalar)
 {
@@ -266,7 +267,21 @@ inline __aicore__ void printf_impl_assert_msg(
     set_ctrl(ctrlValue);
 #endif
 }
+#else
+template <class... Args>
+__aicore__ inline void printf_impl(__gm__ const char* fmt, Args&&... args)
+{}
 
+template <class... Args>
+__aicore__ inline void printf_impl_assert(__gm__ const char* fmt, Args&&... args)
+{}
+
+template <typename... Args>
+inline __aicore__ void printf_impl_assert_msg(
+    const __gm__ char* __assertion, const __gm__ char* __file, unsigned int __line, const __gm__ char* __function,
+    const __gm__ char* fmt, Args&&... args)
+{}
+#endif
 } // namespace __asc_aicore
 #else
 #include <cstdio>
@@ -303,13 +318,6 @@ inline __aicore__ void printf_impl_assert_msg(
 #endif
 }
 
-template <class... Args>
-__aicore__ inline void scalar_printf_impl(
-    DumpType debugType, __gm__ const char* fmt, __gm__ const char* dumphead, Args&&... args)
-{}
-
-__aicore__ inline void enable_asc_diagnostics() {}
-
 } // namespace __asc_aicore
 
 using namespace __asc_aicore;
@@ -320,17 +328,13 @@ namespace __asc_aicore {
 template <class... Args>
 __aicore__ inline void printf(__gm__ const char* fmt, Args&&... args)
 {
-#if (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
     printf_impl(fmt, args...);
-#endif
 }
 
 template <class... Args>
 __aicore__ inline void PRINTF(__gm__ const char* fmt, Args&&... args)
 {
-#if (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
     printf_impl(fmt, args...);
-#endif
 }
 } // namespace __asc_aicore
 #endif
