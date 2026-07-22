@@ -93,8 +93,8 @@ fixpipe_value = l1_value & 0x00007fe0ffffe0ff
 该掩码保留位`[7:0]`、`[31:13]`和`[46:37]`，清零位`[12:8]`、`[36:32]`和`[63:47]`。
 `desc=301`的结果应等于`desc=102`的数据与该掩码按位与后的结果。
 
-相关规则参见[L1与Fixpipe Buffer数据搬运](https://gitcode.com/ApeiriaNode_Booker/asc-devkit/blob/example%2F3510-special-buffer-dump/docs/api/SIMD-API/基础API/数据搬运导览/L1与Fixpipe-Buffer数据搬运.md)和
-[随路量化](https://gitcode.com/ApeiriaNode_Booker/asc-devkit/blob/example%2F3510-special-buffer-dump/docs/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬出/关键特性说明/随路量化.md)。
+相关规则参见[L1与Fixpipe Buffer数据搬运](../../../../../docs/zh/api/SIMD-API/基础API/数据搬运导览/L1与Fixpipe-Buffer数据搬运.md)和
+[随路量化](../../../../../docs/zh/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬出/关键特性说明/随路量化.md)。
 其中，随路量化文档的3510量化参数位域表将`[12:0]`标记为无效位；本样例的dav-3510打印结果中
 `[7:0]`保留输入值，仅`[12:8]`清零。该差异仅表示无效位的打印可见值不同，不改变其量化语义。
 

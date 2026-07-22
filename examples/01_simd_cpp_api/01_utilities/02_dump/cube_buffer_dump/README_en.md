@@ -95,8 +95,8 @@ The mask retains bits `[7:0]`, `[31:13]`, and `[46:37]`, and clears bits `[12:8]
 The `desc=301` result must equal the `desc=102` value after applying this mask.
 
 For the relevant rules, see
-[L1 and Fixpipe Buffer Data Transfer](https://gitcode.com/ApeiriaNode_Booker/asc-devkit/blob/example%2F3510-special-buffer-dump/docs/api/SIMD-API/基础API/数据搬运导览/L1与Fixpipe-Buffer数据搬运.md) and
-[On-the-fly Quantization](https://gitcode.com/ApeiriaNode_Booker/asc-devkit/blob/example%2F3510-special-buffer-dump/docs/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬出/关键特性说明/随路量化.md).
+[L1 and Fixpipe Buffer Data Transfer](../../../../../docs/zh/api/SIMD-API/基础API/数据搬运导览/L1与Fixpipe-Buffer数据搬运.md) and
+[On-the-fly Quantization](../../../../../docs/zh/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬出/关键特性说明/随路量化.md).
 The 3510 quantization parameter table in the latter marks bits `[12:0]` as invalid. In this sample's dav-3510
 dump output, bits `[7:0]` retain their input values and only bits `[12:8]` are cleared. This difference only
 affects the visible values of invalid bits and does not change their quantization semantics.
