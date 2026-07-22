@@ -8,10 +8,10 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
-#include "../../../../include/adv_api/math/round_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/math/round_tiling.h"
 
-#include "graph/tensor.h"
-#include "../../../../include/utils/tiling/platform/platform_ascendc.h"
+#include "utils/tiling/platform/platform_ascendc.h"
 #include "../../detail/host_log.h"
 namespace AscendC {
 constexpr uint32_t ROUND_HALF_CALC_FAC_200 = 2;
@@ -20,8 +20,8 @@ constexpr uint32_t ROUND_FLOAT_CALC_FAC = 1;
 constexpr uint32_t ROUND_ONE_REPEAT_BYTE_SIZE = 256;
 
 void GetRoundMaxMinTmpSize(
-    const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape, const uint32_t typeSize,
-    const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
+    const platform_ascendc::PlatformAscendC& ascendcPlatform, const AscendC::TensorShape& srcShape,
+    const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
     (void)isReuseSource;
     const uint32_t inputSize = srcShape.GetShapeSize();

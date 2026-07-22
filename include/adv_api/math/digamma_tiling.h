@@ -16,7 +16,7 @@
 #define LIB_MATH_DIGAMMA_TILING_H
 
 #include <cstdint>
-#include "graph/tensor.h"
+#include "../utils/types.h"
 
 namespace AscendC {
 /*
@@ -29,7 +29,7 @@ namespace AscendC {
  * @param [out] minValue: Digamma api calculate need min temporary local space size.
  */
 void GetDigammaMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue);
 
 /*

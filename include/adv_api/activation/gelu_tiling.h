@@ -15,7 +15,7 @@
 #ifndef TILING_GELU_TILING_H
 #define TILING_GELU_TILING_H
 #include <cstdint>
-#include "graph/tensor.h"
+#include "../utils/types.h"
 namespace AscendC {
 /*!
  * \brief This interface is used to obtain the minimum temporary space reserved or applied.
@@ -23,7 +23,7 @@ namespace AscendC {
  * \param [in] typeSize, size of the input data type, in bytes
  * return: minimum temporary space required
  */
-uint32_t GetGeluMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize);
+uint32_t GetGeluMinTmpSize(const AscendC::TensorShape& srcShape, const uint32_t typeSize);
 
 /*!
  * \brief This interface is used to obtain the maximum temporary space reserved or applied.
@@ -31,7 +31,7 @@ uint32_t GetGeluMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize);
  * \param [in] typeSize, size of the input data type, in bytes
  * return: maximum temporary space required
  */
-uint32_t GetGeluMaxTmpSize(const ge::Shape& srcShape, const uint32_t typeSize);
+uint32_t GetGeluMaxTmpSize(const AscendC::TensorShape& srcShape, const uint32_t typeSize);
 
 /*!
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
@@ -41,6 +41,7 @@ uint32_t GetGeluMaxTmpSize(const ge::Shape& srcShape, const uint32_t typeSize);
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetGeluMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue);
+void GetGeluMaxMinTmpSize(
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue);
 } // namespace AscendC
 #endif // TILING_GELU_TILING_H

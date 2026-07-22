@@ -15,8 +15,7 @@
 #ifndef LIB_QUANTIZATION_ANTIQUANTIZE_TILING_H
 #define LIB_QUANTIZATION_ANTIQUANTIZE_TILING_H
 #include <cstdint>
-#include "graph/tensor.h"
-#include "graph/types.h"
+#include "../utils/types.h"
 namespace AscendC {
 /*!
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
@@ -30,8 +29,9 @@ namespace AscendC {
  * \param [out] minValue, minimum temporary space required
  */
 void GetAntiQuantizeMaxMinTmpSize(
-    const ge::Shape& srcShape, const ge::Shape& scaleShape, bool isTranspose, ge::DataType inputDataType,
-    ge::DataType outputDataType, uint32_t& maxValue, uint32_t& minValue);
+    const AscendC::TensorShape& srcShape, const AscendC::TensorShape& scaleShape, bool isTranspose,
+    AscendC::TensorDataType inputDataType, AscendC::TensorDataType outputDataType, uint32_t& maxValue,
+    uint32_t& minValue);
 
 /*!
  * \brief The calculation of the AntiQuantize interface requires the developer to reserve or apply for temporary space.
@@ -46,7 +46,7 @@ void GetAntiQuantizeMaxMinTmpSize(
  * \param [out] extraBuf, the size of the extra temporary space
  */
 void GetAntiQuantizeTmpBufferFactorSize(
-    const ge::Shape& srcShape, const ge::Shape& scaleShape, ge::DataType inputDataType, ge::DataType outputDataType,
-    uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
+    const AscendC::TensorShape& srcShape, const AscendC::TensorShape& scaleShape, AscendC::TensorDataType inputDataType,
+    AscendC::TensorDataType outputDataType, uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 } // namespace AscendC
 #endif // LIB_QUANTIZATION_ANTIQUANTIZE_TILING_H

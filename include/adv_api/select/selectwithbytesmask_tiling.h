@@ -17,7 +17,7 @@
 #include <cstdint>
 #include <algorithm>
 
-#include "graph/tensor.h"
+#include "../utils/types.h"
 namespace AscendC {
 /* !
  * \brief This interface is used to obtain the minimum temporary space reserved or applied.
@@ -33,12 +33,12 @@ namespace AscendC {
  * \return minValue, minimum temporary space required
  */
 uint32_t GetSelectWithBytesMaskMinTmpSize(
-    const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape,
-    const uint32_t maskTypeSize, const bool isReuseMask);
+    const AscendC::TensorShape& src0Shape, const AscendC::TensorShape& src1Shape, const uint32_t srcTypeSize,
+    const AscendC::TensorShape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask);
 
 uint32_t GetSelectMinTmpSize(
-    const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape,
-    const uint32_t maskTypeSize, const bool isReuseMask);
+    const AscendC::TensorShape& src0Shape, const AscendC::TensorShape& src1Shape, const uint32_t srcTypeSize,
+    const AscendC::TensorShape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask);
 
 /* !
  * \brief This interface is used to obtain the maximum temporary space reserved or applied.
@@ -54,12 +54,12 @@ uint32_t GetSelectMinTmpSize(
  * \return maxValue, maximum temporary space required
  */
 uint32_t GetSelectWithBytesMaskMaxTmpSize(
-    const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape,
-    const uint32_t maskTypeSize, const bool isReuseMask);
+    const AscendC::TensorShape& src0Shape, const AscendC::TensorShape& src1Shape, const uint32_t srcTypeSize,
+    const AscendC::TensorShape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask);
 
 uint32_t GetSelectMaxTmpSize(
-    const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape,
-    const uint32_t maskTypeSize, const bool isReuseMask);
+    const AscendC::TensorShape& src0Shape, const AscendC::TensorShape& src1Shape, const uint32_t srcTypeSize,
+    const AscendC::TensorShape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask);
 
 /* !
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
@@ -76,11 +76,13 @@ uint32_t GetSelectMaxTmpSize(
  * \param [out] minValue, minimum temporary space required
  */
 void GetSelectWithBytesMaskMaxMinTmpSize(
-    const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape,
-    const uint32_t maskTypeSize, const bool isReuseMask, uint32_t& maxValue, uint32_t& minValue);
+    const AscendC::TensorShape& src0Shape, const AscendC::TensorShape& src1Shape, const uint32_t srcTypeSize,
+    const AscendC::TensorShape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask, uint32_t& maxValue,
+    uint32_t& minValue);
 
 void GetSelectMaxMinTmpSize(
-    const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape,
-    const uint32_t maskTypeSize, const bool isReuseMask, uint32_t& maxValue, uint32_t& minValue);
+    const AscendC::TensorShape& src0Shape, const AscendC::TensorShape& src1Shape, const uint32_t srcTypeSize,
+    const AscendC::TensorShape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask, uint32_t& maxValue,
+    uint32_t& minValue);
 } // namespace AscendC
 #endif // LIB_SELECT_SELECT_WITH_BYTES_MASK_TILING_H

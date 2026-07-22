@@ -15,7 +15,7 @@
 #ifndef TILING_DROPOUT_TILING_H
 #define TILING_DROPOUT_TILING_H
 #include <cstdint>
-#include "graph/tensor.h"
+#include "../utils/types.h"
 namespace AscendC {
 /*!
  * \brief This interface is used to obtain the minimum temporary space reserved or applied.
@@ -24,7 +24,7 @@ namespace AscendC {
  * \param [in] isReuseSource, Whether temporary variables can reuse the input memory.
  * return: minimum temporary space required
  */
-uint32_t GetDropOutMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource);
+uint32_t GetDropOutMinTmpSize(const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource);
 
 /*!
  * \brief This interface is used to obtain the maximum temporary space reserved or applied.
@@ -33,7 +33,7 @@ uint32_t GetDropOutMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize
  * \param [in] isReuseSource, Whether temporary variables can reuse the input memory.
  * return: maximum temporary space required
  */
-uint32_t GetDropOutMaxTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource);
+uint32_t GetDropOutMaxTmpSize(const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource);
 
 /*!
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
@@ -45,7 +45,7 @@ uint32_t GetDropOutMaxTmpSize(const ge::Shape& srcShape, const uint32_t typeSize
  * \param [out] minValue, minimum temporary space required
  */
 void GetDropOutMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue);
 } // namespace AscendC
 #endif // TILING_DROPOUT_TILING_H

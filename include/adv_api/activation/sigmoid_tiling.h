@@ -16,7 +16,7 @@
 #define TILING_ACTIVATION_SIGMOID_TILING_H
 #include <cstdint>
 
-#include "graph/tensor.h"
+#include "../utils/types.h"
 
 namespace AscendC {
 /*
@@ -30,7 +30,8 @@ namespace AscendC {
  * @param [out] minValue: min temporary local space size
  */
 void GetSigmoidMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue);
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, bool isReuseSource, uint32_t& maxValue,
+    uint32_t& minValue);
 
 } // namespace AscendC
 #endif // TILING_ACTIVATION_SIGMOID_TILING_H

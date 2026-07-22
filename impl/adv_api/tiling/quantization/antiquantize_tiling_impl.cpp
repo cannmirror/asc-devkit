@@ -12,14 +12,13 @@
  * \file antiquantize_tiling_impl.cpp
  * \brief
  */
-#include "graph/tensor.h"
-#include "graph/types.h"
-#include "../../../../include/adv_api/quantization/antiquantize_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/quantization/antiquantize_tiling.h"
 
 namespace AscendC {
 void GetAntiQuantizeTmpBufferFactorSize(
-    const ge::Shape& srcShape, const ge::Shape& scaleShape, ge::DataType inputDataType, ge::DataType outputDataType,
-    uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
+    const AscendC::TensorShape& srcShape, const AscendC::TensorShape& scaleShape, AscendC::TensorDataType inputDataType,
+    AscendC::TensorDataType outputDataType, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 {
     (void)srcShape;
     (void)scaleShape;
@@ -30,8 +29,9 @@ void GetAntiQuantizeTmpBufferFactorSize(
 }
 
 void GetAntiQuantizeMaxMinTmpSize(
-    const ge::Shape& srcShape, const ge::Shape& scaleShape, bool isTranspose, ge::DataType inputDataType,
-    ge::DataType outputDataType, uint32_t& maxValue, uint32_t& minValue)
+    const AscendC::TensorShape& srcShape, const AscendC::TensorShape& scaleShape, bool isTranspose,
+    AscendC::TensorDataType inputDataType, AscendC::TensorDataType outputDataType, uint32_t& maxValue,
+    uint32_t& minValue)
 {
     (void)srcShape;
     (void)scaleShape;

@@ -8,15 +8,14 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
+#include "adv_api/utils/types.h"
 #include <cstdint>
 #include <set>
 #include <map>
 
-#include "../../../../include/adv_api/sort/sort_tiling_intf.h"
-#include "graph/tensor.h"
-#include "graph/types.h"
+#include "adv_api/sort/sort_tiling_intf.h"
 #include "../../detail/host_log.h"
-#include "../../../../include/utils/tiling/platform/platform_ascendc.h"
+#include "utils/tiling/platform/platform_ascendc.h"
 
 namespace AscendC {
 namespace {
@@ -42,18 +41,18 @@ void CheckSortHostCommon(
 } // namespace
 
 void GetSortMaxMinTmpSize(
-    const ge::Shape& srcShape, ge::DataType valueType, ge::DataType indexType, bool isReuseSource,
-    const SortConfig& config, uint32_t& maxValue, uint32_t& minValue)
+    const AscendC::TensorShape& srcShape, AscendC::TensorDataType valueType, AscendC::TensorDataType indexType,
+    bool isReuseSource, const SortConfig& config, uint32_t& maxValue, uint32_t& minValue)
 {
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT(platform != nullptr, return, "Failed to get PlatformAscendC");
     auto npuArch = platform->GetCurNpuArch();
     ASCENDC_HOST_ASSERT(
         npuArch == NpuArch::DAV_3510 || npuArch == NpuArch::DAV_5102, return, "Unsupported NpuArch for Sort API.");
-    std::set<ge::DataType> supportValueType = {ge::DT_INT8,   ge::DT_UINT8,  ge::DT_FLOAT, ge::DT_FLOAT16,
-                                               ge::DT_BF16,   ge::DT_INT16,  ge::DT_INT32, ge::DT_UINT16,
-                                               ge::DT_UINT32, ge::DT_UINT64, ge::DT_INT64};
-    std::set<ge::DataType> supportIndexType = {ge::DT_INT32, ge::DT_UINT32, ge::DT_INT64, ge::DT_UINT64};
+    std::set<AscendC::TensorDataType> supportValueType = {ge::DT_INT8,   ge::DT_UINT8,  ge::DT_FLOAT, ge::DT_FLOAT16,
+                                                          ge::DT_BF16,   ge::DT_INT16,  ge::DT_INT32, ge::DT_UINT16,
+                                                          ge::DT_UINT32, ge::DT_UINT64, ge::DT_INT64};
+    std::set<AscendC::TensorDataType> supportIndexType = {ge::DT_INT32, ge::DT_UINT32, ge::DT_INT64, ge::DT_UINT64};
     ASCENDC_HOST_ASSERT(
         (!config.hasSrcIndex || config.hasDstIndex), return, "Sort API cannot only have source input index.");
     ASCENDC_HOST_ASSERT(
@@ -75,7 +74,7 @@ void GetSortMaxMinTmpSize(
         minValue = MERGE_SORT_ONE_ELM_SIZE * inputSize;
         return;
     }
-    std::map<ge::DataType, uint32_t> typeToSize = {
+    std::map<AscendC::TensorDataType, uint32_t> typeToSize = {
         {ge::DT_INT8, 1},  {ge::DT_UINT8, 1},   {ge::DT_INT16, 2}, {ge::DT_UINT16, 2},
         {ge::DT_INT32, 4}, {ge::DT_UINT32, 4},  {ge::DT_INT64, 8}, {ge::DT_UINT64, 8},
         {ge::DT_FLOAT, 4}, {ge::DT_FLOAT16, 2}, {ge::DT_BF16, 2},

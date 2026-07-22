@@ -8,11 +8,11 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
-#include "../../../../include/adv_api/normalization/layernorm_grad_tiling.h"
-#include "graph/tensor.h"
-#include "../../../../include/adv_api/normalization/layernorm_grad_tilingdata.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/normalization/layernorm_grad_tiling.h"
+#include "adv_api/normalization/layernorm_grad_tilingdata.h"
 #include "../../detail/host_log.h"
-#include "../../../../include/utils/tiling/platform/platform_ascendc.h"
+#include "utils/tiling/platform/platform_ascendc.h"
 namespace optiling {
 REGISTER_TILING_DATA_CLASS(LayerNormGradTilingOpApi, LayerNormGradTiling);
 }
@@ -37,7 +37,7 @@ void CheckSrcShape(std::vector<int64_t> shapeDims)
 }
 
 void CheckLayerNormGradHostCommon(
-    const char* apiName, const char* hostFuncName, const ge::Shape& srcShape, const uint32_t typeSize)
+    const char* apiName, const char* hostFuncName, const AscendC::TensorShape& srcShape, const uint32_t typeSize)
 {
     ASCENDC_HOST_ASSERT(
         typeSize == LAYERNORM_GRAD_HALF_SIZE || typeSize == LAYERNORM_GRAD_FLOAT_SIZE, return,
@@ -101,7 +101,7 @@ void SetTilingData(
 } // namespace
 
 void GetLayerNormGradMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue)
 {
     CheckLayerNormGradHostCommon("LayerNormGrad", "GetLayerNormGradMaxMinTmpSize", srcShape, typeSize);
@@ -145,8 +145,8 @@ void GetLayerNormGradMaxMinTmpSize(
 }
 
 void GetLayerNormGradNDTilingInfo(
-    const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
-    optiling::LayerNormGradTiling& tiling)
+    const AscendC::TensorShape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, optiling::LayerNormGradTiling& tiling)
 {
     CheckLayerNormGradHostCommon("LayerNormGrad", "GetLayerNormGradNDTilingInfo", srcShape, typeSize);
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -199,8 +199,8 @@ void GetLayerNormGradNDTilingInfo(
 }
 
 void GetLayerNormGradNDTilingInfo(
-    const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
-    AscendC::tiling::LayerNormGradTiling& tiling)
+    const AscendC::TensorShape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, AscendC::tiling::LayerNormGradTiling& tiling)
 {
     optiling::LayerNormGradTiling tilingData;
     GetLayerNormGradNDTilingInfo(srcShape, stackBufferSize, typeSize, isReuseSource, tilingData);

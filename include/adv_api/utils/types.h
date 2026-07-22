@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * Copyright (c) 2026 Huawei Technologies Co., Ltd.
  * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
  * CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -8,23 +8,15 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
-/* !
- * \file swish_tiling.cpp
- * \brief
- */
-#include "adv_api/utils/types.h"
-#include "adv_api/activation/swish_tiling.h"
-#include <cstdint>
+#ifndef ASCENDC_ADV_API_UTILS_TYPES_H
+#define ASCENDC_ADV_API_UTILS_TYPES_H
+
+#include "graph/types.h"
+#include "graph/tensor.h"
 
 namespace AscendC {
-void GetSwishTmpSize(
-    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
-    uint32_t& minValue)
-{
-    (void)srcShape;
-    (void)typeSize;
-    (void)isReuseSource;
-    maxValue = 0U;
-    minValue = 0U;
-}
+using TensorShape = ge::Shape;
+using TensorDataType = ge::DataType;
 } // namespace AscendC
+
+#endif // ASCENDC_ADV_API_UTILS_TYPES_H

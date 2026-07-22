@@ -12,16 +12,16 @@
  * \file xor_tiling.cpp
  * \brief
  */
-#include "../../../../include/adv_api/math/xor_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/math/xor_tiling.h"
 #include "../../detail/host_log.h"
-#include "graph/tensor.h"
 #include "register/tilingdata_base.h"
 namespace AscendC {
 namespace {
 constexpr uint32_t XOR_CALC_FAC = 1;
 constexpr uint32_t XOR_ONE_REPEAT_BYTE_SIZE = 256;
 
-uint32_t GetXorMaxTmpSize(const ge::Shape srcShape, const uint32_t typeSize, const bool isReuseSource)
+uint32_t GetXorMaxTmpSize(const AscendC::TensorShape srcShape, const uint32_t typeSize, const bool isReuseSource)
 {
     (void)isReuseSource;
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -34,7 +34,7 @@ uint32_t GetXorMaxTmpSize(const ge::Shape srcShape, const uint32_t typeSize, con
     return calcPro * inputSize * typeSize;
 }
 
-uint32_t GetXorMinTmpSize(const ge::Shape srcShape, const uint32_t typeSize, const bool isReuseSource)
+uint32_t GetXorMinTmpSize(const AscendC::TensorShape srcShape, const uint32_t typeSize, const bool isReuseSource)
 {
     (void)(srcShape);
     (void)(isReuseSource);
@@ -45,7 +45,7 @@ uint32_t GetXorMinTmpSize(const ge::Shape srcShape, const uint32_t typeSize, con
 } // namespace
 
 void GetXorMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue)
 {
     uint32_t max = GetXorMaxTmpSize(srcShape, typeSize, isReuseSource);

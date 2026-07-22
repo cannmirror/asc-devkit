@@ -12,11 +12,11 @@
  * \file swiglu_tiling.cpp
  * \brief
  */
-#include "../../../../include/adv_api/activation/swiglu_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/activation/swiglu_tiling.h"
 
 #include <cstdint>
 
-#include "graph/tensor.h"
 #include "../../detail/host_log.h"
 #include "../../detail/api_check/host_apicheck.h"
 
@@ -45,7 +45,7 @@ inline uint32_t GetSwiGLUMinTmpSize(const uint32_t typeSize)
 } // namespace
 
 void GetSwiGLUMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue,
     const bool isReuseSource)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<SWI_GELU_GET_MAX_MIN>(srcShape.GetShapeSize(), typeSize);

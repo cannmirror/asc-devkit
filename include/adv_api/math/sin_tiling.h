@@ -15,7 +15,7 @@
 #ifndef LIB_MATH_SIN_TILING_H
 #define LIB_MATH_SIN_TILING_H
 #include <cstdint>
-#include "graph/tensor.h"
+#include "../utils/types.h"
 #include "sin_utils.h"
 
 namespace AscendC {
@@ -30,7 +30,7 @@ namespace AscendC {
  * \param [out] minValue, minimum temporary space required
  */
 void GetSinMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue);
 
 /*!
@@ -57,7 +57,7 @@ void GetSinTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCou
  * \param [out] minValue, minimum temporary space required
  */
 void GetSinMaxMinTmpSize(
-    const SinConfig& config, const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    const SinConfig& config, const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource,
     uint32_t& maxValue, uint32_t& minValue);
 
 /*!

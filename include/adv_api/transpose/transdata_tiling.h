@@ -15,8 +15,7 @@
 #ifndef LIB_TRANSPOSE_TRANSDATA_TILING_H
 #define LIB_TRANSPOSE_TRANSDATA_TILING_H
 #include <cstdint>
-#include "graph/tensor.h"
-#include "graph/types.h"
+#include "../utils/types.h"
 #include "tiling/platform/platform_ascendc.h"
 
 namespace AscendC {
@@ -59,7 +58,8 @@ struct TransDataConfig {
  * \return whether get the max/min value successfully
  */
 bool GetTransDataMaxMinTmpSize(
-    const platform_ascendc::PlatformAscendC& platform, const ge::Shape& srcShape, const ge::Shape& dstShape,
-    const ge::DataType dataType, const TransDataConfig& config, uint32_t& maxValue, uint32_t& minValue);
+    const platform_ascendc::PlatformAscendC& platform, const AscendC::TensorShape& srcShape,
+    const AscendC::TensorShape& dstShape, const AscendC::TensorDataType dataType, const TransDataConfig& config,
+    uint32_t& maxValue, uint32_t& minValue);
 } // namespace AscendC
 #endif // LIB_TRANSPOSE_TRANSDATA_TILING_H

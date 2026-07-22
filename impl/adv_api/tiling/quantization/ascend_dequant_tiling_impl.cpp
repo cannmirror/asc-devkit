@@ -12,13 +12,13 @@
  * \file ascend_dequant_tiling_impl.cpp
  * \brief
  */
-#include "../../../../include/adv_api/quantization/ascend_dequant_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/quantization/ascend_dequant_tiling.h"
 
 #include <cstdint>
 
-#include "graph/tensor.h"
 #include "../../detail/host_log.h"
-#include "../../../../include/utils/tiling/platform/platform_ascendc.h"
+#include "utils/tiling/platform/platform_ascendc.h"
 
 namespace AscendC {
 namespace {
@@ -49,7 +49,7 @@ inline uint32_t GetAscendDequantMinTmpSize(const uint32_t outer, const uint32_t 
 }
 
 void CheckDequantHostCommon(
-    const char* apiName, const char* hostFuncName, const ge::Shape& srcShape, const uint32_t typeSize)
+    const char* apiName, const char* hostFuncName, const AscendC::TensorShape& srcShape, const uint32_t typeSize)
 {
     ASCENDC_HOST_ASSERT(
         srcShape.GetShapeSize() > 0, return, "[%s][%s] Input Shape size must be greater than 0.", apiName,
@@ -64,7 +64,8 @@ void CheckDequantHostCommon(
 }
 } // namespace
 
-void GetAscendDequantTmpBufferFactorSize(const ge::Shape& srcShape, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
+void GetAscendDequantTmpBufferFactorSize(
+    const AscendC::TensorShape& srcShape, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 {
     extraBuf = FLOAT_PER_BLOCK + FLOAT_PER_REPEAT;
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -80,7 +81,7 @@ void GetAscendDequantTmpBufferFactorSize(const ge::Shape& srcShape, uint32_t& ma
 }
 
 void GetAscendDequantMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 {
     CheckDequantHostCommon("AscendDequant", "GetAscendDequantMaxMinTmpSize", srcShape, typeSize);
     std::vector<int64_t> shapeDims = srcShape.GetDims(); // should be 2-dimensional or 1-dimensional

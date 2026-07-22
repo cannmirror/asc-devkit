@@ -8,14 +8,14 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
-#include "../../../../include/adv_api/transpose/transdata_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/transpose/transdata_tiling.h"
 
 #include <cstdint>
 #include <algorithm>
 
-#include "graph/tensor.h"
 #include "../../detail/host_log.h"
-#include "../../../../include/utils/tiling/platform/platform_ascendc.h"
+#include "utils/tiling/platform/platform_ascendc.h"
 namespace AscendC {
 namespace {
 constexpr int32_t PAD_ELE_FOR_HALF = 16;
@@ -94,8 +94,8 @@ bool GenerateNcdhwToFractalZ3DShapeInfo(
 }
 
 bool GenerateShapeInfo(
-    const TransDataConfig& config, const ge::Shape& srcShape, const ge::Shape& dstShape, ge::DataType type,
-    TmpTransDataParams& param)
+    const TransDataConfig& config, const AscendC::TensorShape& srcShape, const AscendC::TensorShape& dstShape,
+    AscendC::TensorDataType type, TmpTransDataParams& param)
 {
     (void)type;
     constexpr int32_t c0 = 16, n0 = 16;
@@ -176,12 +176,13 @@ int32_t GetTmpBufferSize(const TransDataConfig& config, const TmpTransDataParams
 } // namespace
 
 bool GetTransDataMaxMinTmpSize(
-    const platform_ascendc::PlatformAscendC& platform, const ge::Shape& srcShape, const ge::Shape& dstShape,
-    const ge::DataType dataType, const TransDataConfig& config, uint32_t& maxValue, uint32_t& minValue)
+    const platform_ascendc::PlatformAscendC& platform, const AscendC::TensorShape& srcShape,
+    const AscendC::TensorShape& dstShape, const AscendC::TensorDataType dataType, const TransDataConfig& config,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     ASCENDC_HOST_ASSERT(
-        dataType == ge::DataType::DT_FLOAT16 || dataType == ge::DataType::DT_BF16 ||
-            dataType == ge::DataType::DT_UINT16 || dataType == ge::DataType::DT_INT16,
+        dataType == AscendC::TensorDataType::DT_FLOAT16 || dataType == AscendC::TensorDataType::DT_BF16 ||
+            dataType == AscendC::TensorDataType::DT_UINT16 || dataType == AscendC::TensorDataType::DT_INT16,
         return false,
         "[TransData][GetTransDataMaxMinTmpSize] it only supports DT_FLOAT16/DT_BF16/DT_UINT16/DT_INT16 data type");
 

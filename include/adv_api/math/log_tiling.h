@@ -16,7 +16,7 @@
 #define LIB_MATH_LOG_TILING_H
 #include <cstdint>
 
-#include "graph/tensor.h"
+#include "../utils/types.h"
 namespace AscendC {
 /*!
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
@@ -29,7 +29,7 @@ namespace AscendC {
  * \param [out] minValue, minimum temporary space required
  */
 void GetLogMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue);
 
 /*!
@@ -55,7 +55,7 @@ void GetLogTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCou
  * \param [out] minValue, minimum temporary space required
  */
 void GetLog10MaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue);
 
 /*!
@@ -81,7 +81,7 @@ void GetLog10TmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeC
  * \param [out] minValue, minimum temporary space required
  */
 void GetLog2MaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue);
 
 /*!

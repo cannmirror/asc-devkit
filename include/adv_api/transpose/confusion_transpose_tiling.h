@@ -14,7 +14,7 @@
  */
 #ifndef LIB_TRANSPOSE_CONFUSION_TRANSPOSE_TILING_H
 #define LIB_TRANSPOSE_CONFUSION_TRANSPOSE_TILING_H
-#include "graph/tensor.h"
+#include "../utils/types.h"
 #include "confusion_transpose_tilingdata.h"
 #include "kernel_tiling/kernel_tiling.h"
 namespace AscendC {
@@ -65,11 +65,11 @@ const int32_t CUBE_MAX_SIZE = 256;
  * \param [out] minValue min size of tmp buffer
  */
 void GetConfusionTransposeMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const uint32_t transposeTypeIn, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const uint32_t transposeTypeIn, uint32_t& maxValue,
     uint32_t& minValue);
 
 void GetTransposeMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const uint32_t transposeTypeIn, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const uint32_t transposeTypeIn, uint32_t& maxValue,
     uint32_t& minValue);
 
 /*!
@@ -84,27 +84,27 @@ void GetTransposeMaxMinTmpSize(
  * \param [out] tiling Transpose tiling
  */
 void GetConfusionTransposeTilingInfo(
-    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const uint32_t transposeTypeIn,
-    optiling::ConfusionTransposeTiling& tiling);
+    const AscendC::TensorShape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const uint32_t transposeTypeIn, optiling::ConfusionTransposeTiling& tiling);
 
 void GetTransposeTilingInfo(
-    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const uint32_t transposeTypeIn,
-    optiling::ConfusionTransposeTiling& tiling);
+    const AscendC::TensorShape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const uint32_t transposeTypeIn, optiling::ConfusionTransposeTiling& tiling);
 
 void GetConfusionTransposeOnlyTilingInfo(
-    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const AscendC::TensorShape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
     optiling::ConfusionTransposeTiling& tiling);
 
 void GetConfusionTransposeTilingInfo(
-    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const uint32_t transposeTypeIn,
-    AscendC::tiling::ConfusionTransposeTiling& tiling);
+    const AscendC::TensorShape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const uint32_t transposeTypeIn, AscendC::tiling::ConfusionTransposeTiling& tiling);
 
 void GetTransposeTilingInfo(
-    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const uint32_t transposeTypeIn,
-    AscendC::tiling::ConfusionTransposeTiling& tiling);
+    const AscendC::TensorShape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const uint32_t transposeTypeIn, AscendC::tiling::ConfusionTransposeTiling& tiling);
 
 void GetConfusionTransposeOnlyTilingInfo(
-    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const AscendC::TensorShape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
     AscendC::tiling::ConfusionTransposeTiling& tiling);
 } // namespace AscendC
 #endif // LIB_TRANSPOSE_CONFUSION_TRANSPOSE_TILING_H

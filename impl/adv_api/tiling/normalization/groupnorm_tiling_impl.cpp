@@ -13,7 +13,8 @@
  * \brief
  */
 
-#include "../../../../include/adv_api/normalization/groupnorm_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/normalization/groupnorm_tiling.h"
 #include "../../detail/host_log.h"
 
 namespace optiling {
@@ -39,7 +40,7 @@ constexpr uint32_t GROUPNORM_REDUCESUM_MAX_FLOAT_NUM = 64;
 constexpr uint32_t GROUPNORM_REDUCESUM_MAX_REPEAT_SMALLSHAPE = 8;
 
 uint32_t GetGroupNormTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t groupNum,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t groupNum,
     const bool isMaxValue)
 {
     ASCENDC_HOST_ASSERT(typeSize > 0, return 0, "typeSize must be greater than 0.");
@@ -75,7 +76,7 @@ uint32_t GetGroupNormTmpSize(
 }
 
 void CheckGroupNormHostCommon(
-    const char* apiName, const char* hostFuncName, const ge::Shape& srcShape, const uint32_t typeSize)
+    const char* apiName, const char* hostFuncName, const AscendC::TensorShape& srcShape, const uint32_t typeSize)
 {
     ASCENDC_HOST_ASSERT(
         srcShape.GetShapeSize() > 0, return, "[%s][%s] Input Shape size must be greater than 0.", apiName,
@@ -92,7 +93,7 @@ void CheckGroupNormHostCommon(
 } // namespace
 
 void GetGroupNormMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, const uint32_t groupNum,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, const uint32_t groupNum,
     uint32_t& maxValue, uint32_t& minValue)
 {
     CheckGroupNormHostCommon("GroupNorm", "GetGroupNormMaxMinTmpSize", srcShape, typeSize);
@@ -101,8 +102,8 @@ void GetGroupNormMaxMinTmpSize(
 }
 
 void GetGroupNormNDTilingInfo(
-    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
-    const uint32_t groupNum, optiling::GroupNormTiling& tiling)
+    const AscendC::TensorShape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, const uint32_t groupNum, optiling::GroupNormTiling& tiling)
 {
     CheckGroupNormHostCommon("GroupNorm", "GetGroupNormNDTilingInfo", srcShape, typeSize);
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
@@ -230,8 +231,8 @@ void GetGroupNormNDTilingInfo(
 }
 
 void GetGroupNormNDTilingInfo(
-    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
-    const uint32_t groupNum, AscendC::tiling::GroupNormTiling& tiling)
+    const AscendC::TensorShape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, const uint32_t groupNum, AscendC::tiling::GroupNormTiling& tiling)
 {
     optiling::GroupNormTiling tilingData;
     GetGroupNormNDTilingInfo(srcShape, stackBufferSize, typeSize, isReuseSource, groupNum, tilingData);

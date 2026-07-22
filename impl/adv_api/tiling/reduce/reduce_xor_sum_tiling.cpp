@@ -12,7 +12,8 @@
  * \file reduce_xor_sum_tiling.cpp
  * \brief
  */
-#include "../../../../include/adv_api/reduce/reduce_xor_sum_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/reduce/reduce_xor_sum_tiling.h"
 #include "../../detail/host_log.h"
 
 namespace AscendC {
@@ -29,7 +30,7 @@ inline uint32_t GetTmpSize(const uint32_t inputSize, const uint32_t typeSize, co
 } // namespace
 
 void GetReduceXorSumMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue)
 {
     const uint32_t inputSize = srcShape.GetShapeSize();

@@ -16,7 +16,7 @@
 #define LIB_MATH_COS_TILING_H
 #include <cstdint>
 
-#include "graph/tensor.h"
+#include "../utils/types.h"
 #include "cos_utils.h"
 
 namespace AscendC {
@@ -31,7 +31,7 @@ namespace AscendC {
  * \param [out] minValue, minimum temporary space required
  */
 void GetCosMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue);
 
 /*!
@@ -58,7 +58,7 @@ void GetCosTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCou
  * \param [out] minValue, minimum temporary space required
  */
 void GetCosMaxMinTmpSize(
-    const CosConfig& config, const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    const CosConfig& config, const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource,
     uint32_t& maxValue, uint32_t& minValue);
 
 /*!

@@ -12,15 +12,16 @@
  * \file sign_tiling.cpp
  * \brief
  */
-#include "../../../../include/adv_api/math/sign_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/math/sign_tiling.h"
 #include "../../detail/host_log.h"
-#include "graph/tensor.h"
 #include "register/tilingdata_base.h"
 namespace AscendC {
 constexpr uint32_t SIGN_CALC_PROC = 3;
 constexpr uint32_t SIGN_ONE_REPEAT_BYTE_SIZE = 256;
 
-inline uint32_t GetSignMaxTmpSize(const ge::Shape srcShape, const uint32_t typeSize, const bool isReuseSource)
+inline uint32_t GetSignMaxTmpSize(
+    const AscendC::TensorShape srcShape, const uint32_t typeSize, const bool isReuseSource)
 {
     (void)isReuseSource;
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -33,7 +34,8 @@ inline uint32_t GetSignMaxTmpSize(const ge::Shape srcShape, const uint32_t typeS
     return calcPro * inputSize * typeSize;
 }
 
-inline uint32_t GetSignMinTmpSize(const ge::Shape srcShape, const uint32_t typeSize, const bool isReuseSource)
+inline uint32_t GetSignMinTmpSize(
+    const AscendC::TensorShape srcShape, const uint32_t typeSize, const bool isReuseSource)
 {
     (void)(srcShape);
     (void)(isReuseSource);
@@ -43,7 +45,7 @@ inline uint32_t GetSignMinTmpSize(const ge::Shape srcShape, const uint32_t typeS
 }
 
 void GetSignMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue)
 {
     uint32_t max = GetSignMaxTmpSize(srcShape, typeSize, isReuseSource);

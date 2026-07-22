@@ -12,12 +12,12 @@
  * \file fma_tiling_impl.cpp
  * \brief
  */
+#include "adv_api/utils/types.h"
 #include <set>
-#include "../../../../include/adv_api/math/fma_tiling.h"
-#include "../../../../include/utils/tiling/platform/platform_ascendc.h"
+#include "adv_api/math/fma_tiling.h"
+#include "utils/tiling/platform/platform_ascendc.h"
 #include "../../detail/host_log.h"
 #include "../../detail/api_check/host_apicheck.h"
-#include "graph/tensor.h"
 
 namespace AscendC {
 namespace {
@@ -29,8 +29,8 @@ static constexpr const char FMA_GET_TMP_BUFFER[] = "GetFmaTmpBufferFactorSize";
 } // namespace
 
 void GetFmaMaxMinTmpSize(
-    const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape, const uint32_t typeSize,
-    const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
+    const platform_ascendc::PlatformAscendC& ascendcPlatform, const AscendC::TensorShape& srcShape,
+    const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<FMA_GET_MAX_MIN>(srcShape.GetShapeSize(), typeSize);
     HighLevelApiCheck::TypeSizeVerifyingParameters<FMA_GET_MAX_MIN>(typeSize, SUPPORT_TYPESIZE);

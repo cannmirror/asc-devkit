@@ -15,7 +15,7 @@
 #ifndef LIB_NORMALIZATION_LAYERNORM_GRAD_TILING_H
 #define LIB_NORMALIZATION_LAYERNORM_GRAD_TILING_H
 
-#include "graph/tensor.h"
+#include "../utils/types.h"
 #include "layernorm_grad_tilingdata.h"
 #include "kernel_tiling/kernel_tiling.h"
 namespace AscendC {
@@ -40,7 +40,7 @@ constexpr uint32_t LAYERNORM_GRAD_B16_DATA_NUM_PER_BLOCK = 16;
  * \param [out] minValue: min size required for tmp buffer
  */
 void GetLayerNormGradMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue);
 
 /*!
@@ -52,10 +52,10 @@ void GetLayerNormGradMaxMinTmpSize(
  * \param [out] tiling: LayerNormGradTiling
  */
 void GetLayerNormGradNDTilingInfo(
-    const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
-    optiling::LayerNormGradTiling& tiling);
+    const AscendC::TensorShape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, optiling::LayerNormGradTiling& tiling);
 void GetLayerNormGradNDTilingInfo(
-    const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
-    AscendC::tiling::LayerNormGradTiling& tiling);
+    const AscendC::TensorShape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, AscendC::tiling::LayerNormGradTiling& tiling);
 } // namespace AscendC
 #endif // LIB_NORMALIZATION_LAYERNORM_GRAD_TILING_H

@@ -12,9 +12,9 @@
  * \file clamp_tiling_impl.cpp
  * \brief
  */
-#include "../../../../include/adv_api/math/clamp_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/math/clamp_tiling.h"
 #include <cstdint>
-#include "graph/tensor.h"
 #include "../../detail/host_log.h"
 namespace AscendC {
 constexpr uint32_t CLAMP_CALC_FAC = 1;
@@ -22,7 +22,7 @@ constexpr uint32_t CLAMP_FLOAT_ELE = 64;
 constexpr uint32_t CLAMP_HALF_ELE = 128;
 
 void GetClampMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue)
 {
     (void)isReuseSource;

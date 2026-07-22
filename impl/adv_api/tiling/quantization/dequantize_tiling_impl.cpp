@@ -12,11 +12,11 @@
  * \file dequantize_tiling_impl.cpp
  * \brief
  */
-#include "../../../../include/adv_api/quantization/dequantize_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/quantization/dequantize_tiling.h"
 
 #include <cstdint>
 
-#include "graph/tensor.h"
 #include "../../detail/host_log.h"
 
 namespace AscendC {
@@ -47,7 +47,8 @@ inline uint32_t GetDequantizeMinTmpSize(const uint32_t outer, const uint32_t inn
 }
 } // namespace
 
-void GetDequantizeTmpBufferFactorSize(const ge::Shape& srcShape, uint32_t& maxLiveNodeCnt, uint32_t& extraBuf)
+void GetDequantizeTmpBufferFactorSize(
+    const AscendC::TensorShape& srcShape, uint32_t& maxLiveNodeCnt, uint32_t& extraBuf)
 {
     extraBuf = FLOAT_PER_BLOCK + FLOAT_PER_REPEAT;
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -63,7 +64,7 @@ void GetDequantizeTmpBufferFactorSize(const ge::Shape& srcShape, uint32_t& maxLi
 }
 
 void GetDequantizeMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 {
     (void)typeSize;
     std::vector<int64_t> shapeDims = srcShape.GetDims(); // should be 2-dimensional or 1-dimensional

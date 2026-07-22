@@ -12,9 +12,9 @@
  * \file dropout_tiling_impl.h
  * \brief
  */
-#include "graph/tensor.h"
+#include "adv_api/utils/types.h"
 #include "register/tilingdata_base.h"
-#include "../../../../include/adv_api/filter/dropout_tiling.h"
+#include "adv_api/filter/dropout_tiling.h"
 #include "../../detail/host_log.h"
 
 namespace AscendC {
@@ -25,7 +25,7 @@ constexpr uint32_t DROPOUT_TYPE_TWO = 2;
 constexpr uint32_t DROPOUT_TYPE_FOUR = 4;
 
 void CheckDropOutParams(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, const char* funcName)
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, const char* funcName)
 {
     ASCENDC_HOST_ASSERT(
         typeSize == DROPOUT_TYPE_TWO || typeSize == DROPOUT_TYPE_FOUR, continue,
@@ -41,14 +41,14 @@ void CheckDropOutParams(
 }
 } // namespace
 
-uint32_t GetDropOutMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource)
+uint32_t GetDropOutMinTmpSize(const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource)
 {
     CheckDropOutParams(srcShape, typeSize, isReuseSource, "GetDropOutMinTmpSize");
 
     return DROPOUT_TWO_TIMES * DROPOUT_ONE_REPEAT_BYTE_SIZE;
 }
 
-uint32_t GetDropOutMaxTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource)
+uint32_t GetDropOutMaxTmpSize(const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource)
 {
     CheckDropOutParams(srcShape, typeSize, isReuseSource, "GetDropOutMaxTmpSize");
 
@@ -66,7 +66,7 @@ uint32_t GetDropOutMaxTmpSize(const ge::Shape& srcShape, const uint32_t typeSize
 }
 
 void GetDropOutMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue)
 {
     CheckDropOutParams(srcShape, typeSize, isReuseSource, "GetDropOutMaxMinTmpSize");

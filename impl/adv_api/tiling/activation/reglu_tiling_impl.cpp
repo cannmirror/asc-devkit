@@ -15,7 +15,8 @@
 
 #include <set>
 
-#include "../../../../include/adv_api/activation/reglu_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/activation/reglu_tiling.h"
 #include "../../detail/host_log.h"
 #include "../../detail/api_check/host_apicheck.h"
 
@@ -28,7 +29,7 @@ static constexpr uint32_t RE_GELU_FLOAT_SIZE = 4;
 static const std::set<uint32_t> SUPPORT_TYPESIZE = {RE_GELU_HALF_SIZE, RE_GELU_FLOAT_SIZE};
 static constexpr const char RE_GELU_GET_MAX_MIN[] = "GetReGluMaxMinTmpSize";
 
-uint32_t GetReGluMaxTmpSize(const ge::Shape& srcShape, const uint32_t typeSize)
+uint32_t GetReGluMaxTmpSize(const AscendC::TensorShape& srcShape, const uint32_t typeSize)
 {
     std::vector<int64_t> shapeDims = srcShape.GetDims();
     uint32_t inputSize = 1;
@@ -52,7 +53,7 @@ uint32_t GetReGluMinTmpSize(const uint32_t typeSize)
 } // namespace
 
 void GetReGluMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<RE_GELU_GET_MAX_MIN>(srcShape.GetShapeSize(), typeSize);

@@ -9,7 +9,7 @@
  */
 #ifndef LIB_NORMALIZATION_RMSNORM_TILING_H
 #define LIB_NORMALIZATION_RMSNORM_TILING_H
-#include "graph/tensor.h"
+#include "../utils/types.h"
 #include "rmsnorm_tilingdata.h"
 #include "kernel_tiling/kernel_tiling.h"
 namespace AscendC {
@@ -30,7 +30,7 @@ namespace AscendC {
            if src shape is illeagl for basic block, it will return false.
  */
 bool GetRmsNormMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue,
     const bool isBasicBlock = false);
 
 /*!
@@ -49,10 +49,12 @@ bool GetRmsNormMaxMinTmpSize(
    if src shape and origin src shape is illeagl or input stackBufferByteSize is not big enough, it will return false.
  */
 bool GetRmsNormTilingInfo(
-    const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferByteSize,
-    const uint32_t typeSize, optiling::RmsNormTiling& tiling, const bool isBasicBlock = false);
+    const AscendC::TensorShape& srcShape, const AscendC::TensorShape& originSrcShape,
+    const uint32_t stackBufferByteSize, const uint32_t typeSize, optiling::RmsNormTiling& tiling,
+    const bool isBasicBlock = false);
 bool GetRmsNormTilingInfo(
-    const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferByteSize,
-    const uint32_t typeSize, AscendC::tiling::RmsNormTiling& tiling, const bool isBasicBlock = false);
+    const AscendC::TensorShape& srcShape, const AscendC::TensorShape& originSrcShape,
+    const uint32_t stackBufferByteSize, const uint32_t typeSize, AscendC::tiling::RmsNormTiling& tiling,
+    const bool isBasicBlock = false);
 } // namespace AscendC
 #endif // LIB_NORMALIZATION_RMSNORM_TILING_H

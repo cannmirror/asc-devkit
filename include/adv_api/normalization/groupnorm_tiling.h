@@ -15,7 +15,7 @@
 
 #ifndef LIB_NORMALIZATION_GROUPNORM_TILING_H
 #define LIB_NORMALIZATION_GROUPNORM_TILING_H
-#include "graph/tensor.h"
+#include "../utils/types.h"
 #include "groupnorm_tilingdata.h"
 #include "kernel_tiling/kernel_tiling.h"
 namespace AscendC {
@@ -32,7 +32,7 @@ namespace AscendC {
  *         If src shape is illegal for basic block, it will return false.
  */
 void GetGroupNormMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, const uint32_t groupNum,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, const uint32_t groupNum,
     uint32_t& maxValue, uint32_t& minValue);
 
 /*!
@@ -50,10 +50,10 @@ void GetGroupNormMaxMinTmpSize(
    if src shape and origin src shape is illeagl or input stackBufferSize is not big enough, it will return false.
  */
 void GetGroupNormNDTilingInfo(
-    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
-    const uint32_t groupNum, optiling::GroupNormTiling& tiling);
+    const AscendC::TensorShape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, const uint32_t groupNum, optiling::GroupNormTiling& tiling);
 void GetGroupNormNDTilingInfo(
-    const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
-    const uint32_t groupNum, AscendC::tiling::GroupNormTiling& tiling);
+    const AscendC::TensorShape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, const uint32_t groupNum, AscendC::tiling::GroupNormTiling& tiling);
 } // namespace AscendC
 #endif // LIB_NORMALIZATION_GROUPNORM_TILING_H

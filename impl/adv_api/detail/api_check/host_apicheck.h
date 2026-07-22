@@ -20,8 +20,8 @@
 #include <set>
 #include <string>
 #include <vector>
+#include "../../../../include/adv_api/utils/types.h"
 #include "../../detail/host_log.h"
-#include "graph/tensor.h"
 
 namespace AscendC {
 namespace HighLevelApiCheck {
@@ -34,7 +34,7 @@ inline void SrcShapeSizeVerifyingParameters(const size_t shapeSize, const uint32
 
 template <const char* func>
 inline void ShapeLastAxisAlignVerifyingParameters(
-    const ge::Shape& shape, const uint32_t dataTypeSize, const uint32_t blockSize)
+    const AscendC::TensorShape& shape, const uint32_t dataTypeSize, const uint32_t blockSize)
 {
     std::vector<int64_t> shapeDims = shape.GetDims();
     auto lastAxisDataLength = shapeDims.back() * dataTypeSize;

@@ -16,7 +16,7 @@
 #define LIB_QUANTIZATION_DEQUANTIZE_TILING_H
 #include <cstdint>
 
-#include "graph/tensor.h"
+#include "../utils/types.h"
 namespace AscendC {
 
 /*!
@@ -27,7 +27,7 @@ namespace AscendC {
  * \param [out] minValue: min size of tmp buffer
  */
 void GetDequantizeMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue);
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief The calculation of the Dequantize interface requires the developer to reserve or apply for temporary space.
@@ -38,6 +38,7 @@ void GetDequantizeMaxMinTmpSize(
  * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
  * \param [out] extraBuf, the size of the extra temporary space
  */
-void GetDequantizeTmpBufferFactorSize(const ge::Shape& srcShape, uint32_t& maxLiveNodeCnt, uint32_t& extraBuf);
+void GetDequantizeTmpBufferFactorSize(
+    const AscendC::TensorShape& srcShape, uint32_t& maxLiveNodeCnt, uint32_t& extraBuf);
 } // namespace AscendC
 #endif // LIB_QUANTIZATION_DEQUANTIZE_TILING_H

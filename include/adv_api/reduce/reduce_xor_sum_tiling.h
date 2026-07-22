@@ -16,7 +16,7 @@
 #define LIB_REDUCE_REDUCE_XOR_SUM_TILING_H
 
 #include <cstdint>
-#include "graph/tensor.h"
+#include "../utils/types.h"
 
 namespace AscendC {
 /*
@@ -29,7 +29,7 @@ namespace AscendC {
  * @param [out] minValue: ReduceXorSum api calculate need min temporary local space size.
  */
 void GetReduceXorSumMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue);
 } // namespace AscendC
 

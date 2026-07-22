@@ -8,10 +8,11 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
-#include "../../../../include/adv_api/normalization/layernorm_grad_beta_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/normalization/layernorm_grad_beta_tiling.h"
 
 #include "../../detail/host_log.h"
-#include "../../../../include/utils/tiling/platform/platform_ascendc.h"
+#include "utils/tiling/platform/platform_ascendc.h"
 
 namespace optiling {
 REGISTER_TILING_DATA_CLASS(LayerNormGradBetaTilingOpApi, LayerNormGradBetaTiling);
@@ -24,7 +25,7 @@ constexpr uint32_t LAYERNORM_GRAD_BETA_FLOAT_SIZE = 4;
 constexpr uint32_t LAYERNORM_GRAD_BETA_SRC_DIM_NUM = 4;
 
 void CheckLayerNormGradBetaHostCommon(
-    const char* apiName, const char* hostFuncName, const ge::Shape& srcShape, const uint32_t typeSize)
+    const char* apiName, const char* hostFuncName, const AscendC::TensorShape& srcShape, const uint32_t typeSize)
 {
     ASCENDC_HOST_ASSERT(
         typeSize == LAYERNORM_GRAD_BETA_HALF_SIZE || typeSize == LAYERNORM_GRAD_BETA_FLOAT_SIZE, return,
@@ -39,7 +40,8 @@ void CheckLayerNormGradBetaHostCommon(
     return;
 }
 
-uint32_t GetLayerNormGradBetaMaxTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource)
+uint32_t GetLayerNormGradBetaMaxTmpSize(
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource)
 {
     (void)(isReuseSource);
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -58,7 +60,8 @@ uint32_t GetLayerNormGradBetaMaxTmpSize(const ge::Shape& srcShape, const uint32_
     return LAYERNORM_GRAD_BETA_TWO_BUF_NUM * inputSize;
 }
 
-uint32_t GetLayerNormGradBetaMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource)
+uint32_t GetLayerNormGradBetaMinTmpSize(
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource)
 {
     (void)(isReuseSource);
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -98,7 +101,7 @@ void SetLayerNormGradBetaNDTilingInfo(
 } // namespace
 
 void GetLayerNormGradBetaMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue)
 {
     CheckLayerNormGradBetaHostCommon("LayerNormGradBeta", "GetLayerNormGradBetaMaxMinTmpSize", srcShape, typeSize);
@@ -107,8 +110,8 @@ void GetLayerNormGradBetaMaxMinTmpSize(
 }
 
 void GetLayerNormGradBetaNDTilingInfo(
-    const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
-    optiling::LayerNormGradBetaTiling& tiling)
+    const AscendC::TensorShape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, optiling::LayerNormGradBetaTiling& tiling)
 {
     CheckLayerNormGradBetaHostCommon("LayerNormGradBeta", "GetLayerNormGradBetaNDTilingInfo", srcShape, typeSize);
     LayerNormGradBetaTilingTmp tilingTmp;
@@ -174,8 +177,8 @@ void GetLayerNormGradBetaNDTilingInfo(
 }
 
 void GetLayerNormGradBetaNDTilingInfo(
-    const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource,
-    AscendC::tiling::LayerNormGradBetaTiling& tiling)
+    const AscendC::TensorShape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, AscendC::tiling::LayerNormGradBetaTiling& tiling)
 {
     optiling::LayerNormGradBetaTiling tilingData;
     GetLayerNormGradBetaNDTilingInfo(srcShape, stackBufferSize, typeSize, isReuseSource, tilingData);

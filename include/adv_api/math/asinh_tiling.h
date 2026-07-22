@@ -16,7 +16,7 @@
 #define LIB_MATH_ASINH_TILING_H
 #include <cstdint>
 
-#include "graph/tensor.h"
+#include "../utils/types.h"
 namespace AscendC {
 /*!
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
@@ -29,7 +29,7 @@ namespace AscendC {
  * \param [out] minValue, minimum temporary space required
  */
 void GetAsinhMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue);
 /*!
  * \brief The calculation of the Asinh interface requires the developer to reserve or apply for temporary space. The

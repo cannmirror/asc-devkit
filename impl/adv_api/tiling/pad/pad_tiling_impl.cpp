@@ -13,7 +13,8 @@
  * \brief
  */
 
-#include "../../../../include/adv_api/pad/pad_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/pad/pad_tiling.h"
 #include "../../detail/host_log.h"
 
 namespace optiling {
@@ -31,7 +32,7 @@ constexpr uint32_t PAD_DIM_TWO = 2;
 constexpr uint32_t PAD_TYPE_TWO = 2;
 constexpr uint32_t PAD_TYPE_FOUR = 4;
 
-void CheckPadMaxMinTmpSizeParams(const ge::Shape& srcShape, const uint32_t typeSize, const char* funcName)
+void CheckPadMaxMinTmpSizeParams(const AscendC::TensorShape& srcShape, const uint32_t typeSize, const char* funcName)
 {
     ASCENDC_HOST_ASSERT(
         typeSize == PAD_TYPE_TWO || typeSize == PAD_TYPE_FOUR, continue,
@@ -43,8 +44,8 @@ void CheckPadMaxMinTmpSizeParams(const ge::Shape& srcShape, const uint32_t typeS
 }
 
 void CheckPadTilingFuncParams(
-    const ge::Shape srcShape, const ge::Shape oriSrcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const char* funcName)
+    const AscendC::TensorShape srcShape, const AscendC::TensorShape oriSrcShape, const uint32_t stackBufferSize,
+    const uint32_t typeSize, const char* funcName)
 {
     (void)stackBufferSize;
     CheckPadMaxMinTmpSizeParams(srcShape, typeSize, funcName);
@@ -58,7 +59,7 @@ void CheckPadTilingFuncParams(
         oriSrcShape.GetShapeSize(), srcShape.GetShapeSize());
 }
 
-void CheckUnPadParams(const ge::Shape& srcShape, const uint32_t typeSize, const char* funcName)
+void CheckUnPadParams(const AscendC::TensorShape& srcShape, const uint32_t typeSize, const char* funcName)
 {
     ASCENDC_HOST_ASSERT(
         typeSize == PAD_TYPE_TWO || typeSize == PAD_TYPE_FOUR, continue,
@@ -69,14 +70,16 @@ void CheckUnPadParams(const ge::Shape& srcShape, const uint32_t typeSize, const 
         funcName, srcShape.GetDimNum());
 }
 
-void CheckGetUnPadMaxMinTmpSizeParams(const ge::Shape& srcShape, const uint32_t typeSize, const char* funcName)
+void CheckGetUnPadMaxMinTmpSizeParams(
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const char* funcName)
 {
     CheckUnPadParams(srcShape, typeSize, funcName);
 }
 
 } // namespace
 
-void GetPadMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
+void GetPadMaxMinTmpSize(
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 {
     CheckPadMaxMinTmpSizeParams(srcShape, typeSize, "GetPadMaxMinTmpSize");
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
@@ -92,8 +95,8 @@ void GetPadMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, uin
 }
 
 void PadTilingFunc(
-    const ge::Shape srcShape, const ge::Shape oriSrcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    optiling::PadTiling& tiling)
+    const AscendC::TensorShape srcShape, const AscendC::TensorShape oriSrcShape, const uint32_t stackBufferSize,
+    const uint32_t typeSize, optiling::PadTiling& tiling)
 {
     CheckPadTilingFuncParams(srcShape, oriSrcShape, stackBufferSize, typeSize, "PadTilingFunc");
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
@@ -173,8 +176,8 @@ void PadTilingFunc(
 }
 
 void PadTilingFunc(
-    const ge::Shape srcShape, const ge::Shape oriSrcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    AscendC::tiling::PadTiling& tiling)
+    const AscendC::TensorShape srcShape, const AscendC::TensorShape oriSrcShape, const uint32_t stackBufferSize,
+    const uint32_t typeSize, AscendC::tiling::PadTiling& tiling)
 {
     optiling::PadTiling tilingData;
     PadTilingFunc(srcShape, oriSrcShape, stackBufferSize, typeSize, tilingData);
@@ -182,8 +185,8 @@ void PadTilingFunc(
 }
 
 void GetUnPadMaxMinTmpSize(
-    const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape, const uint32_t typeSize,
-    uint32_t& maxValue, uint32_t& minValue)
+    const platform_ascendc::PlatformAscendC& ascendcPlatform, const AscendC::TensorShape& srcShape,
+    const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 {
     CheckGetUnPadMaxMinTmpSizeParams(srcShape, typeSize, "GetUnPadMaxMinTmpSize");
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
@@ -205,7 +208,8 @@ void GetUnPadMaxMinTmpSize(
 }
 
 void UnPadTilingFunc(
-    const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, optiling::UnPadTiling& tiling)
+    const AscendC::TensorShape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    optiling::UnPadTiling& tiling)
 {
     CheckGetUnPadMaxMinTmpSizeParams(srcShape, typeSize, "UnPadTilingFunc");
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
@@ -247,7 +251,7 @@ void UnPadTilingFunc(
 }
 
 void UnPadTilingFunc(
-    const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const AscendC::TensorShape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
     AscendC::tiling::UnPadTiling& tiling)
 {
     optiling::UnPadTiling tilingData;

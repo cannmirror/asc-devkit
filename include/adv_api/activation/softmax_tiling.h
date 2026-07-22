@@ -17,7 +17,7 @@
 #define LIB_SOFTMAX_SOFTMAX_TILING_H
 #include <cstdint>
 
-#include "graph/tensor.h"
+#include "../utils/types.h"
 #include "softmax_tilingdata.h"
 #include "kernel_tiling/kernel_tiling.h"
 namespace AscendC {
@@ -29,7 +29,8 @@ namespace AscendC {
  * @param [in] isReuseSource : whether to reuse the src Tensor
  * @return max temporary local space size
  */
-uint32_t GetSoftMaxMaxTmpSize(const ge::Shape& srcShape, const uint32_t dataTypeSize, const bool isReuseSource);
+uint32_t GetSoftMaxMaxTmpSize(
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const bool isReuseSource);
 /*
  * @ingroup GetSoftMaxMinTmpSize
  * @brief get softmax api calculate need min temporary local space size
@@ -38,7 +39,8 @@ uint32_t GetSoftMaxMaxTmpSize(const ge::Shape& srcShape, const uint32_t dataType
  * @param [in] isReuseSource : whether to reuse the src Tensor
  * @return min temporary local space size
  */
-uint32_t GetSoftMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t dataTypeSize, const bool isReuseSource);
+uint32_t GetSoftMaxMinTmpSize(
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const bool isReuseSource);
 /*
  * @ingroup SoftMaxTilingFunc
  * @brief calculate SoftMax api need tiling
@@ -48,11 +50,11 @@ uint32_t GetSoftMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t dataType
  * @param [out] softmaxTiling : SoftMax api tiling
  */
 void SoftMaxTilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
     optiling::SoftMaxTiling& softmaxTiling);
 
 void SoftMaxTilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
     AscendC::tiling::SoftMaxTiling& softmaxTiling);
 /*
  * @ingroup GetSoftMaxFlashV3MaxMinTmpSize
@@ -64,8 +66,8 @@ void SoftMaxTilingFunc(
  * @param [in] isBasicBlock : whether enable basicblock calculate
  */
 void GetSoftMaxFlashV3MaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2, uint32_t& maxValue,
-    uint32_t& minValue, const bool isUpdate, const bool isBasicBlock = false);
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
+    uint32_t& maxValue, uint32_t& minValue, const bool isUpdate, const bool isBasicBlock = false);
 /*
  * @ingroup SoftMaxFlashV3TilingFunc
  * @brief calculate SoftmaxFlashV3 api need tiling
@@ -78,12 +80,12 @@ void GetSoftMaxFlashV3MaxMinTmpSize(
  * @param [out] softmaxFlashTiling : SoftmaxFlashV3 api tiling
  */
 void SoftMaxFlashV3TilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
     const uint32_t localWorkSpaceSize, optiling::SoftMaxTiling& softmaxFlashV3Tiling, const bool isUpdate,
     const bool isBasicBlock = false);
 
 void SoftMaxFlashV3TilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
     const uint32_t localWorkSpaceSize, AscendC::tiling::SoftMaxTiling& softmaxFlashV3Tiling, const bool isUpdate,
     const bool isBasicBlock = false);
 /*
@@ -96,7 +98,7 @@ void SoftMaxFlashV3TilingFunc(
  * @return max temporary local space size
  */
 uint32_t GetSoftMaxFlashMaxTmpSize(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const bool isUpdate, const bool isReuseSource);
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const bool isUpdate, const bool isReuseSource);
 /*
  * @ingroup GetSoftMaxFlashMinTmpSize
  * @brief calculate SoftmaxFlash api need min temporary local space size
@@ -107,7 +109,7 @@ uint32_t GetSoftMaxFlashMaxTmpSize(
  * @return min temporary local space size
  */
 uint32_t GetSoftMaxFlashMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const bool isUpdate, const bool isReuseSource);
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const bool isUpdate, const bool isReuseSource);
 /*
  * @ingroup SoftMaxFlashTilingFunc
  * @brief calculate SoftmaxFlash api need tiling
@@ -118,11 +120,11 @@ uint32_t GetSoftMaxFlashMinTmpSize(
  * @param [out] softmaxFlashTiling : SoftmaxFlash api tiling
  */
 void SoftMaxFlashTilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
     optiling::SoftMaxTiling& softmaxFlashTiling, const bool isUpdate = false);
 
 void SoftMaxFlashTilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
     AscendC::tiling::SoftMaxTiling& softmaxFlashTiling, const bool isUpdate = false);
 
 /*
@@ -135,7 +137,7 @@ void SoftMaxFlashTilingFunc(
  * @return max temporary local space size
  */
 uint32_t GetSoftMaxGradMaxTmpSize(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const bool isFront, const bool isReuseSource);
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const bool isFront, const bool isReuseSource);
 /*
  * @ingroup GetSoftMaxGradMinTmpSize
  * @brief get SoftmaxGrad api need min temporary local space size
@@ -146,7 +148,7 @@ uint32_t GetSoftMaxGradMaxTmpSize(
  * @return min temporary local space size
  */
 uint32_t GetSoftMaxGradMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const bool isFront, const bool isReuseSource);
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const bool isFront, const bool isReuseSource);
 /*
  * @ingroup SoftMaxGradTilingFunc
  * @brief calculate SoftmaxGrad api need tiling
@@ -157,11 +159,11 @@ uint32_t GetSoftMaxGradMinTmpSize(
  * @param [out] softmaxGradTiling : SoftmaxGrad api tiling
  */
 void SoftMaxGradTilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
     optiling::SoftMaxTiling& softmaxGradTiling, const bool isFront = false);
 
 void SoftMaxGradTilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
     AscendC::tiling::SoftMaxTiling& softmaxGradTiling, const bool isFront = false);
 /*
  * @ingroup IsBasicBlockInSoftMax
@@ -185,8 +187,8 @@ bool IsBasicBlockInSoftMax(AscendC::tiling::SoftMaxTiling& tiling, const uint32_
  * @return min temporary local space size
  */
 uint32_t GetSoftMaxFlashV2MinTmpSize(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2, const bool isUpdate,
-    const bool isBasicBlock = false, const bool isFlashOutputBrc = false);
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
+    const bool isUpdate, const bool isBasicBlock = false, const bool isFlashOutputBrc = false);
 /*
  * @ingroup GetSoftMaxFlashV2MaxTmpSize
  * @brief get SoftmaxFlashV2 api need max temporary local space size
@@ -199,8 +201,8 @@ uint32_t GetSoftMaxFlashV2MinTmpSize(
  * @return max temporary local space size
  */
 uint32_t GetSoftMaxFlashV2MaxTmpSize(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2, const bool isUpdate,
-    const bool isBasicBlock = false, const bool isFlashOutputBrc = false);
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
+    const bool isUpdate, const bool isBasicBlock = false, const bool isFlashOutputBrc = false);
 /*
  * @ingroup SoftMaxFlashV2TilingFunc
  * @brief calculate SoftmaxFlashV2 api need tiling
@@ -214,12 +216,12 @@ uint32_t GetSoftMaxFlashV2MaxTmpSize(
  * @param [out] softmaxFlashTiling : SoftmaxFlashV2 api tiling
  */
 void SoftMaxFlashV2TilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
     const uint32_t localWorkSpaceSize, optiling::SoftMaxTiling& softmaxFlashTiling, const bool isUpdate,
     const bool isBasicBlock = false, const bool isFlashOutputBrc = false);
 
 void SoftMaxFlashV2TilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
     const uint32_t localWorkSpaceSize, AscendC::tiling::SoftMaxTiling& softmaxFlashTiling, const bool isUpdate,
     const bool isBasicBlock = false, const bool isFlashOutputBrc = false);
 } // namespace AscendC

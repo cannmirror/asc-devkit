@@ -12,11 +12,11 @@
  * \file frac_tiling.cpp
  * \brief
  */
-#include "../../../../include/adv_api/math/frac_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/math/frac_tiling.h"
 
 #include <cstdint>
 
-#include "graph/tensor.h"
 #include "../../detail/host_log.h"
 namespace AscendC {
 namespace {
@@ -39,7 +39,7 @@ inline uint32_t GetFracMinTmpSize(const uint32_t typeSize)
 } // namespace
 
 void GetFracMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue)
 {
     (void)isReuseSource;

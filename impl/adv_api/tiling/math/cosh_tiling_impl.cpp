@@ -12,9 +12,9 @@
  * \file cosh_tiling_impl.cpp
  * \brief
  */
-#include "../../../../include/adv_api/math/cosh_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/math/cosh_tiling.h"
 #include <cstdint>
-#include "graph/tensor.h"
 #include "../../detail/host_log.h"
 
 namespace AscendC {
@@ -43,7 +43,7 @@ void GetCoshTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCo
 }
 
 void GetCoshMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue)
 {
     (void)isReuseSource;

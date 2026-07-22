@@ -15,9 +15,10 @@
 
 #include <set>
 
-#include "../../../../include/adv_api/activation/softmax_tilingdata.h"
-#include "../../../../include/adv_api/activation/softmax_tiling.h"
-#include "../../../../include/utils/tiling/platform/platform_ascendc.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/activation/softmax_tilingdata.h"
+#include "adv_api/activation/softmax_tiling.h"
+#include "utils/tiling/platform/platform_ascendc.h"
 #include "../../detail/host_log.h"
 #include "../../detail/api_check/host_apicheck.h"
 
@@ -58,7 +59,7 @@ static constexpr const char SOFTMAX_FLASH_V3_TILING[] = "SoftMaxFlashV3TilingFun
 
 #define UNUSED __attribute__((unused))
 
-inline std::vector<uint32_t> GetLastAxisShapeND(const ge::Shape& srcShape)
+inline std::vector<uint32_t> GetLastAxisShapeND(const AscendC::TensorShape& srcShape)
 {
     std::vector<uint32_t> ret;
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -87,7 +88,8 @@ inline void AdjustToBasicBlockBaseM(uint32_t& baseM, const uint32_t srcM, const 
     }
 }
 
-uint32_t GetSoftMaxMaxTmpSize(const ge::Shape& srcShape, const uint32_t dataTypeSize, UNUSED const bool isReuseSource)
+uint32_t GetSoftMaxMaxTmpSize(
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, UNUSED const bool isReuseSource)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<SOFTMAX_GET_MAX>(srcShape.GetShapeSize(), dataTypeSize);
     HighLevelApiCheck::ShapeLastAxisAlignVerifyingParameters<SOFTMAX_GET_MAX>(
@@ -120,7 +122,8 @@ uint32_t GetSoftMaxMaxTmpSize(const ge::Shape& srcShape, const uint32_t dataType
     return needSize * SOFTMAX_FLOAT_SIZE;
 }
 
-uint32_t GetSoftMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t dataTypeSize, UNUSED const bool isReuseSource)
+uint32_t GetSoftMaxMinTmpSize(
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, UNUSED const bool isReuseSource)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<SOFTMAX_GET_MIN>(srcShape.GetShapeSize(), dataTypeSize);
     HighLevelApiCheck::ShapeLastAxisAlignVerifyingParameters<SOFTMAX_GET_MIN>(
@@ -154,7 +157,7 @@ uint32_t GetSoftMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t dataType
 }
 
 void SoftMaxTilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
     optiling::SoftMaxTiling& softmaxTiling)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<SOFTMAX_TILING>(srcShape.GetShapeSize(), dataTypeSize);
@@ -208,7 +211,7 @@ void SoftMaxTilingFunc(
 }
 
 void SoftMaxTilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
     AscendC::tiling::SoftMaxTiling& softmaxTiling)
 {
     optiling::SoftMaxTiling tiling;
@@ -217,7 +220,8 @@ void SoftMaxTilingFunc(
 }
 
 uint32_t GetSoftMaxFlashMaxTmpSize(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const bool isUpdate, UNUSED const bool isReuseSource)
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const bool isUpdate,
+    UNUSED const bool isReuseSource)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<SOFTMAX_FLASH_GET_MAX>(srcShape.GetShapeSize(), dataTypeSize);
     HighLevelApiCheck::ShapeLastAxisAlignVerifyingParameters<SOFTMAX_FLASH_GET_MAX>(
@@ -259,7 +263,8 @@ uint32_t GetSoftMaxFlashMaxTmpSize(
 }
 
 uint32_t GetSoftMaxFlashMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const bool isUpdate, UNUSED const bool isReuseSource)
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const bool isUpdate,
+    UNUSED const bool isReuseSource)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<SOFTMAX_FLASH_GET_MIN>(srcShape.GetShapeSize(), dataTypeSize);
     HighLevelApiCheck::ShapeLastAxisAlignVerifyingParameters<SOFTMAX_FLASH_GET_MIN>(
@@ -300,7 +305,7 @@ uint32_t GetSoftMaxFlashMinTmpSize(
 }
 
 void SoftMaxFlashTilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
     optiling::SoftMaxTiling& softmaxFlashTiling, const bool isUpdate)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<SOFTMAX_FLASH_TILING>(srcShape.GetShapeSize(), dataTypeSize);
@@ -357,7 +362,7 @@ void SoftMaxFlashTilingFunc(
 }
 
 void SoftMaxFlashTilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
     AscendC::tiling::SoftMaxTiling& softmaxFlashTiling, const bool isUpdate)
 {
     optiling::SoftMaxTiling tiling;
@@ -366,7 +371,8 @@ void SoftMaxFlashTilingFunc(
 }
 
 uint32_t GetSoftMaxGradMaxTmpSize(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const bool isFront, UNUSED const bool isReuseSource)
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const bool isFront,
+    UNUSED const bool isReuseSource)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<SOFTMAX_GRAD_GET_MAX>(srcShape.GetShapeSize(), dataTypeSize);
     HighLevelApiCheck::ShapeLastAxisAlignVerifyingParameters<SOFTMAX_GRAD_GET_MAX>(
@@ -395,7 +401,8 @@ uint32_t GetSoftMaxGradMaxTmpSize(
 }
 
 uint32_t GetSoftMaxGradMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const bool isFront, UNUSED const bool isReuseSource)
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const bool isFront,
+    UNUSED const bool isReuseSource)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<SOFTMAX_GRAD_GET_MIN>(srcShape.GetShapeSize(), dataTypeSize);
     HighLevelApiCheck::ShapeLastAxisAlignVerifyingParameters<SOFTMAX_GRAD_GET_MIN>(
@@ -436,7 +443,7 @@ uint32_t GetSoftMaxGradMinTmpSize(
 }
 
 void SoftMaxGradTilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
     optiling::SoftMaxTiling& softmaxGradTiling, const bool isFront)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<SOFTMAX_GRAD_TILING>(srcShape.GetShapeSize(), dataTypeSize);
@@ -499,7 +506,7 @@ void SoftMaxGradTilingFunc(
 }
 
 void SoftMaxGradTilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
     AscendC::tiling::SoftMaxTiling& softmaxGradTiling, const bool isFront)
 {
     optiling::SoftMaxTiling tiling;
@@ -532,8 +539,8 @@ bool IsBasicBlockInSoftMax(AscendC::tiling::SoftMaxTiling& tiling, const uint32_
 }
 
 uint32_t GetSoftMaxFlashV2MaxTmpSize(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2, const bool isUpdate,
-    const bool isBasicBlock, UNUSED const bool isFlashOutputBrc)
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
+    const bool isUpdate, const bool isBasicBlock, UNUSED const bool isFlashOutputBrc)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<SOFTMAX_FLASH_V2_GET_MAX>(
         srcShape.GetShapeSize(), dataTypeSize1);
@@ -625,8 +632,8 @@ uint32_t GetSoftMaxFlashV2MaxTmpSize(
 }
 
 uint32_t GetSoftMaxFlashV2MinTmpSize(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2, const bool isUpdate,
-    const bool isBasicBlock, const bool isFlashOutputBrc)
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
+    const bool isUpdate, const bool isBasicBlock, const bool isFlashOutputBrc)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<SOFTMAX_FLASH_V2_GET_MIN>(
         srcShape.GetShapeSize(), dataTypeSize1);
@@ -710,7 +717,7 @@ uint32_t GetSoftMaxFlashV2MinTmpSize(
 }
 
 void SoftMaxFlashV2TilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
     const uint32_t localWorkSpaceSize, optiling::SoftMaxTiling& softmaxFlashTiling, UNUSED const bool isUpdate,
     const bool isBasicBlock, const bool isFlashOutputBrc)
 {
@@ -800,7 +807,7 @@ void SoftMaxFlashV2TilingFunc(
 }
 
 void SoftMaxFlashV2TilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
     const uint32_t localWorkSpaceSize, AscendC::tiling::SoftMaxTiling& softmaxFlashTiling, UNUSED const bool isUpdate,
     const bool isBasicBlock, const bool isFlashOutputBrc)
 {
@@ -811,8 +818,8 @@ void SoftMaxFlashV2TilingFunc(
 }
 
 void GetSoftMaxFlashV3MaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2, uint32_t& maxValue,
-    uint32_t& minValue, const bool isUpdate, UNUSED const bool isBasicBlock)
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
+    uint32_t& maxValue, uint32_t& minValue, const bool isUpdate, UNUSED const bool isBasicBlock)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<SOFTMAX_FLASH_V3_GET_MAX_MIN>(
         srcShape.GetShapeSize(), dataTypeSize1);
@@ -852,7 +859,7 @@ void GetSoftMaxFlashV3MaxMinTmpSize(
 }
 
 void SoftMaxFlashV3TilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
     const uint32_t localWorkSpaceSize, optiling::SoftMaxTiling& softmaxFlashV3Tiling, UNUSED const bool isUpdate,
     UNUSED const bool isBasicBlock)
 {
@@ -911,7 +918,7 @@ void SoftMaxFlashV3TilingFunc(
 }
 
 void SoftMaxFlashV3TilingFunc(
-    const ge::Shape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
+    const AscendC::TensorShape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
     const uint32_t localWorkSpaceSize, AscendC::tiling::SoftMaxTiling& softmaxFlashV3Tiling, UNUSED const bool isUpdate,
     UNUSED const bool isBasicBlock)
 {

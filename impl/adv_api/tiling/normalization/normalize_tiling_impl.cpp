@@ -8,9 +8,10 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
-#include "../../../../include/adv_api/normalization/normalize_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/normalization/normalize_tiling.h"
 #include "../../detail/host_log.h"
-#include "../../../../include/utils/tiling/platform/platform_ascendc.h"
+#include "utils/tiling/platform/platform_ascendc.h"
 
 namespace AscendC {
 namespace {
@@ -57,7 +58,7 @@ uint32_t GetNormalizeMinTmpSize(const uint32_t aLength, const uint32_t rLengthWi
 } // namespace
 
 void GetNormalizeMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSizeU, const uint32_t typeSizeT, const bool isReuseSource,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSizeU, const uint32_t typeSizeT, const bool isReuseSource,
     const bool isComputeRstd, const bool isOnlyOutput, uint32_t& maxValue, uint32_t& minValue)
 {
     (void)isReuseSource;

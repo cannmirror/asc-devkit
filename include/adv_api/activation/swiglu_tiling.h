@@ -16,7 +16,7 @@
 #define LIB_ACTIVATION_SWIGLU_TILING_H
 #include <cstdint>
 
-#include "graph/tensor.h"
+#include "../utils/types.h"
 
 namespace AscendC {
 /*!
@@ -30,7 +30,7 @@ namespace AscendC {
  * \param [out] minValue, minimum temporary space required
  */
 void GetSwiGLUMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue,
     const bool isReuseSource);
 
 /*!

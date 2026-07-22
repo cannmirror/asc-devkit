@@ -12,11 +12,11 @@
  * \file erfc_tiling.cpp
  * \brief
  */
-#include "../../../../include/adv_api/math/erfc_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/math/erfc_tiling.h"
 
 #include <cstdint>
 
-#include "graph/tensor.h"
 #include "../../detail/host_log.h"
 namespace AscendC {
 namespace {
@@ -38,7 +38,7 @@ inline uint32_t GetErfcMinTmpSize(const uint32_t typeSize)
 } // namespace
 
 void GetErfcMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue)
 {
     (void)isReuseSource;

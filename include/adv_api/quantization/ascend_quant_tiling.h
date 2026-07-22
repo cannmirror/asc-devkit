@@ -16,7 +16,7 @@
 #define TILING_ASCEND_QUANT_ASCEND_QUANT_TILING_H
 #include <cstdint>
 
-#include "graph/tensor.h"
+#include "../utils/types.h"
 namespace AscendC {
 /*
  * @ingroup GetAscendQuantMaxMinTmpSize
@@ -28,7 +28,7 @@ namespace AscendC {
  * @param [out] minValue: min temporary local space size
  */
 void GetAscendQuantMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue);
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief The calculation of the AscendQuant interface requires the developer to reserve or apply for temporary space.

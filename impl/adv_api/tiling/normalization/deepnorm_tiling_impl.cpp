@@ -8,8 +8,9 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
+#include "adv_api/utils/types.h"
 #include "../../detail/host_log.h"
-#include "../../../../include/adv_api/normalization/deepnorm_tiling.h"
+#include "adv_api/normalization/deepnorm_tiling.h"
 
 namespace optiling {
 REGISTER_TILING_DATA_CLASS(DeepNormTilingOpApi, DeepNormTiling);
@@ -36,7 +37,7 @@ uint32_t GetFinalBlockSize(uint32_t dataAmount, uint32_t blockSize)
     return (dataAmount + blockSize - 1) / blockSize * blockSize;
 }
 
-uint32_t GetDeepNormMaxTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource)
+uint32_t GetDeepNormMaxTmpSize(const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource)
 {
     std::vector<int64_t> shapeDims = srcShape.GetDims();
     const uint32_t bLength = static_cast<uint32_t>(shapeDims[0]);
@@ -57,7 +58,7 @@ uint32_t GetDeepNormMaxTmpSize(const ge::Shape& srcShape, const uint32_t typeSiz
 }
 
 uint32_t GetDeepNormMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, const bool isBasicBlock)
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, const bool isBasicBlock)
 {
     (void)isBasicBlock;
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -78,7 +79,7 @@ uint32_t GetDeepNormMinTmpSize(
 }
 
 void CheckDeepNormHostCommon(
-    const char* apiName, const char* hostFuncName, const ge::Shape& srcShape, const uint32_t typeSize,
+    const char* apiName, const char* hostFuncName, const AscendC::TensorShape& srcShape, const uint32_t typeSize,
     const bool isBasicBlock)
 {
     ASCENDC_HOST_ASSERT(
@@ -114,8 +115,8 @@ void CheckDeepNormHostCommon(
 }
 
 void CheckDeepNormTilingInfo(
-    const char* apiName, const char* hostFuncName, const ge::Shape& srcShape, const ge::Shape& originSrcShape,
-    const bool isBasicBlock)
+    const char* apiName, const char* hostFuncName, const AscendC::TensorShape& srcShape,
+    const AscendC::TensorShape& originSrcShape, const bool isBasicBlock)
 {
     uint32_t hLength = static_cast<uint32_t>(srcShape.GetDim(2));
     uint32_t hOriginLength = static_cast<uint32_t>(originSrcShape.GetDim(2));
@@ -133,7 +134,7 @@ void CheckDeepNormTilingInfo(
 } // namespace
 
 bool GetDeepNormMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, const bool isBasicBlock,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, const bool isBasicBlock,
     uint32_t& maxValue, uint32_t& minValue)
 {
     CheckDeepNormHostCommon("DeepNorm", "GetDeepNormMaxMinTmpSize", srcShape, typeSize, isBasicBlock);
@@ -155,8 +156,8 @@ bool GetDeepNormMaxMinTmpSize(
 }
 
 bool GetDeepNormTilingInfo(
-    const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const bool isReuseSource, const bool isBasicBlock, optiling::DeepNormTiling& tiling)
+    const AscendC::TensorShape& srcShape, const AscendC::TensorShape& originSrcShape, const uint32_t stackBufferSize,
+    const uint32_t typeSize, const bool isReuseSource, const bool isBasicBlock, optiling::DeepNormTiling& tiling)
 {
     CheckDeepNormHostCommon("DeepNorm", "GetDeepNormTilingInfo", srcShape, typeSize, isBasicBlock);
     CheckDeepNormTilingInfo("DeepNorm", "GetDeepNormTilingInfo", srcShape, originSrcShape, isBasicBlock);
@@ -264,8 +265,8 @@ bool GetDeepNormTilingInfo(
 }
 
 bool GetDeepNormTilingInfo(
-    const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const bool isReuseSource, const bool isBasicBlock, AscendC::tiling::DeepNormTiling& tiling)
+    const AscendC::TensorShape& srcShape, const AscendC::TensorShape& originSrcShape, const uint32_t stackBufferSize,
+    const uint32_t typeSize, const bool isReuseSource, const bool isBasicBlock, AscendC::tiling::DeepNormTiling& tiling)
 {
     optiling::DeepNormTiling tilingData;
     bool ret = GetDeepNormTilingInfo(

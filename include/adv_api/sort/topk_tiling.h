@@ -16,7 +16,7 @@
 #define LIB_SORT_TOPK_TILING_H
 #include "topk_tilingdata.h"
 #include "tiling/platform/platform_ascendc.h"
-#include "graph/types.h"
+#include "../utils/types.h"
 #include "topk_utils_constants.h"
 #include "kernel_tiling/kernel_tiling.h"
 
@@ -62,8 +62,8 @@ bool GetTopKMaxMinTmpSize(
  */
 bool GetTopKMaxMinTmpSize(
     const int32_t inner, const int32_t outter, const int32_t k, const bool isReuseSource, const bool isInitIndex,
-    enum TopKMode mode, const bool isLargest, ge::DataType dataType, const TopKConfig& config, uint32_t& maxValue,
-    uint32_t& minValue);
+    enum TopKMode mode, const bool isLargest, AscendC::TensorDataType dataType, const TopKConfig& config,
+    uint32_t& maxValue, uint32_t& minValue);
 
 /*
  * @ingroup TopKTilingFunc

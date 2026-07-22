@@ -14,7 +14,7 @@
  */
 #ifndef LIB_ACTIVATION_SWISH_TILING_H
 #define LIB_ACTIVATION_SWISH_TILING_H
-#include "graph/tensor.h"
+#include "../utils/types.h"
 #include "register/tilingdata_base.h"
 
 namespace AscendC {
@@ -29,7 +29,7 @@ namespace AscendC {
  * @param [out] minValue: min temporary local space size
  */
 void GetSwishTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue);
 } // namespace AscendC
 #endif

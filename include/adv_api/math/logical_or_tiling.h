@@ -15,7 +15,7 @@
 #ifndef LIB_MATH_LOGICAL_OR_TILING_H
 #define LIB_MATH_LOGICAL_OR_TILING_H
 
-#include "graph/tensor.h"
+#include "../utils/types.h"
 #include "tiling/platform/platform_ascendc.h"
 namespace AscendC {
 /*!
@@ -30,8 +30,8 @@ namespace AscendC {
  * \param [out] minValue, minimum temporary space required
  */
 void GetLogicalOrMaxMinTmpSize(
-    const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape, const uint32_t typeSize,
-    const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue);
+    const platform_ascendc::PlatformAscendC& ascendcPlatform, const AscendC::TensorShape& srcShape,
+    const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief The calculation of the LogicalOr interface requires the developer to reserve or apply for temporary space.

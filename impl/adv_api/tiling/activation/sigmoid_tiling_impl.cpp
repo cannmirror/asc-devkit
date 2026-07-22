@@ -12,12 +12,12 @@
  * \file sigmoid_tiling_impl.cpp
  * \brief
  */
-#include "../../../../include/adv_api/activation/sigmoid_tiling.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/activation/sigmoid_tiling.h"
 
 #include <cstdint>
 #include <set>
 
-#include "graph/tensor.h"
 #include "../../detail/host_log.h"
 #include "../../detail/api_check/host_apicheck.h"
 namespace AscendC {
@@ -34,7 +34,8 @@ inline uint32_t GetSigmoidMaxTmpSize(const uint32_t inputSize, const uint32_t ty
 } // namespace
 
 void GetSigmoidMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, bool isReuseSource, uint32_t& maxValue,
+    uint32_t& minValue)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<SIGMOID_GET_MAX_MIN>(srcShape.GetShapeSize(), typeSize);
     HighLevelApiCheck::TypeSizeVerifyingParameters<SIGMOID_GET_MAX_MIN>(typeSize, SUPPORT_TYPESIZE);

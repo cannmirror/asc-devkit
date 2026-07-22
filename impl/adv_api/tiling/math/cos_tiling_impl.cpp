@@ -12,12 +12,12 @@
  * \file cos_tiling_impl.cpp
  * \brief
  */
+#include "adv_api/utils/types.h"
 #include <cstdint>
 
-#include "graph/tensor.h"
 #include "../../detail/host_log.h"
-#include "../../../../include/adv_api/math/cos_tiling.h"
-#include "../../../../include/utils/tiling/platform/platform_ascendc.h"
+#include "adv_api/math/cos_tiling.h"
+#include "utils/tiling/platform/platform_ascendc.h"
 
 namespace AscendC {
 namespace {
@@ -56,7 +56,7 @@ inline uint32_t GetCosMinTmpSize(const uint32_t typeSize, const bool isReuseSour
 } // namespace
 
 void GetCosMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
     uint32_t& minValue)
 {
     const uint32_t inputSize = srcShape.GetShapeSize();
@@ -73,7 +73,7 @@ void GetCosTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCou
 }
 
 void GetCosMaxMinTmpSize(
-    const CosConfig& config, const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    const CosConfig& config, const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isReuseSource,
     uint32_t& maxValue, uint32_t& minValue)
 {
     (void)typeSize;

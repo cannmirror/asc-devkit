@@ -12,12 +12,12 @@
  * \file bitwise_not_tiling_impl.cpp
  * \brief
  */
+#include "adv_api/utils/types.h"
 #include <set>
-#include "graph/tensor.h"
 #include "../../detail/host_log.h"
 #include "../../detail/api_check/host_apicheck.h"
-#include "../../../../include/adv_api/math/bitwise_not_tiling.h"
-#include "../../../../include/utils/tiling/platform/platform_ascendc.h"
+#include "adv_api/math/bitwise_not_tiling.h"
+#include "utils/tiling/platform/platform_ascendc.h"
 
 namespace AscendC {
 namespace {
@@ -41,8 +41,8 @@ uint32_t GetBitwiseNotMinTmpSize(const NpuArch npuArch, const uint32_t typeSize)
 }
 } // namespace
 void GetBitwiseNotMaxMinTmpSize(
-    const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape, const uint32_t typeSize,
-    const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
+    const platform_ascendc::PlatformAscendC& ascendcPlatform, const AscendC::TensorShape& srcShape,
+    const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
     (void)isReuseSource;
 

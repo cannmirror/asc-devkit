@@ -13,12 +13,12 @@
  * \brief
  */
 
-#include "../../../../include/adv_api/math/cumsum_tiling.h"
-#include "graph/tensor.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/math/cumsum_tiling.h"
 #include "../../detail/host_log.h"
 namespace AscendC {
 void GetCumSumMaxMinTmpSize(
-    const ge::Shape& srcShape, const uint32_t typeSize, const bool isLastAxis, const bool isReuseSource,
+    const AscendC::TensorShape& srcShape, const uint32_t typeSize, const bool isLastAxis, const bool isReuseSource,
     uint32_t& maxValue, uint32_t& minValue)
 {
     (void)isReuseSource;

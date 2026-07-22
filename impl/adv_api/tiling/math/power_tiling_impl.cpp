@@ -12,13 +12,13 @@
  * \file power_tiling_impl.cpp
  * \brief
  */
-#include "../../../../include/adv_api/math/power_tiling.h"
-#include "../../../../include/utils/tiling/platform/platform_ascendc.h"
+#include "adv_api/utils/types.h"
+#include "adv_api/math/power_tiling.h"
+#include "utils/tiling/platform/platform_ascendc.h"
 
 #include <cstdint>
 #include "../../detail/host_log.h"
 
-#include "graph/tensor.h"
 namespace AscendC {
 namespace {
 constexpr uint32_t POWER_MIN_TMP_SIZE = 256;
@@ -76,7 +76,7 @@ constexpr PowTiling POW_TILING_PARAM_V200(
 /*
 Determine whether the input and output shapes are tensors.
 */
-inline bool ShapeIsTensor(const ge::Shape& shape)
+inline bool ShapeIsTensor(const AscendC::TensorShape& shape)
 {
     // The shape is one dimension and the length of the dimension is one, which is a scalar.
     if (shape.GetDimNum() == 1 && shape.GetDim(0) == 1) {
@@ -86,7 +86,8 @@ inline bool ShapeIsTensor(const ge::Shape& shape)
 }
 
 inline uint32_t GetPowerMaxTmpSizeArch3510(
-    const ge::Shape& srcShape1, const ge::Shape& srcShape2, const bool typeIsInt, const bool isReuseSource)
+    const AscendC::TensorShape& srcShape1, const AscendC::TensorShape& srcShape2, const bool typeIsInt,
+    const bool isReuseSource)
 {
     (void)(isReuseSource);
     std::vector<int64_t> shapeDims1 = srcShape1.GetDims();
@@ -113,8 +114,8 @@ inline uint32_t GetPowerMaxTmpSizeArch3510(
 }
 
 inline uint32_t GetPowerMinTmpSize(
-    const NpuArch npuArch, const ge::Shape& srcShape1, const ge::Shape& srcShape2, const bool typeIsInt,
-    const uint32_t typeSize, const bool isReuseSource)
+    const NpuArch npuArch, const AscendC::TensorShape& srcShape1, const AscendC::TensorShape& srcShape2,
+    const bool typeIsInt, const uint32_t typeSize, const bool isReuseSource)
 {
     (void)(isReuseSource);
     struct PowTiling param(0, 0, 0, 0, 0, 0);
@@ -141,8 +142,8 @@ inline uint32_t GetPowerMinTmpSize(
 }
 
 inline uint32_t GetPowerMaxTmpSize(
-    const NpuArch npuArch, const ge::Shape& srcShape1, const ge::Shape& srcShape2, const bool typeIsInt,
-    const uint32_t typeSize, const bool isReuseSource)
+    const NpuArch npuArch, const AscendC::TensorShape& srcShape1, const AscendC::TensorShape& srcShape2,
+    const bool typeIsInt, const uint32_t typeSize, const bool isReuseSource)
 {
     (void)(isReuseSource);
     struct PowTiling param(0, 0, 0, 0, 0, 0);
@@ -226,8 +227,8 @@ void GetPowerTmpBufferFactorSizeArch3510(
 } // namespace
 
 void GetPowerMaxMinTmpSize(
-    const ge::Shape& srcShape1, const ge::Shape& srcShape2, const bool typeIsInt, const uint32_t typeSize,
-    const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
+    const AscendC::TensorShape& srcShape1, const AscendC::TensorShape& srcShape2, const bool typeIsInt,
+    const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
     ASCENDC_HOST_ASSERT(
         platform_ascendc::PlatformAscendCManager::GetInstance() != nullptr, return,
