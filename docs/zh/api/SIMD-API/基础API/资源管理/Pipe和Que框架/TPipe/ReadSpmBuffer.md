@@ -58,7 +58,7 @@
 
 | 参数名称 | 含义 |
 | -------- | ---- |
-| T | 待获取Tensor的数据类型，支持的类型请见[LocalTensor](../../../数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor.md)相关描述。|
+| T | 待获取Tensor的数据类型，支持的类型请见[LocalTensor](../../../数据结构/LocalTensor/LocalTensor.md)相关描述。|
 
 **表2**  接口参数说明
 

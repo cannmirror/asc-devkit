@@ -56,7 +56,7 @@ __aicore__ inline TBuf();
 </thead>
 <tbody><tr id="row16731173415179"><td class="cellrowborder" valign="top" width="14.760000000000002%" headers="mcps1.2.3.1.1 "><p id="p185019592913"><a name="p185019592913"></a><a name="p185019592913"></a>pos</p>
 </td>
-<td class="cellrowborder" valign="top" width="85.24000000000001%" headers="mcps1.2.3.1.2 "><p id="p35011591693"><a name="p35011591693"></a><a name="p35011591693"></a>TBuf所在的逻辑位置，支持的TPosition可以为VECIN、VECOUT、A1、A2、B1、B2、CO1、CO2。<span>关于TPosition的具体介绍请参考</span><a href="../../../数据结构/辅助数据结构//TPosition.md">TPosition</a>。</p>
+<td class="cellrowborder" valign="top" width="85.24000000000001%" headers="mcps1.2.3.1.2 "><p id="p35011591693"><a name="p35011591693"></a><a name="p35011591693"></a>TBuf所在的逻辑位置，支持的TPosition可以为VECIN、VECOUT、A1、A2、B1、B2、CO1、CO2。<span>关于TPosition的具体介绍请参考</span><a href="../../../辅助数据结构//TPosition.md">TPosition</a>。</p>
 </td>
 </tr>
 </tbody>

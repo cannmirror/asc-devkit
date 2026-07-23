@@ -52,11 +52,11 @@
 - 样例实现：
   - Kernel侧整体思路
     - `mmad_custom`是一个[`__global__`](../../../../../docs/zh/guide/编程指南/语言扩展层/SIMD-BuiltIn关键字.md) [`__cube__`](../../../../../docs/zh/guide/编程指南/语言扩展层/SIMD-BuiltIn关键字.md)核函数，表示该函数运行在[AI Core](../../../../../docs/zh/guide/技术附录/概念原理和术语/术语表.md)的[Cube](../../../../../docs/zh/guide/技术附录/概念原理和术语/术语表.md)计算单元上，主要用于矩阵计算。
-    - 样例使用[静态Tensor编程方式](../../../../../docs/zh/guide/编程指南/编程模型/AI-Core-SIMD编程/基于Tensor的CPP编程/静态Tensor编程.md)，通过[`LocalMemAllocator`](../../../../../docs/zh/api/SIMD-API/基础API/资源管理/内存管理/LocalMemAllocator/LocalMemAllocator简介.md)创建[`LocalTensor`](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor简介.md)。
+    - 样例使用[静态Tensor编程方式](../../../../../docs/zh/guide/编程指南/编程模型/AI-Core-SIMD编程/基于Tensor的CPP编程/静态Tensor编程.md)，通过[`LocalMemAllocator`](../../../../../docs/zh/api/SIMD-API/基础API/资源管理/内存管理/LocalMemAllocator/LocalMemAllocator简介.md)创建[`LocalTensor`](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/LocalTensor/LocalTensor简介.md)。
     - `CUBE_BLOCK = 16`表示half数据类型分形为`16 x 16`，代码中按`16 x 16`的分形为单位进行[`LoadData`](../../../../../docs/zh/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/LoadData_2D.md)搬运。
 
   - Kernel侧详细流程
-    - 创建[`GlobalTensor`](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/LocalTensor和GlobalTensor定义/GlobalTensor/GlobalTensor简介.md)`<half>`对象`aGM`、`bGM`、`cGM`，分别表示[GM（Global Memory，全局内存）](../../../../../docs/zh/guide/编程指南/高级编程/硬件实现/基本架构.md)中的A、B、C矩阵。
+    - 创建[`GlobalTensor`](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/GlobalTensor/GlobalTensor简介.md)`<half>`对象`aGM`、`bGM`、`cGM`，分别表示[GM（Global Memory，全局内存）](../../../../../docs/zh/guide/编程指南/高级编程/硬件实现/基本架构.md)中的A、B、C矩阵。
     - 通过[AscendC::GetBlockIdx()](../../../../../docs/zh/api/SIMD-API/基础API/工具接口/系统资源与变量/GetBlockIdx.md)获取当前核号，并计算`mIterIdx`。本样例只沿M轴切分任务，因此每个核只需要处理A矩阵和C矩阵中属于自己的M轴分片。
     - 设置GM地址偏移：
       - `aGM`偏移`mIterIdx * singleCoreM * K`，使当前核读取自己负责的A矩阵行块。

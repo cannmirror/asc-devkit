@@ -65,7 +65,7 @@
 </thead>
 <tbody><tr id="row6129355182310"><td class="cellrowborder" valign="top" width="12.65%" headers="mcps1.2.3.1.1 "><p id="p81291855102318"><a name="p81291855102318"></a><a name="p81291855102318"></a>T</p>
 </td>
-<td class="cellrowborder" valign="top" width="87.35000000000001%" headers="mcps1.2.3.1.2 "><p id="p14983161812418"><a name="p14983161812418"></a><a name="p14983161812418"></a>待获取Tensor的数据类型，支持的类型请见<a href="../../../数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor.md">LocalTensor</a>相关描述。</p>
+<td class="cellrowborder" valign="top" width="87.35000000000001%" headers="mcps1.2.3.1.2 "><p id="p14983161812418"><a name="p14983161812418"></a><a name="p14983161812418"></a>待获取Tensor的数据类型，支持的类型请见<a href="../../../数据结构/LocalTensor/LocalTensor.md">LocalTensor</a>相关描述。</p>
 </td>
 </tr>
 </tbody>
@@ -98,7 +98,7 @@ len的数值是Tensor中元素的个数，len\*sizeof\(T\)不能超过TBuf初始
 
 ## 返回值说明<a name="section640mcpsimp"></a>
 
-获取到的[LocalTensor](../../../数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor.md)。
+获取到的[LocalTensor](../../../数据结构/LocalTensor/LocalTensor.md)。
 
 ## 调用示例<a name="section5725818154718"></a>
 

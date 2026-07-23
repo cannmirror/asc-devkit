@@ -36,7 +36,7 @@
 
 支持Unified Buffer与Unified Buffer之间的连续数据搬运，数据在传输过程中保持原始格式和内容不变。
 
-具体支持的数据通路为（以[逻辑位置TPosition](../../../数据结构/辅助数据结构/TPosition.md)表示）：
+具体支持的数据通路为（以[逻辑位置TPosition](../../../辅助数据结构/TPosition.md)表示）：
 
 - Unified Buffer -> Unified Buffer
     - VECIN -> VECCALC
@@ -61,7 +61,7 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const LocalTensor<T>&
 
 | 参数名 | 输入/输出 | 描述 |
 | :--- | :---: | :--- |
-| dst | 输出 | 目的操作数。类型为[LocalTensor](../../../数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor简介.md)，存储位置为Unified Buffer，目的地址需要32字节对齐。 |
+| dst | 输出 | 目的操作数。类型为[LocalTensor](../../../数据结构/LocalTensor/LocalTensor简介.md)，存储位置为Unified Buffer，目的地址需要32字节对齐。 |
 | src | 输入 | 源操作数。类型为LocalTensor，存储位置为Unified Buffer，源地址需要32字节对齐。 |
 | count | 输入 | 参与搬运的元素个数。<br>**注：count * sizeof(T)需要32字节对齐，若未对齐，搬运量会向下取整到32字节对齐。** |
 

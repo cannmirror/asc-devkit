@@ -60,8 +60,8 @@
 
 | 参数名 | 输入/输出 | 描述 |
 | --- | --- | --- |
-| dst0/dst1 | 输出 | 目的操作数。类型为[LocalTensor](../../数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor.md)，支持的TPosition为VECIN/VECCALC/VECOUT。LocalTensor的起始地址需要32字节对齐。 |
-| src/src0/src1 | 输入 | 源操作数。类型为[LocalTensor](../../数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor.md)，支持的TPosition为VECIN/VECCALC/VECOUT。LocalTensor的起始地址需要32字节对齐。源操作数的数据类型需要与目的操作数保持一致。 |
+| dst0/dst1 | 输出 | 目的操作数。类型为[LocalTensor](../../数据结构/LocalTensor/LocalTensor.md)，支持的TPosition为VECIN/VECCALC/VECOUT。LocalTensor的起始地址需要32字节对齐。 |
+| src/src0/src1 | 输入 | 源操作数。类型为[LocalTensor](../../数据结构/LocalTensor/LocalTensor.md)，支持的TPosition为VECIN/VECCALC/VECOUT。LocalTensor的起始地址需要32字节对齐。源操作数的数据类型需要与目的操作数保持一致。 |
 | count | 输入 | 输入/输出数据元素个数，dst0/dst1/src0/src1长度大小为count。count必须为偶数。 |
 | srcCount | 输入 | 输入数据元素个数，两个输出的大小都为输入的一半。srcCount必须为偶数。 |
 

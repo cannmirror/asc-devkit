@@ -64,7 +64,7 @@ __aicore__ inline void MulsCast(const T2 &dst, const T3 &src0, const T4 &src1, c
 
 | 参数名 | 输入/输出 | 描述 |
 | :----- | :-------- | :--- |
-| dst | 输出 | 目的操作数。<br>类型为[LocalTensor](../../数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor.md)，支持的TPosition为VECIN/VECCALC/VECOUT。<br>LocalTensor的起始地址需要32字节对齐。<br>Ascend 950PR/Ascend 950DT，支持的数据类型为：half<br>不同数据类型对应的精度转换规则见[精度转换规则](概述.md#精度转换)。 |
+| dst | 输出 | 目的操作数。<br>类型为[LocalTensor](../../数据结构/LocalTensor/LocalTensor.md)，支持的TPosition为VECIN/VECCALC/VECOUT。<br>LocalTensor的起始地址需要32字节对齐。<br>Ascend 950PR/Ascend 950DT，支持的数据类型为：half<br>不同数据类型对应的精度转换规则见[精度转换规则](概述.md#精度转换)。 |
 | src0/src1 | 输入 | 源操作数。<br>&bull; 类型为LocalTensor时，支持当作矢量操作数或标量单点元素，支持的TPosition为VECIN/VECCALC/VECOUT。<br>LocalTensor的起始地址需要32字节对齐。<br>Ascend 950PR/Ascend 950DT，支持的数据类型为：float<br>&bull; 类型为标量时：<br>Ascend 950PR/Ascend 950DT，支持的数据类型为：float |
 | count | 输入 | 参与计算的元素个数。 |
 

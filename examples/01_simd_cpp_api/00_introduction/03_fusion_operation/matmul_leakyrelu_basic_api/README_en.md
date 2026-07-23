@@ -138,7 +138,7 @@ This example implements Matmul and LeakyRelu fusion computation based on the sta
 
       1. **Cube Core Computation Phase**:
 
-          **GlobalTensor Definition and Core Distribution Offset**: Use [GlobalTensor](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/LocalTensor和GlobalTensor定义/GlobalTensor/GlobalTensor简介.md) (global memory tensor) to access input/output data in the external DDR of the chip, and use [GetBlockIdx](../../../../../docs/zh/api/SIMD-API/基础API/工具接口/系统资源与变量/GetBlockIdx.md) (get the logical index of the current core) to calculate the core distribution offset:
+          **GlobalTensor Definition and Core Distribution Offset**: Use [GlobalTensor](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/GlobalTensor/GlobalTensor简介.md) (global memory tensor) to access input/output data in the external DDR of the chip, and use [GetBlockIdx](../../../../../docs/zh/api/SIMD-API/基础API/工具接口/系统资源与变量/GetBlockIdx.md) (get the logical index of the current core) to calculate the core distribution offset:
 
           ```cpp
           class KernelMatmul {
@@ -171,7 +171,7 @@ This example implements Matmul and LeakyRelu fusion computation based on the sta
 
           **Memory Transfer and Computation Flow**:
 
-          - **LocalTensor Creation**: Use [LocalMemAllocator](../../../../../docs/zh/api/SIMD-API/基础API/资源管理/内存管理/LocalMemAllocator/LocalMemAllocator简介.md) (on-chip memory allocator that automatically allocates in application order, avoiding manual address offset maintenance) to create [LocalTensor](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor简介.md) (on-chip memory tensor) for each on-chip cache. The temporary space for A and B matrices in L1 is allocated by the same L1 allocator in application order to avoid manual L1 address offset maintenance
+          - **LocalTensor Creation**: Use [LocalMemAllocator](../../../../../docs/zh/api/SIMD-API/基础API/资源管理/内存管理/LocalMemAllocator/LocalMemAllocator简介.md) (on-chip memory allocator that automatically allocates in application order, avoiding manual address offset maintenance) to create [LocalTensor](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/LocalTensor/LocalTensor简介.md) (on-chip memory tensor) for each on-chip cache. The temporary space for A and B matrices in L1 is allocated by the same L1 allocator in application order to avoid manual L1 address offset maintenance
           - **GM → L1**: Use [DataCopy](../../../../../docs/zh/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L1-Buffer/GMToL1随路转换-ND2NZ搬运（DataCopy）.md) to transfer A and B matrices from GM to L1, completing ND to Nz format conversion (Cube computation unit requires Nz fractal layout, so ND format must be converted to Nz format during transfer)
           - **L1 → L0A/L0B**: Use [LoadData](../../../../../docs/zh/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/LoadData_2D.md) to transfer data to L0A and L0B. B matrix requires transpose (Nz→Zn)
           - **L0A/L0B → L0C**: Use [Mmad](../../../../../docs/zh/api/SIMD-API/基础API/矩阵计算（ISASI）/Mmad计算/Mmad.md) (matrix multiply-accumulate instruction) to execute matrix multiply-add, accumulating all data blocks along the K axis
@@ -254,7 +254,7 @@ This example implements Matmul and LeakyRelu fusion computation based on the sta
 
       2. **Vector Core Computation Phase**:
           - **Inter-core Synchronization**: Vector cores use [CrossCoreWaitFlag](../../../../../docs/zh/api/SIMD-API/基础API/同步控制/核间同步/CrossCoreWaitFlag(ISASI).md) (inter-core synchronization flag wait, blocks until the flag is set) to wait for Cube core to complete Fixpipe writeback, ensuring LeakyRelu starts only after Matmul computation completes
-          - **LocalTensor Creation**: Use UB allocator to create [LocalTensor](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor简介.md) at the VECCALC position to carry the half-block result processed by the current Vector core
+          - **LocalTensor Creation**: Use UB allocator to create [LocalTensor](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/LocalTensor/LocalTensor简介.md) at the VECCALC position to carry the half-block result processed by the current Vector core
           - **GM → UB**: Use [DataCopyPad](../../../../../docs/zh/api/SIMD-API/基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/GMToUB非对齐数据搬运(DataCopyPad).md) (data transfer between GM and UB with padding) to transfer Matmul results to UB. Each Vector core processes baseM/2×baseN data
           - **UB Computation**: Use [LeakyRelu](../../../../../docs/zh/api/SIMD-API/基础API/Memory矢量计算/基础算术/LeakyRelu.md) (LeakyReLU activation function, negative values are multiplied by negativeSlope) to execute activation computation, with negative values multiplied by 0.001
           - **UB → GM**: Use [DataCopyPad](../../../../../docs/zh/api/SIMD-API/基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/UBToGM非对齐数据搬运(DataCopyPad).md) to write results back to GM, completing the fusion computation
@@ -482,7 +482,7 @@ The following table details each step of the Cube core and Vector core operation
 
 | Stage | Data Flow/Behavior | Implementation Purpose/Reason |
 |:---|:---|:---|
-| Initialization | Use [LocalMemAllocator](../../../../../docs/zh/api/SIMD-API/基础API/资源管理/内存管理/LocalMemAllocator/LocalMemAllocator简介.md) to allocate [LocalTensor](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor简介.md) for on-chip caches such as L1, L0A/L0B, L0C | Automatically allocate on-chip memory in application order, avoiding manual address offset maintenance |
+| Initialization | Use [LocalMemAllocator](../../../../../docs/zh/api/SIMD-API/基础API/资源管理/内存管理/LocalMemAllocator/LocalMemAllocator简介.md) to allocate [LocalTensor](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/LocalTensor/LocalTensor简介.md) for on-chip caches such as L1, L0A/L0B, L0C | Automatically allocate on-chip memory in application order, avoiding manual address offset maintenance |
 | GM → L1 | [DataCopy](../../../../../docs/zh/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L1-Buffer/GMToL1随路转换-ND2NZ搬运（DataCopy）.md) transfers A/B matrices from GM to L1, simultaneously completing ND→Nz format conversion | Cube computation unit requires Nz fractal layout format, so ND format must be converted to Nz format during transfer to avoid additional conversion overhead |
 | L1 → L0A/L0B | [LoadData](../../../../../docs/zh/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/LoadData_2D.md) transfers A matrix from L1 to L0A (Nz→Zz/Nz), B matrix from L1 to L0B (Nz→Zn transpose) | B matrix requires transpose because the Mmad instruction requires B matrix to be input in Zn (transposed Nz) format |
 | L0A/L0B → L0C | [Mmad](../../../../../docs/zh/api/SIMD-API/基础API/矩阵计算（ISASI）/Mmad计算/Mmad.md) executes matrix multiply-add, accumulating all data blocks along the K direction | Completes A×B matrix multiplication computation, K-direction block accumulation ensures correctness |
@@ -495,7 +495,7 @@ The following table details each step of the Cube core and Vector core operation
 | Stage | Data Flow/Behavior | Implementation Purpose/Reason |
 |:---|:---|:---|
 | Inter-core Synchronization | [CrossCoreWaitFlag](../../../../../docs/zh/api/SIMD-API/基础API/同步控制/核间同步/CrossCoreWaitFlag(ISASI).md) waits for Cube core Fixpipe to complete | Blocks until Cube core notifies data is ready, ensuring complete Matmul results are read |
-| Initialization | Use UB allocator to allocate [LocalTensor](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor简介.md) at VECCALC position | Allocates UB buffer for GM→UB transfer and Vector computation |
+| Initialization | Use UB allocator to allocate [LocalTensor](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/LocalTensor/LocalTensor简介.md) at VECCALC position | Allocates UB buffer for GM→UB transfer and Vector computation |
 | GM → UB | [DataCopyPad](../../../../../docs/zh/api/SIMD-API/基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/GMToUB非对齐数据搬运(DataCopyPad).md) transfers Matmul results from GM to UB, each Vector core reads baseM/2 rows, with baseN elements per row | Vector cores read Matmul results written back by Cube cores from GM, each Vector core processes half-block data |
 | UB Computation | [LeakyRelu](../../../../../docs/zh/api/SIMD-API/基础API/Memory矢量计算/基础算术/LeakyRelu.md) executes activation computation, negative values are multiplied by 0.001 | Applies LeakyRelu activation function to Matmul results, completing fusion computation |
 | UB → GM | [DataCopyPad](../../../../../docs/zh/api/SIMD-API/基础API/Memory矢量计算/数据搬运/GM与UB数据搬运/UBToGM非对齐数据搬运(DataCopyPad).md) writes LeakyRelu results back to GM | Outputs final computation results to GM for subsequent use |
@@ -529,7 +529,7 @@ AscendC::printf("matmul blockIdx=%d\n", AscendC::GetBlockIdx());
 
 ### DumpTensor
 
-For operators developed based on operator projects, you can use this interface to Dump the contents of a specified [LocalTensor](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor简介.md). It also supports printing custom additional information (only supports uint32\_t data type information), such as printing the current line number.
+For operators developed based on operator projects, you can use this interface to Dump the contents of a specified [LocalTensor](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/LocalTensor/LocalTensor简介.md). It also supports printing custom additional information (only supports uint32\_t data type information), such as printing the current line number.
 
 Call the DumpTensor interface at the location in the operator kernel-side implementation code where Tensor data needs to be printed. Example:
 

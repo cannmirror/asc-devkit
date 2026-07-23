@@ -41,7 +41,7 @@ __aicore__ inline LocalTensor<T> AllocTensor()
 
 | 参数名称 | 说明 |
 | -------- | ---- |
-| T | 待获取Tensor的数据类型，支持的类型请见[LocalTensor](../../../数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor.md)相关描述。|
+| T | 待获取Tensor的数据类型，支持的类型请见[LocalTensor](../../../数据结构/LocalTensor/LocalTensor.md)相关描述。|
 
 ## 约束说明<a name="section633mcpsimp"></a>
 

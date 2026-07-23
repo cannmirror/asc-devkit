@@ -52,11 +52,11 @@ This sample implements multi-core matrix multiplication computation based on the
 - Sample Implementation:
   - Kernel-side Overall Approach
     - `mmad_custom` is a [`__global__`](../../../../../docs/zh/guide/编程指南/语言扩展层/SIMD-BuiltIn关键字.md) [`__cube__`](../../../../../docs/zh/guide/编程指南/语言扩展层/SIMD-BuiltIn关键字.md) kernel function, which indicates that this function runs on the [Cube](../../../../../docs/zh/guide/技术附录/概念原理和术语/术语表.md) computation unit of [AI Core](../../../../../docs/zh/guide/技术附录/概念原理和术语/术语表.md), primarily used for matrix computation.
-    - The sample uses the [static Tensor programming method](../../../../../docs/zh/guide/编程指南/编程模型/AI-Core-SIMD编程/基于Tensor的CPP编程/静态Tensor编程.md) and creates [`LocalTensor`](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor简介.md) through [`LocalMemAllocator`](../../../../../docs/zh/api/SIMD-API/基础API/资源管理/内存管理/LocalMemAllocator/LocalMemAllocator简介.md).
+    - The sample uses the [static Tensor programming method](../../../../../docs/zh/guide/编程指南/编程模型/AI-Core-SIMD编程/基于Tensor的CPP编程/静态Tensor编程.md) and creates [`LocalTensor`](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/LocalTensor/LocalTensor简介.md) through [`LocalMemAllocator`](../../../../../docs/zh/api/SIMD-API/基础API/资源管理/内存管理/LocalMemAllocator/LocalMemAllocator简介.md).
     - `CUBE_BLOCK = 16` indicates that the half data type fractal is `16 x 16`, and the code performs [`LoadData`](../../../../../docs/zh/api/SIMD-API/基础API/矩阵计算（ISASI）/矩阵计算的搬入/矩阵数据搬入至L0-Buffer/LoadData_2D.md) transfers in units of `16 x 16` fractals.
 
   - Kernel-side Detailed Process
-    - Create [`GlobalTensor`](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/LocalTensor和GlobalTensor定义/GlobalTensor/GlobalTensor简介.md)`<half>` objects `aGM`, `bGM`, `cGM`, representing matrices A, B, C in [GM (Global Memory)](../../../../../docs/zh/guide/编程指南/高级编程/硬件实现/基本架构.md).
+    - Create [`GlobalTensor`](../../../../../docs/zh/api/SIMD-API/基础API/数据结构/GlobalTensor/GlobalTensor简介.md)`<half>` objects `aGM`, `bGM`, `cGM`, representing matrices A, B, C in [GM (Global Memory)](../../../../../docs/zh/guide/编程指南/高级编程/硬件实现/基本架构.md).
     - Obtain the current core ID through [AscendC::GetBlockIdx()](../../../../../docs/zh/api/SIMD-API/基础API/工具接口/系统资源与变量/GetBlockIdx.md) and calculate `mIterIdx`. This sample only splits tasks along the M axis, so each core only needs to process its own M-axis slice of matrix A and matrix C.
     - Set GM address offsets:
       - `aGM` offset by `mIterIdx * singleCoreM * K`, enabling the current core to read its assigned row block of matrix A.

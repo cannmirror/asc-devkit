@@ -96,7 +96,7 @@
 
 | 参数名称 | 含义 |
 | -------- | ---- |
-| pos | Buffer逻辑位置，可以为VECIN、VECOUT、VECCALC、A1、B1、C1。关于TPosition的具体介绍请参考[TPosition](../../../数据结构/辅助数据结构/TPosition.md)。|
+| pos | Buffer逻辑位置，可以为VECIN、VECOUT、VECCALC、A1、B1、C1。关于TPosition的具体介绍请参考[TPosition](../../../辅助数据结构/TPosition.md)。|
 
 **表4**  为TBuf分配内存的函数原型-接口参数说明
 

@@ -206,7 +206,7 @@ struct Layout : private Std::tuple<T, U>
 
     将多维逻辑坐标映射为一维线性索引。
 
-    该接口内部调用[Crd2Idx](../../数据结构/辅助数据结构/Coordinate/Crd2Idx.md)，根据当前Layout的Shape和Stride计算坐标在内存中的线性位置。
+    该接口内部调用[Crd2Idx](../../辅助数据结构/Coordinate/Crd2Idx.md)，根据当前Layout的Shape和Stride计算坐标在内存中的线性位置。
 
 - 函数原型
 
