@@ -40,7 +40,7 @@ L0C Buffer到Global Memory搬运支持不量化输出、`float`到`half`或`bflo
 
 **图1**  L0C2GM流程图
 
-![L0C2GM流程图](../../../../figures/l0c2gm_flowchart-68.png)
+![L0C2GM流程图](../../../../figures/L0C2GM_Function_Combination_950.png)
 
 ## 函数原型
 

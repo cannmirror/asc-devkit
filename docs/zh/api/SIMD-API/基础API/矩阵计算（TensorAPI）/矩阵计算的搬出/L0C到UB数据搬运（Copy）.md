@@ -38,7 +38,7 @@ L0C Buffer到Unified Buffer搬运支持不量化输出、`float`到`half`或`bfl
 
 **图1**  L0C2UB流程图
 
-![L0C2UB流程图](../../../../figures/l0c2ub_flowchart.png)
+![L0C2UB流程图](../../../../figures/L0C2UB_Function_Combination_950.png)
 
 ## 函数原型
 
