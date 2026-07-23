@@ -92,7 +92,7 @@
 
 ## 返回值说明<a name="section640mcpsimp"></a>
 
-non-inplace接口的返回值为从队列中取出的[LocalTensor](../../../数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor.md)；inplace接口没有返回值。
+non-inplace接口的返回值为从队列中取出的[LocalTensor](../../../数据结构/LocalTensor/LocalTensor.md)；inplace接口没有返回值。
 
 ## 调用示例<a name="section642mcpsimp"></a>
 

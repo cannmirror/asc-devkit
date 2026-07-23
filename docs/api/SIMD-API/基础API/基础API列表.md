@@ -4,21 +4,21 @@
 
 | 接口名 | 功能描述 |
 | --- | --- |
-| [LocalTensor](数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor.md) | LocalTensor用于存放AI Core中Local Memory（内部存储）的数据，支持逻辑位置TPosition为VECIN、VECOUT、VECCALC、A1、A2、B1、B2、CO1、CO2。 |
-| [GlobalTensor](数据结构/LocalTensor和GlobalTensor定义/GlobalTensor/GlobalTensor.md) | GlobalTensor用来存放Global Memory（外部存储）的全局数据。 |
+| [LocalTensor](数据结构/LocalTensor/LocalTensor.md) | LocalTensor用于存放AI Core中Local Memory（内部存储）的数据，支持逻辑位置TPosition为VECIN、VECOUT、VECCALC、A1、A2、B1、B2、CO1、CO2。 |
+| [GlobalTensor](数据结构/GlobalTensor/GlobalTensor.md) | GlobalTensor用来存放Global Memory（外部存储）的全局数据。 |
 | [layout_structure](data_structure_TensorAPI/data_structure_TensorAPI.md) | Tensor API基础数据结构中Layout相关基础数据结构。 |
 | [tensor_structure](data_structure_TensorAPI/data_structure_TensorAPI.md) | Tensor API基础数据结构中Tensor相关数据结构。 |
 | [GetLayoutPattern](data_structure_TensorAPI/utils/GetLayoutPattern.md) | GetLayoutPattern用于从Layout类型中提取其LayoutPattern类型信息。 |
-| [Coordinate](数据结构/辅助数据结构/Coordinate/Coordinate.md) | Coordinate本质上是一个元组（tuple），用于表示张量在不同维度的位置信息，即坐标值。 |
-| [Layout](数据结构/辅助数据结构/Layout/Layout.md) | Layout数据结构是描述多维张量内存布局的基础模板类，通过编译时的形状（Shape）和步长（Stride）信息，实现逻辑坐标空间到一维内存地址空间的映射。 |
-| [TensorTrait](数据结构/辅助数据结构/TensorTrait/TensorTrait.md) | TensorTrait数据结构是描述Tensor相关信息的基础模板类，包含Tensor的数据类型、逻辑位置和Layout内存布局。 |
-| [ShapeInfo](数据结构/辅助数据结构/ShapeInfo.md) | 存放LocalTensor或GlobalTensor的shape信息。 |
-| [ListTensorDesc](数据结构/辅助数据结构/ListTensorDesc.md) | 解析符合指定内存排布格式的数据，在kernel侧根据索引获取存储对应数据的地址及shape信息。 |
-| [TensorDesc](数据结构/辅助数据结构/TensorDesc/TensorDesc.md) | 储存ListTensorDesc.GetDesc()中根据index获取对应的Tensor描述信息。 |
-| [UnaryRepeatParams](数据结构/辅助数据结构/UnaryRepeatParams.md) | 控制单操作数地址步长的数据结构，包含相邻迭代间和同一迭代内DataBlock的地址步长参数。 |
-| [BinaryRepeatParams](数据结构/辅助数据结构/BinaryRepeatParams.md) | 控制双操作数地址步长的数据结构，包含相邻迭代间和同一迭代内DataBlock的地址步长参数。 |
-| [complex32/complex64](数据结构/辅助数据结构/complex32-complex64.md) | 复数类型，complex32实部和虚部都是half类型位宽32位，complex64实部和虚部都是float类型位宽64位。 |
-| [TPosition](数据结构/辅助数据结构/TPosition.md) | 用一种抽象的逻辑位置（TPosition）来表达各级别的存储，代替片上物理存储的概念。主要类型包括：VECIN、VECOUT、VECCALC、A1、A2、B1、B2、CO1、CO2。 |
+| [Coordinate](辅助数据结构/Coordinate/Coordinate.md) | Coordinate本质上是一个元组（tuple），用于表示张量在不同维度的位置信息，即坐标值。 |
+| [Layout](辅助数据结构/Layout/Layout.md) | Layout数据结构是描述多维张量内存布局的基础模板类，通过编译时的形状（Shape）和步长（Stride）信息，实现逻辑坐标空间到一维内存地址空间的映射。 |
+| [TensorTrait](辅助数据结构/TensorTrait/TensorTrait.md) | TensorTrait数据结构是描述Tensor相关信息的基础模板类，包含Tensor的数据类型、逻辑位置和Layout内存布局。 |
+| [ShapeInfo](辅助数据结构/ShapeInfo.md) | 存放LocalTensor或GlobalTensor的shape信息。 |
+| [ListTensorDesc](辅助数据结构/ListTensorDesc.md) | 解析符合指定内存排布格式的数据，在kernel侧根据索引获取存储对应数据的地址及shape信息。 |
+| [TensorDesc](辅助数据结构/TensorDesc/TensorDesc.md) | 储存ListTensorDesc.GetDesc()中根据index获取对应的Tensor描述信息。 |
+| [UnaryRepeatParams](辅助数据结构/UnaryRepeatParams.md) | 控制单操作数地址步长的数据结构，包含相邻迭代间和同一迭代内DataBlock的地址步长参数。 |
+| [BinaryRepeatParams](辅助数据结构/BinaryRepeatParams.md) | 控制双操作数地址步长的数据结构，包含相邻迭代间和同一迭代内DataBlock的地址步长参数。 |
+| [complex32/complex64](辅助数据结构/complex32-complex64.md) | 复数类型，complex32实部和虚部都是half类型位宽32位，complex64实部和虚部都是float类型位宽64位。 |
+| [TPosition](辅助数据结构/TPosition.md) | 用一种抽象的逻辑位置（TPosition）来表达各级别的存储，代替片上物理存储的概念。主要类型包括：VECIN、VECOUT、VECCALC、A1、A2、B1、B2、CO1、CO2。 |
 
 ## 矩阵计算（ISASI）
 
@@ -477,6 +477,7 @@
 | [CountLeadingZero](标量计算/CountLeadingZero.md) | 统计uint64_t类型数值的二进制表示中前导0的个数（二进制表示中最高有效位到第一个'1'的'0'的数量，输入为0时返回64）。 |
 | [CountBitsCntSameAsSignBit](标量计算/CountBitsCntSameAsSignBit.md) | 统计int64_t类型数值的二进制表示中，从最高数值位开始与符号位相同的连续比特位的个数。 |
 | [GetSFFValue](标量计算/GetSFFValue.md) | 查找uint64_t类型数值的二进制表示中从最低有效位开始的首个指定比特值（0或1）的位置，如果没找到则返回-1。 |
+| [CeilDivision](标量计算/CeilDivision.md) | 计算两个整数num1和num2相除后向上取整结果。 |
 | [Cast（float转half/int32_t）](标量计算/Cast_float_to_half_int32.md) | 对标量的数据类型进行转换。 |
 | [Cast（float转bfloat16_t）](标量计算/Cast_float_to_bfloat16.md) | float类型标量数据转换成bfloat16_t类型标量数据。 |
 | [Cast（多类型转float）](标量计算/Cast_multi_type_to_float.md) | 该接口将输入数据转换为float类型。 |
@@ -563,15 +564,14 @@
 | --- | --- |
 | [Async](工具接口/执行模式/Async.md) | Async通过模板函数的方式对这种隔离模式进行了封装，提供了一个统一的接口，用于在不同执行单元（AIC或AIV）下执行特定函数，从而避免在代码中使用硬件条件分支。 |
 | [InitSocState](工具接口/系统初始化/InitSocState.md) | 本接口对AI Core的全局状态进行初始化，包括AIC（Cube Core）与AIV（Vector Core）的公共状态及各自特有状态。由于不同产品的实现存在差异，实际执行的初始化项也有所不同。 |
-| [Max](工具接口/数学计算/NumericLimits/Max-77.md) | 返回指定数据类型的最大有限值。 |
-| [Lowest](工具接口/数学计算/NumericLimits/Lowest.md) | 返回指定数据类型的最低有限值，即满足无其他有限值y符合y < x的有限值x。 |
-| [Min](工具接口/数学计算/NumericLimits/Min-78.md) | 返回指定数据类型的最小有限值。 |
-| [Infinity](工具接口/数学计算/NumericLimits/Infinity.md) | 返回指定数据类型的正无穷大值。 |
-| [NegativeInfinity](工具接口/数学计算/NumericLimits/NegativeInfinity.md) | 返回指定数据类型的负无穷大值。 |
-| [QuietNaN](工具接口/数学计算/NumericLimits/QuietNaN.md) | 返回指定数据类型的安静NaN值（浮点尾数最高位为1）。 |
-| [SignalingNaN](工具接口/数学计算/NumericLimits/SignalingNaN.md) | 返回指定数据类型的发信NaN值（浮点尾数最高位为0）。 |
-| [DeNormMin](工具接口/数学计算/NumericLimits/DeNormMin.md) | 返回指定数据类型的最小正的非正规值。 |
-| [CeilDivision](工具接口/数学计算/CeilDivision.md) | 计算两个整数num1和num2相除后向上取整结果。 |
+| [Max](工具接口/NumericLimits工具类/Max-77.md) | 返回指定数据类型的最大有限值。 |
+| [Lowest](工具接口/NumericLimits工具类/Lowest.md) | 返回指定数据类型的最低有限值，即满足无其他有限值y符合y < x的有限值x。 |
+| [Min](工具接口/NumericLimits工具类/Min-78.md) | 返回指定数据类型的最小有限值。 |
+| [Infinity](工具接口/NumericLimits工具类/Infinity.md) | 返回指定数据类型的正无穷大值。 |
+| [NegativeInfinity](工具接口/NumericLimits工具类/NegativeInfinity.md) | 返回指定数据类型的负无穷大值。 |
+| [QuietNaN](工具接口/NumericLimits工具类/QuietNaN.md) | 返回指定数据类型的安静NaN值（浮点尾数最高位为1）。 |
+| [SignalingNaN](工具接口/NumericLimits工具类/SignalingNaN.md) | 返回指定数据类型的发信NaN值（浮点尾数最高位为0）。 |
+| [DeNormMin](工具接口/NumericLimits工具类/DeNormMin.md) | 返回指定数据类型的最小正的非正规值。 |
 | [GetTaskRatio](工具接口/系统资源与变量/GetTaskRatio.md) | 分离模式下，获取任务启动的Cube Core（AIC）或者Vector Core（AIV）的数量与逻辑AI Core数量的比例。 |
 | [GetUBSizeInBytes](工具接口/系统资源与变量/GetUBSizeInBytes.md) | 获取UB空间的大小，单位为Byte。开发者根据UB的大小来计算循环次数等参数值。 |
 | [GetRuntimeUBSize](工具接口/系统资源与变量/GetRuntimeUBSize.md) | 获取运行时UB空间的大小，单位为Byte。开发者根据UB的大小来计算循环次数等参数值。 |

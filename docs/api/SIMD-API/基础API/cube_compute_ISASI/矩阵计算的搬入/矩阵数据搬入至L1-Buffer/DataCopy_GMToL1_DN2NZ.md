@@ -56,7 +56,7 @@ __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>
 | 参数名称 | 输入/输出 | 含义 |
 | ---------- | ---------- | ---------- |
 | dst | 输出 | 目的操作数，类型为LocalTensor，存储位置为L1 Buffer（TPosition为A1/B1）。 |
-| src | 输入 | 源操作数，类型为GlobalTensor。<br>[SetL2CacheHint](../../../数据结构/LocalTensor和GlobalTensor定义/GlobalTensor/SetL2CacheHint.md)支持的L2 Cache控制模式如下：CacheMode::CACHE_MODE_DISABLE、CacheMode::CACHE_MODE_NORMAL。 |
+| src | 输入 | 源操作数，类型为GlobalTensor。<br>[SetL2CacheHint](../../../数据结构/GlobalTensor/SetL2CacheHint.md)支持的L2 Cache控制模式如下：CacheMode::CACHE_MODE_DISABLE、CacheMode::CACHE_MODE_NORMAL。 |
 | intriParams | 输入 | 搬运参数，Dn2NzParams类型，具体参数说明请参考[表3](#table9182515919)。 |
 
 **表3** Dn2NzParams结构体参数定义<a id="table9182515919"></a>

@@ -32,7 +32,7 @@ $$
 
 **说明**：GELU 是神经网络中常用的激活函数，用于替代 ReLU 以获得更平滑的梯度特性。
 
-本样例采用 RegBase 编程方式实现 GELU 计算——与 [01_vector/add 样例](../../01_add/add/README.md) 使用的 MemBase（基于 [LocalTensor](../../../../../docs/api/SIMD-API/基础API/数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor简介.md) + Compute API）方式相比，RegBase 允许中间计算结果暂存在寄存器而非 UB 中，减少了 UB 读写次数，适合多步骤融合计算场景。
+本样例采用 RegBase 编程方式实现 GELU 计算——与 [01_vector/add 样例](../../01_add/add/README.md) 使用的 MemBase（基于 [LocalTensor](../../../../../docs/api/SIMD-API/基础API/数据结构/LocalTensor/LocalTensor简介.md) + Compute API）方式相比，RegBase 允许中间计算结果暂存在寄存器而非 UB 中，减少了 UB 读写次数，适合多步骤融合计算场景。
 
 完整的数据通路为：GM → UB → 寄存器（逐步计算）→ UB → GM。
 
@@ -55,7 +55,7 @@ $$
   - `MTE2_V`：表示 MTE2（内存搬运引擎）完成 GM→UB 搬运后，V（向量计算单元）再开始读取 UB 数据
   - `V_MTE3`：表示 V 完成计算后，MTE3（回写引擎）再将 UB 结果写回 GM
 - [PipeBarrier](../../../../../docs/api/SIMD-API/基础API/同步控制/核内同步/PipeBarrier_ISASI.md) 用于等待本核所有流水阶段全部完成后再退出 kernel，确保数据写回完成。
-- **RegBase 编程范式**：与传统 MemBase（基于 [LocalTensor](../../../../../docs/api/SIMD-API/基础API/数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor简介.md) + Compute API）不同，RegBase 通过 [asc_vf_call](../../../../../docs/api/SIMD-API/基础API/Reg矢量计算/VF调用/asc_vf_call.md) 调用 VF 函数，在函数内使用 [RegTensor](../../../../../docs/api/SIMD-API/基础API/Reg矢量计算/寄存器数据类型/RegTensor.md)（寄存器张量）完成计算。VF 函数以 `__simd_vf__` 声明，参数和局部变量通过 `__ubuf__` 标记 UB 地址空间。VF 函数内数据通过 [LoadAlign](../../../../../docs/api/SIMD-API/基础API/Reg矢量计算/Reg数据搬入/LoadAlign_continuous.md)（UB→寄存器）和 [StoreAlign](../../../../../docs/api/SIMD-API/基础API/Reg矢量计算/Reg数据搬出/StoreAlign_continuous.md)（寄存器→UB）搬运，使用 [MaskReg](../../../../../docs/api/SIMD-API/基础API/Reg矢量计算/寄存器数据类型/MaskReg.md)（掩码寄存器）控制每次计算的元素数量，通过 [UpdateMask](../../../../../docs/api/SIMD-API/基础API/Reg矢量计算/MaskReg计算/MoveMask.md) 根据剩余元素数更新掩码。优势是中间结果可暂存在寄存器，减少 UB 读写次数。
+- **RegBase 编程范式**：与传统 MemBase（基于 [LocalTensor](../../../../../docs/api/SIMD-API/基础API/数据结构/LocalTensor/LocalTensor简介.md) + Compute API）不同，RegBase 通过 [asc_vf_call](../../../../../docs/api/SIMD-API/基础API/Reg矢量计算/VF调用/asc_vf_call.md) 调用 VF 函数，在函数内使用 [RegTensor](../../../../../docs/api/SIMD-API/基础API/Reg矢量计算/寄存器数据类型/RegTensor.md)（寄存器张量）完成计算。VF 函数以 `__simd_vf__` 声明，参数和局部变量通过 `__ubuf__` 标记 UB 地址空间。VF 函数内数据通过 [LoadAlign](../../../../../docs/api/SIMD-API/基础API/Reg矢量计算/Reg数据搬入/LoadAlign_continuous.md)（UB→寄存器）和 [StoreAlign](../../../../../docs/api/SIMD-API/基础API/Reg矢量计算/Reg数据搬出/StoreAlign_continuous.md)（寄存器→UB）搬运，使用 [MaskReg](../../../../../docs/api/SIMD-API/基础API/Reg矢量计算/寄存器数据类型/MaskReg.md)（掩码寄存器）控制每次计算的元素数量，通过 [UpdateMask](../../../../../docs/api/SIMD-API/基础API/Reg矢量计算/MaskReg计算/MoveMask.md) 根据剩余元素数更新掩码。优势是中间结果可暂存在寄存器，减少 UB 读写次数。
 
 **核心代码示例**：
 
@@ -173,7 +173,7 @@ AscendC::printf("gelu blockIdx=%d, singleCoreLength=%d\n", AscendC::GetBlockIdx(
 
 ### DumpTensor
 
-基于算子工程开发的算子，可以使用该接口 Dump 指定 [LocalTensor](../../../../../docs/api/SIMD-API/基础API/数据结构/LocalTensor和GlobalTensor定义/LocalTensor/LocalTensor简介.md) 的内容。同时支持打印自定义的附加信息（仅支持 uint32_t 数据类型的信息），比如打印当前行号等。
+基于算子工程开发的算子，可以使用该接口 Dump 指定 [LocalTensor](../../../../../docs/api/SIMD-API/基础API/数据结构/LocalTensor/LocalTensor简介.md) 的内容。同时支持打印自定义的附加信息（仅支持 uint32_t 数据类型的信息），比如打印当前行号等。
 
 在算子 kernel 侧实现代码中需要打印 Tensor 数据的地方调用 DumpTensor 接口打印相关内容。样例如下：
 

@@ -54,7 +54,7 @@ template <TPosition pos> __aicore__ inline bool InitBuffer(TBuf<pos>& buf, uint3
 </tr>
 <tr id="row758993611212"><td class="cellrowborder" valign="top" width="12.139999999999999%" headers="mcps1.2.3.1.1 "><p id="p12692424332"><a name="p12692424332"></a><a name="p12692424332"></a>pos</p>
 </td>
-<td class="cellrowborder" valign="top" width="87.86%" headers="mcps1.2.3.1.2 "><p id="p35011591693"><a name="p35011591693"></a><a name="p35011591693"></a>Buffer逻辑位置，可以为<span>VECIN、VECOUT、</span>VECCALC、A1<span>、</span>B1、C1。<span>关于TPosition的具体介绍请参考</span><a href="../../../数据结构/辅助数据结构//TPosition.md">TPosition</a>。</p>
+<td class="cellrowborder" valign="top" width="87.86%" headers="mcps1.2.3.1.2 "><p id="p35011591693"><a name="p35011591693"></a><a name="p35011591693"></a>Buffer逻辑位置，可以为<span>VECIN、VECOUT、</span>VECCALC、A1<span>、</span>B1、C1。<span>关于TPosition的具体介绍请参考</span><a href="../../../辅助数据结构/TPosition.md">TPosition</a>。</p>
 </td>
 </tr>
 </tbody>
