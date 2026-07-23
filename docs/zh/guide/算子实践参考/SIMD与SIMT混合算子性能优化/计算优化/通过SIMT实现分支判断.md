@@ -55,69 +55,67 @@ SIMT线程层次结构为：
 
 【反例】
 
-基于SIMD RegBase的floor\_mod算子实现：对应样例中的场景1（SCENARIO\_NUM=1）。该场景使用DataCopy完成GM与UB之间的数据搬运，在UB上使用RegBase VF函数实现计算。由于SIMD无法直接通过普通if else语句表达逐元素分支判断，因此需要使用多个Reg矢量计算API完成符号比较、条件组合和结果选择，相关代码如下。
+基于SIMD Reg矢量计算的floor\_mod算子实现：对应样例中的场景1（SCENARIO\_NUM=1）。该场景使用 `asc_copy_gm2ub_align` 和 `asc_copy_ub2gm_align` 完成GM与UB之间的数据搬运，在UB上使用SIMD VF函数实现计算。由于SIMD无法直接通过普通if else语句表达逐元素分支判断，因此需要使用多个矢量计算API完成符号比较、条件组合和结果选择，相关代码如下。
 
 ```cpp
-template <typename T>
-__simd_vf__ inline void floor_mod_simd(__ubuf__ T* zAddr, __ubuf__ T* xAddr, __ubuf__ T* yAddr, const uint32_t count)
+__simd_vf__ inline void floor_mod_simd(
+    __ubuf__ int32_t* z_addr, __ubuf__ int32_t* x_addr, __ubuf__ int32_t* y_addr, const uint32_t count)
 {
-    constexpr uint32_t oneRepeatSize = AscendC::GetVecLen() / sizeof(T);
-    uint16_t loopTimes = AscendC::CeilDivision(count, oneRepeatSize);
-    AscendC::Reg::RegTensor<T> xValue;
-    AscendC::Reg::RegTensor<T> yValue;
-    AscendC::Reg::RegTensor<T> modValue;
-    AscendC::Reg::RegTensor<T> tempValue;
-    AscendC::Reg::RegTensor<T> defaultValue;
-    AscendC::Reg::RegTensor<T> signValue;
+    constexpr uint32_t one_repeat_size = asc_get_vf_len() / sizeof(int32_t);
+    uint16_t loop_times = ceil_div(count, one_repeat_size);
+    vector_int32_t x_value;
+    vector_int32_t y_value;
+    vector_int32_t mod_value;
+    vector_int32_t temp_value;
+    vector_int32_t default_value;
+    vector_int32_t sign_value;
 
-    AscendC::Reg::MaskReg mask;
-    AscendC::Reg::MaskReg selectMask;
-    AscendC::Reg::MaskReg adjustMask;
-    uint32_t maskCount = count;
+    vector_bool mask;
+    vector_bool select_mask;
+    vector_bool adjust_mask;
+    uint32_t mask_count = count;
 
-    AscendC::Reg::Duplicate(defaultValue, T(-1));
-    AscendC::Reg::Duplicate(signValue, FMOD_B32_SIGN);
+    asc_duplicate_scalar(default_value, int32_t(-1));
+    asc_duplicate_scalar(sign_value, static_cast<int32_t>(FMOD_B32_SIGN));
 
-    for (uint16_t i = 0; i < loopTimes; i++) {
-        mask = AscendC::Reg::UpdateMask<T>(maskCount);
-        AscendC::Reg::LoadAlign(xValue, xAddr + i * oneRepeatSize);
-        AscendC::Reg::LoadAlign(yValue, yAddr + i * oneRepeatSize);
+    for (uint16_t i = 0; i < loop_times; i++) {
+        mask = asc_update_mask_b32(mask_count);
+        asc_loadalign(x_value, x_addr + i * one_repeat_size);
+        asc_loadalign(y_value, y_addr + i * one_repeat_size);
 
-        AscendC::Reg::Div(tempValue, xValue, yValue, mask);
-        AscendC::Reg::Mul(tempValue, yValue, tempValue, mask);
-        AscendC::Reg::Sub(modValue, xValue, tempValue, mask);
+        asc_div(temp_value, x_value, y_value, mask);
+        asc_mul(temp_value, y_value, temp_value, mask);
+        asc_sub(mod_value, x_value, temp_value, mask);
 
-        AscendC::Reg::Compares<T, AscendC::CMPMODE::NE>(selectMask, yValue, T(0), mask);
-        AscendC::Reg::Select(tempValue, modValue, defaultValue, selectMask);
+        asc_ne_scalar(select_mask, y_value, int32_t(0), mask);
+        asc_select(temp_value, mod_value, default_value, select_mask);
 
-        AscendC::Reg::Add(modValue, tempValue, yValue, mask);
-        AscendC::Reg::Compares<T, AscendC::CMPMODE::NE>(adjustMask, tempValue, T(0), mask);
-        AscendC::Reg::And(xValue, tempValue, signValue, mask);
-        AscendC::Reg::And(yValue, yValue, signValue, mask);
-        AscendC::Reg::Compare<T, AscendC::CMPMODE::NE>(selectMask, xValue, yValue, mask);
-        AscendC::Reg::MaskAnd(adjustMask, selectMask, adjustMask, mask);
-        AscendC::Reg::Select(modValue, modValue, tempValue, adjustMask);
-        AscendC::Reg::StoreAlign(zAddr + i * oneRepeatSize, modValue, mask);
+        asc_add(mod_value, temp_value, y_value, mask);
+        asc_ne_scalar(adjust_mask, temp_value, int32_t(0), mask);
+        asc_and(x_value, temp_value, sign_value, mask);
+        asc_and(y_value, y_value, sign_value, mask);
+        asc_ne(select_mask, x_value, y_value, mask);
+        asc_and(adjust_mask, select_mask, adjust_mask, mask);
+        asc_select(mod_value, mod_value, temp_value, adjust_mask);
+        asc_storealign(z_addr + i * one_repeat_size, mod_value, mask);
     }
 }
 ```
 
 【正例】
 
-基于SIMT的floor\_mod算子实现：对应样例中的场景3（SCENARIO\_NUM=3）。该场景同样使用DataCopy完成GM与UB之间的数据搬运，在UB上采用SIMT编程方式实现计算过程，通过if else语句完成分支判断，代码如下所示。
+基于SIMT的floor\_mod算子实现：对应样例中的场景3（SCENARIO\_NUM=3）。该场景同样使用搬运接口完成GM与UB之间的数据搬运，在UB上采用SIMT编程方式实现计算过程，通过if else语句完成分支判断，代码如下所示。
 
 ```cpp
-template <typename T>
 __simt_vf__ inline void floor_mod_simt_contiguous(
-    __ubuf__ T* x, __ubuf__ T* y, __ubuf__ T* z, uint32_t inputTotalLength)
+    __ubuf__ int32_t* x, __ubuf__ int32_t* y, __ubuf__ int32_t* z, uint32_t input_total_length)
 {
-    for (uint32_t index = static_cast<uint32_t>(threadIdx.x); index < inputTotalLength;
-         index += static_cast<uint32_t>(blockDim.x)) {
-        T yValue = y[index];
-        const auto rem = x[index] % yValue;
-        bool signsDiffer = ((rem < 0) != (yValue < 0));
-        if (signsDiffer && (rem != 0)) {
-            z[index] = rem + yValue;
+    for (uint32_t index = threadIdx.x; index < input_total_length; index += blockDim.x) {
+        int32_t y_value = y[index];
+        const int32_t rem = x[index] % y_value;
+        bool signs_differ = ((rem < 0) != (y_value < 0));
+        if (signs_differ && (rem != 0)) {
+            z[index] = rem + y_value;
         } else {
             z[index] = rem;
         }
@@ -127,11 +125,13 @@ __simt_vf__ inline void floor_mod_simt_contiguous(
 
 【性能对比】
 
-在核数相同、输入输出规格相同、均使用DataCopy完成GM与UB之间数据搬运的情况下，对比场景1和场景3的性能数据如下。
+在核数相同、输入输出规格相同、均使用搬运接口完成GM与UB之间数据搬运的情况下，对比场景1和场景3的性能数据如下。
+
+除Task Duration外，其余指标均为所有Thread Block上的平均值。
 
 | 场景 | 实现方式 | 核数 | Task Duration\(μs\) | aiv\_vec\_time\(μs\) | aiv\_vec\_ratio | aiv\_mte2\_time\(μs\) | aiv\_mte2\_ratio |
 |:---|:---|:---:|---:|---:|---:|---:|---:|
-| 场景1 | SIMD RegBase | 64 | 532.144 | 523.082 | 0.985 | 237.127 | 0.446 |
-| 场景3 | SIMT连续访问UB | 64 | 457.402 | 319.948 | 0.701 | 437.758 | 0.959 |
+| 场景1 | SIMD Reg矢量计算 | 64 | 525.736 | 509.987 | 0.989 | 217.341 | 0.421 |
+| 场景3 | SIMT连续访问UB | 64 | 463.179 | 301.474 | 0.668 | 437.055 | 0.968 |
 
-相比场景1，场景3使用SIMT直接表达floor\_mod中的分支判断逻辑，aiv\_vec\_time从523.082μs降低至319.948μs，下降约38.8%，说明Vector计算侧耗时明显降低。端到端Task Duration从532.144μs降低至457.402μs，下降约14.0%，场景3的aiv\_mte2\_ratio达到0.959，主要瓶颈已转为MTE2 Bound，即算子性能的最大影响转变为GM到UB的搬运效率。
+相比场景1，场景3使用SIMT直接表达floor\_mod中的分支判断逻辑，aiv\_vec\_time从509.987μs降低至301.474μs，下降约40.9%，说明Vector计算侧耗时明显降低。端到端Task Duration从525.736μs降低至463.179μs，下降约11.9%，场景3的aiv\_mte2\_ratio达到0.968，主要瓶颈已转为MTE2 Bound，即算子性能的最大影响转变为GM到UB的搬运效率。
