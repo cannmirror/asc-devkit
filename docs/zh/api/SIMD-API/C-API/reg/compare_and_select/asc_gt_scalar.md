@@ -28,7 +28,11 @@
 
 头文件路径：`"c_api/reg_compute/reg_vector.h"`。
 
-对源操作数执行逐元素比较。对于src0_i > value，若条件成立则目的操作数对应结果位为1，否则为0，每个元素的比较结果占一个bit。
+计算公式如下：
+
+$$
+dst_i = \begin{cases} 1, & src_i > value \\ 0, & src_i \leq value \end{cases}
+$$
 
 ## 函数原型
 
@@ -46,6 +50,7 @@ __simd_callee__ inline void asc_gt_scalar(vector_bool& dst, vector_float src, fl
 
 ## 参数说明
 
+**表 1** 参数说明
 | 参数名   | 输入/输出 | 描述                             |
 |:------| :--- |:-------------------------------|
 | dst   | 输出 | 目的操作数（掩码寄存器）。                 |
@@ -65,7 +70,8 @@ PIPE_V
 
 ## 约束说明
 
-无
+- mask未筛选的元素在输出中置零。
+- 浮点数据类型比较，涉及`nan`时比较结果为0。
 
 ## 调用示例
 

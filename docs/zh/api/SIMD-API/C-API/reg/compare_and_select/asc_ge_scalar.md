@@ -32,7 +32,7 @@ ge（greater than or equal to），对源操作数执行逐元素比较。对于
 
 计算公式如下：
 $$
-dst_i = src_i >= value
+dst_i = (src_i \geq value)
 $$
 
 ## 函数原型
@@ -51,6 +51,7 @@ __simd_callee__ inline void asc_ge_scalar(vector_bool& dst, vector_float src, fl
 
 ## 参数说明
 
+**表 1** 参数说明
 | 参数名  | 输入/输出 | 描述 |
 | :----- | :------- | :------- |
 | dst | 输出 | 目的操作数（掩码寄存器）。 |
@@ -70,7 +71,8 @@ PIPE_V
 
 ## 约束说明
 
-无
+- mask未筛选的元素在输出中置零。
+- 浮点数据类型比较，涉及`nan`时比较结果为0。
 
 ## 调用示例
 

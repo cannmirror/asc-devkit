@@ -28,7 +28,11 @@
 
 头文件路径：`"c_api/reg_compute/reg_vector.h"`。
 
-src中的每个元素逐个与标量value比较大小，如果src_i != value，则输出结果dst对应比特位为1，否则为0。
+`src` 中的每个元素逐个与标量 `value` 比较是否不相等，如果 `src_i != value`，则输出结果 `dst` 对应比特位为1，否则为0，每个元素的比较结果占一个bit。`dst` 为掩码寄存器，按掩码 `mask` 指示参与计算的元素。
+
+$$
+dst_i = (src_i \neq value)
+$$
 
 ## 函数原型
 
@@ -45,6 +49,7 @@ __simd_callee__ inline void asc_ne_scalar(vector_bool& dst, vector_bfloat16_t sr
 ```
 ## 参数说明
 
+**表 1** 参数说明
 | 参数名  | 输入/输出 | 描述 |
 | :----- | :------- | :------- |
 | dst | 输出 | 目的操作数（掩码寄存器）。 |
@@ -64,7 +69,8 @@ PIPE_V
 
 ## 约束说明
 
-无
+- mask未筛选的元素在输出中置零。
+- 浮点数据类型比较，涉及`nan`时比较结果为1。
 
 ## 调用示例
 

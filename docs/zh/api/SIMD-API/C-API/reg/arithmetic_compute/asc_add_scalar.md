@@ -50,6 +50,7 @@ __simd_callee__ inline void asc_add_scalar(vector_float& dst, vector_float src, 
 
 ## 参数说明
 
+**表 1** 参数说明
 | 参数名       | 输入/输出 | 描述               |
 | --------- | ----- | ---------------- |
 | dst       | 输出    | 目的操作数（矢量数据寄存器）。            |
@@ -69,7 +70,7 @@ PIPE_V
 
 ## 约束说明
 
-无
+mask未筛选的元素在输出中置零。
 
 ## 调用示例
 

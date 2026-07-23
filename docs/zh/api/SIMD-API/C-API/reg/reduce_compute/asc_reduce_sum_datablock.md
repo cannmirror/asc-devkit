@@ -43,6 +43,7 @@ __simd_callee__ inline void asc_reduce_sum_datablock(vector_int32_t& dst, vector
 
 ## 参数说明
 
+**表 1** 参数说明
 | 参数名  | 输入/输出 | 描述 |
 | :----- | :------- | :------- |
 | dst | 输出 | 目的操作数（矢量数据寄存器）。 |
@@ -61,7 +62,24 @@ PIPE_V
 
 ## 约束说明
 
-无
+- 指令内累加顺序采用二叉树累加方式，在每个DataBlock（32B）内两两相加逐层归约求和，结果连续写入到目的操作数，目的操作数中的其它元素置0。
+- 当DataBlock中的元素均不参与计算（mask全为0）时，将0写入dst对应位置（对于浮点数则为+0）。
+- 对于输入为uint16_t/int16_t类型的情况，会提升精度到uint32_t/int32_t进行计算。
+
+## 关键特性
+
+**asc_reduce_sum_datablock累加顺序**：
+
+以二叉树累加的方式计算每个DataBlock内的和。
+
+以half类型的数据求和为例，在每个DataBlock内有16个数，通过二叉树的方式，两两相加，计算过程如下图所示：
+
+1. data1和data2相加得到data01，data3和data4相加得到data02，……，data13和data14相加得到data07，data15和data16相加得到data08；
+2. data01和data02相加得到data001，data03和data04相加得到data002，……，data07和data08相加得到data004；
+3. 以此类推，得到目的操作数为1个half类型的数据sum。
+
+**图1** asc_reduce_sum_datablock示意图
+![asc_reduce_sum_datablock示意图](../../../../figures/reg_reduce_datablock_index.png "asc_reduce_sum_datablock示意图")
 
 ## 调用示例
 

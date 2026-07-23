@@ -27,8 +27,10 @@
 ## 功能说明
 
 头文件路径：`"c_api/reg_compute/reg_convert.h"`。
-
 将int32_t类型转化为float类型，并支持多种舍入模式。
+$$
+dst_i = (float)src_i
+$$
 
 关于舍入模式的详细说明，请参见[舍入模式](../data_type_convert/rounding_mode.md)。
 
@@ -49,6 +51,7 @@ __simd_callee__ inline void asc_int322float_rz(vector_float& dst, vector_int32_t
 
 ## 参数说明
 
+**表 1** 参数说明
 | 参数名    | 输入/输出 | 描述                |
 | :------ | :----- | :----------------- |
 | dst    | 输出    | 目的操作数（矢量数据寄存器）。            |
@@ -67,7 +70,8 @@ PIPE_V
 
 ## 约束说明
 
-无
+- 当int32_t的值超出float可精确表示的整数范围（绝对值大于2^24）时，按函数后缀指定的舍入模式进行舍入。
+- mask未筛选的元素在输出中置零。
 
 ## 调用示例
 
